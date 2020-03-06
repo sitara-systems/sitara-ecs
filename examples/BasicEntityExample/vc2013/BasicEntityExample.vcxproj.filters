@@ -1,0 +1,85 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="blocks">
+      <UniqueIdentifier>{608f211a-273b-46dc-8c35-b84108ae4dae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\sitara-ecs">
+      <UniqueIdentifier>{439ea8a8-9822-4224-99ec-61b327991b35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\sitara-ecs\libs">
+      <UniqueIdentifier>{947be3d8-1307-47e5-b81e-6fd515ca801b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\sitara-ecs\libs\entityx">
+      <UniqueIdentifier>{1fbb9bed-2c27-4585-91e6-6f0fddb86a32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\sitara-ecs\src">
+      <UniqueIdentifier>{30e138d1-23c3-4a4f-9cba-9c4e6ae38a37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\sitara-ecs\libs\entityx\entityx">
+      <UniqueIdentifier>{3fc5a16d-0d3f-4742-841e-f4684f3267dd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\BasicEntityExampleApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\BasicEntityExampleApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\libs\entityx\entityx\Entity.cc">
+      <Filter>blocks\sitara-ecs\libs\entityx\entityx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\entityx\entityx\Event.cc">
+      <Filter>blocks\sitara-ecs\libs\entityx\entityx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\entityx\entityx\System.cc">
+      <Filter>blocks\sitara-ecs\libs\entityx\entityx</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Ecs.h">
+      <Filter>blocks\sitara-ecs\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\entityx\entityx\config.h">
+      <Filter>blocks\sitara-ecs\libs\entityx\entityx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\entityx\entityx\Entity.h">
+      <Filter>blocks\sitara-ecs\libs\entityx\entityx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\entityx\entityx\entityx.h">
+      <Filter>blocks\sitara-ecs\libs\entityx\entityx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\entityx\entityx\Event.h">
+      <Filter>blocks\sitara-ecs\libs\entityx\entityx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\entityx\entityx\quick.h">
+      <Filter>blocks\sitara-ecs\libs\entityx\entityx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\entityx\entityx\System.h">
+      <Filter>blocks\sitara-ecs\libs\entityx\entityx</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
