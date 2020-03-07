@@ -3,13 +3,18 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
     <BLOCK_ROOT>..\..\..</BLOCK_ROOT>
-    <ENTITYX_ROOT>\libs\entityx</ENTITYX_ROOT>
+    <ENTITYX_ROOT>\libs\entityx-1.1.2</ENTITYX_ROOT>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(BLOCK_ROOT)\src;$(BLOCK_ROOT)$(ENTITYX_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="BLOCK_ROOT">
