@@ -5,3 +5,6 @@
 #include "entityx/Entity.h"
 #include "entityx/System.h"
 #include "entityx/quick.h"
+
+#include "transform/Transform.h"
+#include "transform/TransformSystem.h"

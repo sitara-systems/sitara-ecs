@@ -4,11 +4,7 @@
 #include "cinder/Rand.h"
 #include "cinder/CinderMath.h"
 
-#include "entityx/config.h"
-#include "entityx/Event.h"
-#include "entityx/Entity.h"
-#include "entityx/System.h"
-#include "entityx/quick.h"
+#include "Ecs.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -90,7 +86,7 @@ void BasicEntityExampleApp::update() {
 	for (auto e : mEntities.entities_with_components(positionHandle)) {
 		entityx::ComponentHandle<components::Orbital> orbital = e.component<components::Orbital>();
 		orbital->mTheta += orbital->mAngularVelocity;
-		
+
 		e.component<components::Position>()->mPosition.x = 0.5 * orbital->mDiameter * ci::math<float>::cos(orbital->mTheta);
 		e.component<components::Position>()->mPosition.y = 0.5 * orbital->mDiameter * ci::math<float>::sin(orbital->mTheta);
 	}

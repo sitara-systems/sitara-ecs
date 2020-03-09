@@ -1,0 +1,27 @@
+<ItemGroup>
+  <ClCompile Include="..\..\..\libs\entityx-1.1.2\entityx\Entity.cc" />
+  <ClCompile Include="..\..\..\libs\entityx-1.1.2\entityx\Event.cc" />
+  <ClCompile Include="..\..\..\libs\entityx-1.1.2\entityx\help\Pool.cc" />
+  <ClCompile Include="..\..\..\libs\entityx-1.1.2\entityx\help\Timer.cc" />
+  <ClCompile Include="..\..\..\libs\entityx-1.1.2\entityx\System.cc" />
+  <ClCompile Include="..\..\..\src\transform\TransformSystem.cpp" />
+</ItemGroup>
+
+<ItemGroup>
+  <ClInclude Include="..\..\..\libs\entityx-1.1.2\entityx\3rdparty\catch.hpp" />
+  <ClInclude Include="..\..\..\libs\entityx-1.1.2\entityx\3rdparty\simplesignal.h" />
+  <ClInclude Include="..\..\..\libs\entityx-1.1.2\entityx\config.h" />
+  <ClInclude Include="..\..\..\libs\entityx-1.1.2\entityx\deps\Dependencies.h" />
+  <ClInclude Include="..\..\..\libs\entityx-1.1.2\entityx\Entity.h" />
+  <ClInclude Include="..\..\..\libs\entityx-1.1.2\entityx\entityx.h" />
+  <ClInclude Include="..\..\..\libs\entityx-1.1.2\entityx\Event.h" />
+  <ClInclude Include="..\..\..\libs\entityx-1.1.2\entityx\help\NonCopyable.h" />
+  <ClInclude Include="..\..\..\libs\entityx-1.1.2\entityx\help\Pool.h" />
+  <ClInclude Include="..\..\..\libs\entityx-1.1.2\entityx\help\Timer.h" />
+  <ClInclude Include="..\..\..\libs\entityx-1.1.2\entityx\quick.h" />
+  <ClInclude Include="..\..\..\libs\entityx-1.1.2\entityx\System.h" />
+  <ClInclude Include="..\..\..\libs\entityx-1.1.2\entityx\tags\TagsComponent.h" />
+  <ClCompile Include="..\..\..\src\transform\TransformSystem.h" />
+  <ClCompile Include="..\..\..\src\transform\Transform.h" />
+  <ClInclude Include="..\..\..\src\Ecs.h" />
+</ItemGroup>

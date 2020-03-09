@@ -1,52 +1,155 @@
 #pragma once
 
+#include "entityx/Entity.h"
 #include "cinder/Vector.h"
 #include "cinder/Quaternion.h"
 #include "cinder/Matrix.h"
 
 namespace sitara {
   namespace ecs {
-    namespace components {
-      struct Transform {
-        TransformComponent() = default;
-      	~TransformComponent() = default;
-        const ci::mat4& getWorldTransform() const { return mWorldTransform; }
-        const ci::mat4& getLocalTransform() const { return mLocalTransform; }
+    class Transform {
+      public:
+        Transform() = delete;
 
-      private:
-        void composeTransform(const ci::mat4 &transform) {
-          _local_transform = calcLocalTransform();
-          _world_transform = transform * _local_transform;
+        Transform(entityx::Entity entity, const ci::vec3 &position = ci::vec3(0), const ci::vec3 &scale = ci::vec3(1), const ci::vec3 &anchor = ci::vec3(0), const ci::quat &orientation = ci::quat())
+        : mEntity(entity),
+          mPosition(position),
+          mScale(scale),
+          mAnchor(anchor),
+          mOrientation(orientation) {
+			mParent = invalidHandle();
         }
 
-        ci::mat4 calcLocalTransform() { return glm::translate(position + pivot) * glm::toMat4(orientation) * glm::scale(scale) * glm::translate(- pivot / scale); }
+        ~Transform() {
+          removeFromParent();
+          for(auto &child : mChildren) {
+            child->mParent = invalidHandle();
+            child->getEntity().destroy();
+          }
+        }
 
-        ci::vec3 mPosition;
-      	ci::vec3 mScale;
-      	ci::vec3 mAnchor;
-      	ci::quat mRotation;
-      	ci::mat4 mTransform;
+		entityx::Entity getEntity() const {
+			return mEntity;
+		}
 
-      	//world transform, propgated through the scenegraph
-      	ci::vec3 mWorldPosition;
-      	ci::vec3 mWorldScale;
-      	ci::vec3 mWorldAnchor;
-      	ci::quat mWorldRotation;
-      	ci::mat4 mWorldTransform;
-      	bool mWorldTransformDirty;
+        entityx::ComponentHandle<Transform> addChild(entityx::Entity child) {
+          entityx::ComponentHandle<Transform> handle;
 
-      	//local transform, not propogated through the scene graph
-      	ci::vec3 mLocalPosition;
-      	ci::vec3 mLocalScale;
-      	ci::vec3 mLocalAnchor;
-      	ci::quat mLocalRotation;
-      	ci::mat4 mLocalTransform;
-      	bool mLocalTransformDirty;
+          if(child.has_component<Transform>()) {
+            handle = child.component<Transform>();
+          }
+          else {
+            handle = child.assign<Transform>(child);
+          }
 
-      	uint32_t mLevel;
-      	Handle mParent;
-      	std::list<Handle> mChildren;
-      }
-    }
+          addChild(handle);
+          return handle;
+        }
+
+        void addChild(entityx::ComponentHandle<Transform> childHandle) {
+          if (childHandle.get() != this) {
+            childHandle->removeFromParent();
+            childHandle->mParent = mEntity.component<Transform>();
+            mChildren.push_back(childHandle);
+          }
+        }
+
+        void removeFromParent() {
+          if(mParent) {
+            mParent->removeChild(mEntity.component<Transform>());
+          }
+        }
+
+        void removeChild(entityx::ComponentHandle<Transform> handle) {
+          if (handle) {
+            handle->mParent = invalidHandle();
+            auto begin = std::remove_if(mChildren.begin(), mChildren.end(), [&](const entityx::ComponentHandle<Transform> &entity) {
+              return entity == handle;
+            });
+            mChildren.erase(begin, mChildren.end());
+          }
+        }
+
+        bool isRoot() const {
+          return !mParent;
+        }
+
+        bool isLeaf() const {
+          return mChildren.empty();
+        }
+
+        entityx::ComponentHandle<Transform> getParent() const {
+          return mParent;
+        }
+
+        const std::vector<entityx::ComponentHandle<Transform>>& getChildren() {
+          return mChildren;
+        }
+
+        size_t getNumberOfChildren() const {
+          return mChildren.size();
+        }
+
+		void descend(const std::function<void(const Transform&, Transform&)>& function) {
+			for (auto& child : mChildren) {
+				function(*this, *child.get());
+				child->descend(function);
+			}
+		}
+
+        const ci::mat4& getWorldTransform() const {
+          return mWorldTransform;
+        }
+
+        const ci::mat4& getLocalTransform() const {
+          return mLocalTransform;
+        }
+
+		void updateWorldTransform(const ci::mat4 &parentTransform) {
+			mLocalTransform = calcLocalTransform();
+			mWorldTransform = parentTransform * mLocalTransform;
+		}
+		
+		ci::mat4 calcLocalTransform() const {
+			return glm::translate(mPosition + mAnchor) * glm::toMat4(mOrientation) * glm::scale(mScale) * glm::translate(-mAnchor / mScale);
+		}
+
+		ci::vec3 mPosition;
+        ci::vec3 mScale;
+        ci::vec3 mAnchor; // relative center of orientation and scaling.
+        ci::quat mOrientation;
+
+      private:
+        static entityx::ComponentHandle<Transform> invalidHandle() {
+          return entityx::ComponentHandle<Transform>();
+        }
+
+        entityx::Entity mEntity;
+		entityx::ComponentHandle<Transform> mParent;
+        std::vector<entityx::ComponentHandle<Transform>> mChildren;
+        ci::mat4 mLocalTransform;
+        ci::mat4 mWorldTransform;
+    };
+
+	inline entityx::ComponentHandle<Transform> getTransformComponent(entityx::Entity entity) {
+		/*
+		entityx::ComponentHandle<Transform> handle;
+		if (entity.has_component<Transform>()) {
+			handle = entity.component<Transform>();
+		}
+		else {
+			handle = entity.assign<Transform>(entity);
+		}
+		return handle;
+		*/
+		return entity.has_component<Transform>() ? entity.component<Transform>() : entity.assign<Transform>(entity);
+	}
+
+	inline entityx::Entity attachChild(entityx::Entity root, entityx::Entity child) {
+		auto root_handle = getTransformComponent(root);
+		root_handle->addChild(child);
+		return root;
+	}
+
   }
 }
