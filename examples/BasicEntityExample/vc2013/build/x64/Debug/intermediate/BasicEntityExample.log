@@ -1,19 +1,14 @@
-﻿  Entity.cc
-  Event.cc
-  System.cc
-  Pool.cc
-  Timer.cc
-  BasicEntityExampleApp.cpp
-c:\users\nathan\documents\anicka-hymtf-tate\dependencies\cinder\include\cinder\filesystem.h(40): warning C4996: 'std::tr2': warning STL4018: The non-Standard std::tr2::sys namespace is deprecated and will be REMOVED. It is superseded by std::filesystem. You can define _SILENCE_TR2_SYS_NAMESPACE_DEPRECATION_WARNING to acknowledge that you have received this warning. (compiling source file ..\src\BasicEntityExampleApp.cpp)
-  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\experimental\filesystem(3238): note: see declaration of 'std::tr2' (compiling source file ..\src\BasicEntityExampleApp.cpp)
+﻿  BasicEntityExampleApp.cpp
+c:\users\nathan\documents\anicka-hymtf-tate\dependencies\cinder\include\cinder\filesystem.h(40): warning C4996: 'std::tr2': warning STL4018: The non-Standard std::tr2::sys namespace is deprecated and will be REMOVED. It is superseded by std::filesystem. You can define _SILENCE_TR2_SYS_NAMESPACE_DEPRECATION_WARNING to acknowledge that you have received this warning.
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\experimental\filesystem(3238): note: see declaration of 'std::tr2'
   Unknown compiler version - please run the configure tests and report the results
-c:\users\nathan\documents\anicka-hymtf-tate\dependencies\sitara-ecs\examples\basicentityexample\src\basicentityexampleapp.cpp(46): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\nathan\documents\anicka-hymtf-tate\dependencies\sitara-ecs\examples\basicentityexample\src\basicentityexampleapp.cpp(94): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+c:\users\nathan\documents\anicka-hymtf-tate\dependencies\sitara-ecs\examples\basicentityexample\src\basicentityexampleapp.cpp(42): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\nathan\documents\anicka-hymtf-tate\dependencies\sitara-ecs\examples\basicentityexample\src\basicentityexampleapp.cpp(90): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-c:\users\nathan\documents\anicka-hymtf-tate\dependencies\sitara-ecs\examples\basicentityexample\src\basicentityexampleapp.cpp(95): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+c:\users\nathan\documents\anicka-hymtf-tate\dependencies\sitara-ecs\examples\basicentityexample\src\basicentityexampleapp.cpp(91): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float

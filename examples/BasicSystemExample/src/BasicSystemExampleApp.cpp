@@ -8,41 +8,45 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-struct Sun {
-	Sun() = default;
-};
+namespace sitara {
+	struct Sphere {
+		Sphere(float diameter, Color color) :
+			mRadius(diameter / 2.0f),
+			mColor(color)
+		{
+			auto mesh = geom::Sphere().radius(mRadius).subdivisions(16);
+			auto glColor = geom::Constant(geom::COLOR, mColor);
+			auto lambert = gl::ShaderDef().lambert().color();
+			auto shader = gl::getStockShader(lambert);
+			mSphere = gl::Batch::create(mesh >> glColor, shader);
+		}
 
-struct Circle {
-	Circle() = default;
-	Circle(float radius, const ci::Color &color = ci::Color(1.0f, 1.0f, 1.0f))
-	: mRadius(radius),
-	mColor(color) {
-	}
+		float mRadius;
+		Color mColor;
+		gl::BatchRef mSphere;
+	};
 
-	float mRadius = 12.0f;
-	ci::Color mColor = ci::Color(1.0f, 1.0f, 1.0f);
-};
+	struct Rotation {
+		Rotation(vec3 axis, float revs_per_second) : mAxis(axis), mRotationalSpeed(revs_per_second * 2.0 * M_PI) {
 
-struct Rotation {
-	Rotation(vec3 axis, float revs_per_second) : mAxis(axis), mRotationalSpeed(revs_per_second * 2.0 * M_PI) {
+		}
 
-	}
+		vec3 mAxis;
+		float mRotationalSpeed;
+	};
 
-	vec3 mAxis;
-	float mRotationalSpeed;
-};
+	struct RotationSystem : public entityx::System<RotationSystem> {
+		void update(entityx::EntityManager &entities, entityx::EventManager &events, entityx::TimeDelta dt) override {
+			entityx::ComponentHandle<sitara::ecs::Transform> transformHandle;
+			entityx::ComponentHandle<Rotation> rotationHandle;
 
-struct RotationSystem : public entityx::System<RotationSystem> {
-	void update(entityx::EntityManager &entities, entityx::EventManager &events, entityx::TimeDelta dt) override {
-		entityx::ComponentHandle<sitara::ecs::Transform> transformHandle;
-		entityx::ComponentHandle<Rotation> rotationHandle;
-
-		for (entityx::Entity e : entities.entities_with_components(transformHandle, rotationHandle)) {
-			transformHandle->mOrientation *= glm::angleAxis<float>(rotationHandle->mRotationalSpeed * dt, rotationHandle->mAxis);
-			glm::normalize(transformHandle->mOrientation);
+			for (entityx::Entity e : entities.entities_with_components(transformHandle, rotationHandle)) {
+				transformHandle->mOrientation *= glm::angleAxis<float>(rotationHandle->mRotationalSpeed * dt, rotationHandle->mAxis);
+				glm::normalize(transformHandle->mOrientation);
+			};
 		};
 	};
-};
+}
 
 class BasicSystemExampleApp : public App {
   public:
@@ -66,7 +70,7 @@ BasicSystemExampleApp::BasicSystemExampleApp() :
 
 void BasicSystemExampleApp::setup() {
 	mSystems.add<sitara::ecs::TransformSystem>();
-	mSystems.add<RotationSystem>();
+	mSystems.add<sitara::RotationSystem>();
 	mSystems.configure();
 
 	createSolarSystem(mEntities, vec3(getWindowCenter(), 0.0f));
@@ -77,7 +81,7 @@ void BasicSystemExampleApp::mouseDown( MouseEvent event ) {
 
 void BasicSystemExampleApp::update() {
 	mSystems.update<sitara::ecs::TransformSystem>(1.0 / 60.0); // doesnt actually use time
-	mSystems.update<RotationSystem>(1.0 / 60.0);
+	mSystems.update<sitara::RotationSystem>(1.0 / 60.0);
 }
 
 void BasicSystemExampleApp::draw() {
@@ -88,21 +92,19 @@ void BasicSystemExampleApp::draw() {
 	gl::ScopedDepth depth(true);
 
 	entityx::ComponentHandle<sitara::ecs::Transform> transform;
-	entityx::ComponentHandle<Circle> circle;
+	entityx::ComponentHandle<sitara::Sphere> sphere;
 
-	for (auto entity : mEntities.entities_with_components(transform, circle)) {
+	for (auto entity : mEntities.entities_with_components(transform, sphere)) {
 		gl::ScopedModelMatrix mat;
 		gl::multModelMatrix(transform->getWorldTransform());
-		gl::color(circle->mColor);
-		gl::drawSolidCircle(vec2(0), circle->mRadius);
+		sphere->mSphere->draw();
 	}
 }
 
 entityx::Entity BasicSystemExampleApp::createSolarSystem(entityx::EntityManager &entities, const ci::vec3 &center) {
 	auto sun = entities.create();
-	sun.assign<Circle>(50.0f, Color(1.0, 0.5, 0.0));
+	sun.assign<sitara::Sphere>(50.0f, Color(1.0, 0.5, 0.0));
 	sun.assign<sitara::ecs::Transform>(sun, center);
-	sun.assign<Sun>();
 
 	for (auto i = 0; i < 15; i ++) {
 		sitara::ecs::attachChild(sun, createPlanetoid(entities));
@@ -118,15 +120,15 @@ entityx::Entity BasicSystemExampleApp::createPlanetoid(entityx::EntityManager &e
 	auto theta = randFloat(2.0 * M_PI);
 	auto planet_pos = vec3(cos(theta) * distance, sin(theta) * distance, 0.0f);
 	planet.assign<sitara::ecs::Transform>(planet, planet_pos, vec3(1.0f), -planet_pos);
-	planet.assign<Circle>(size, Color(0.0, 1.0, 1.0));
-	planet.assign<Rotation>(vec3(0.0, 0.0, 1.0), randFloat(0.5));
+	planet.assign<sitara::Sphere>(size, Color(0.0, 1.0, 1.0));
+	planet.assign<sitara::Rotation>(vec3(0.0, 0.0, 1.0), randFloat(0.5));
 
 	auto moon_pos = vec3(size, size, 0.0f) * randFloat(1.0f, 1.5f);
 	auto moon = entities.create();
 	moon.assign<sitara::ecs::Transform>(moon, moon_pos, vec3(1.0f), -moon_pos);
-	moon.assign<Circle>(size * 0.33f, Color(1.0, 1.0, 1.0));
+	moon.assign<sitara::Sphere>(size * 0.33f, Color(1.0, 1.0, 1.0));
 	sitara::ecs::attachChild(planet, moon);
-	moon.assign<Rotation>(vec3(0.0, 0.0, 1.0), randFloat(1.0));
+	moon.assign<sitara::Rotation>(vec3(0.0, 0.0, 1.0), randFloat(1.0));
 
 	return planet;
 }
