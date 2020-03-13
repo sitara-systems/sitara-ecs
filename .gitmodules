@@ -1,0 +1,8 @@
+[submodule "libs/entityx"]
+	path = libs/entityx
+	url = https://github.com/alecthomas/entityx
+	branch = master
+[submodule "libs/bullet3"]
+	path = libs/bullet3
+	url = https://github.com/bulletphysics/bullet3
+	branch = master
