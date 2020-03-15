@@ -3,6 +3,7 @@
 #include "entityx/Entity.h"
 #include "cinder/Vector.h"
 #include "bullet/btBulletDynamicsCommon.h"
+#include "physics/PhysicsUtilities.h"
 
 namespace sitara {
 	namespace ecs {
@@ -14,24 +15,28 @@ namespace sitara {
 		class RigidBody {
 		public:
 			RigidBody::RigidBody() = default;
-			RigidBody::RigidBody(sitara::ecs::SHAPE shape, ci::vec3 position = ci::vec3(0.0f), ci::vec3 size = ci::vec3(1.0f), float mass = 0.0f, ci::vec3 inertia = ci::vec3(0.0f)) :
+			RigidBody::RigidBody(sitara::ecs::SHAPE shape, 
+									ci::vec3 position = ci::vec3(0.0f), 
+									ci::vec3 size = ci::vec3(1.0f), 
+									float mass = 0.0f, 
+									ci::vec3 inertia = ci::vec3(0.0f)) :
 				mShape(shape)
 			{
 				btTransform localTransform;
 				localTransform.setIdentity();
-				localTransform.setOrigin(btVector3(position.x, position.y, position.z));
+				localTransform.setOrigin(physics::toBtVector3(position));
 
 				btScalar btMass(mass);
 				bool isDynamic = (mass != 0.f); //rigidbody is dynamic if and only if mass is non zero, otherwise static
-				btVector3 localInertia(inertia.x, inertia.y, inertia.z);
-
+				btVector3 localInertia(physics::toBtVector3(inertia));
+		
 				btCollisionShape* mCollisionShape;
 				switch (shape) {
 					case SPHERE:
-						mCollisionShape = new btSphereShape(btScalar(size.x));
+						mCollisionShape = new btSphereShape(size.x);
 						break;
 					case BOX:
-						mCollisionShape = new btBoxShape(btVector3(btScalar(size.x), btScalar(size.y), btScalar(size.z)));
+						mCollisionShape = new btBoxShape(physics::toBtVector3(size));
 						break;
 				}
 
@@ -43,6 +48,9 @@ namespace sitara {
 				mMotionState = new btDefaultMotionState(localTransform);
 
 				btRigidBody::btRigidBodyConstructionInfo info(btMass, mMotionState, mCollisionShape, localInertia);
+				info.m_restitution = 0.1;
+				info.m_friction = 0.1;
+
 				mRigidBody = new btRigidBody(info);
 			}
 
@@ -57,11 +65,33 @@ namespace sitara {
 				if (mRigidBody->getMotionState()) {
 					mRigidBody->getMotionState()->getWorldTransform(trans);
 				}
-				return ci::vec3(float(trans.getOrigin().getX()), float(trans.getOrigin().getY()), float(trans.getOrigin().getZ()));
+				return physics::fromBtVector3(trans.getOrigin());
 			}
 
-			btRigidBody* getRigidBody() {
+			ci::mat4 getWorldTransform() {
+				btTransform trans;
+				if (mRigidBody->getMotionState()) {
+					mRigidBody->getMotionState()->getWorldTransform(trans);
+				}
+				return physics::fromBtTransform(trans);
+			}
+
+			btRigidBody* getRigidBody() const {
 				return mRigidBody;
+			}
+
+			btRigidBody* setElasticity(float elasticity) {
+				mRigidBody->setRestitution(ci::clamp<float>(elasticity, 0.0, 1.0));
+				return mRigidBody;
+			}
+
+			btRigidBody* setFriction(float friction) {
+				mRigidBody->setFriction(ci::clamp<float>(friction, 0.0, 1.0));
+				return mRigidBody;
+			}
+
+			void setLinearVelocity(ci::vec3 velocity) {
+				mRigidBody->setLinearVelocity(physics::toBtVector3(velocity));
 			}
 
 		private:

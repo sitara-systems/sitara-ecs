@@ -10,7 +10,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(BLOCK_ROOT)\src;$(BLOCK_ROOT)$(ENTITYX_ROOT);$(BLOCK_ROOT)$(BULLET3_ROOT)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_ENABLE_EXTENDED_ALIGNED_STORAGE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DISABLE_EXTENDED_ALIGNED_STORAGE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>

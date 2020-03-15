@@ -27,7 +27,7 @@ void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::Rigi
 
 void PhysicsSystem::setGravity(ci::vec3 gravity) {
 	if (mDynamicsWorld != nullptr) {
-		mDynamicsWorld->setGravity(btVector3(gravity.x, gravity.y, gravity.z));
+		mDynamicsWorld->setGravity(physics::toBtVector3(gravity));
 	}
 	else {
 		std::printf("sitara::ecs::PhysicsSystem ERROR -- must configure() system before you can set parameters.\n");

@@ -113,6 +113,8 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\physics\PhysicsSystem.cpp" />
+    <ClCompile Include="..\..\..\src\transform\TransformSystem.cpp" />
     <ClCompile Include="..\src\PhysicsSystemExampleApp.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -121,10 +123,13 @@
     <ClCompile Include="..\..\..\libs\entityx\entityx\help\Pool.cc" />
     <ClCompile Include="..\..\..\libs\entityx\entityx\help\Timer.cc" />
     <ClCompile Include="..\..\..\libs\entityx\entityx\System.cc" />
-    <ClCompile Include="..\..\..\src\transform\TransformSystem.cpp" />
-    <ClCompile Include="..\..\..\src\physics\PhysicsSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\physics\Utilities.h" />
+    <ClInclude Include="..\..\..\src\physics\PhysicsSystem.h" />
+    <ClInclude Include="..\..\..\src\physics\RigidBody.h" />
+    <ClInclude Include="..\..\..\src\transform\Transform.h" />
+    <ClInclude Include="..\..\..\src\transform\TransformSystem.h" />
     <ClInclude Include="..\include\Resources.h" />
   </ItemGroup>
   <ItemGroup>
@@ -141,10 +146,6 @@
     <ClInclude Include="..\..\..\libs\entityx\entityx\quick.h" />
     <ClInclude Include="..\..\..\libs\entityx\entityx\System.h" />
     <ClInclude Include="..\..\..\libs\entityx\entityx\tags\TagsComponent.h" />
-    <ClCompile Include="..\..\..\src\transform\TransformSystem.h" />
-    <ClCompile Include="..\..\..\src\transform\Transform.h" />
-    <ClCompile Include="..\..\..\src\physics\PhysicsSystem.h" />
-    <ClCompile Include="..\..\..\src\physics\RigidBody.h" />
     <ClInclude Include="..\..\..\src\Ecs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -11,3 +11,4 @@
 
 #include "physics/RigidBody.h"
 #include "physics/PhysicsSystem.h"
+#include "physics/PhysicsUtilities.h"

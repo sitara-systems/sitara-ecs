@@ -71,15 +71,15 @@
     <ClCompile Include="..\..\..\libs\entityx\entityx\help\Timer.cc">
       <Filter>blocks\sitara-ecs\libs\entityx\entityx\help</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\transform\TransformSystem.cpp">
-      <Filter>blocks\sitara-ecs\src\transform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\physics\PhysicsSystem.cpp">
-      <Filter>blocks\sitara-ecs\src\physics</Filter>
-    </ClCompile>
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\..\src\physics\PhysicsSystem.cpp">
+      <Filter>blocks\sitara-ecs\src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\transform\TransformSystem.cpp">
+      <Filter>blocks\sitara-ecs\src\transform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
@@ -88,18 +88,6 @@
     <ClInclude Include="..\..\..\src\Ecs.h">
       <Filter>blocks\sitara-ecs\src</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\..\src\transform\TransformSystem.h">
-      <Filter>blocks\sitara-ecs\src\transform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\transform\Transform.h">
-      <Filter>blocks\sitara-ecs\src\transform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\physics\PhysicsSystem.h">
-      <Filter>blocks\sitara-ecs\src\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\physics\RigidBody.h">
-      <Filter>blocks\sitara-ecs\src\physics</Filter>
-    </ClCompile>
     <ClInclude Include="..\..\..\libs\entityx\entityx\config.h">
       <Filter>blocks\sitara-ecs\libs\entityx\entityx</Filter>
     </ClInclude>
@@ -138,6 +126,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\libs\entityx\entityx\tags\TagsComponent.h">
       <Filter>blocks\sitara-ecs\libs\entityx\entityx\tags</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\physics\PhysicsSystem.h">
+      <Filter>blocks\sitara-ecs\src\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\physics\RigidBody.h">
+      <Filter>blocks\sitara-ecs\src\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\transform\Transform.h">
+      <Filter>blocks\sitara-ecs\src\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\transform\TransformSystem.h">
+      <Filter>blocks\sitara-ecs\src\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\physics\Utilities.h">
+      <Filter>blocks\sitara-ecs\src\physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

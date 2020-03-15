@@ -1,6 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Rand.h"
 #include "Ecs.h"
 
 using namespace ci;
@@ -13,11 +14,11 @@ namespace sitara {
 			mRadius(diameter / 2.0f),
 			mColor(color)
 		{
-			auto mesh = geom::Sphere().radius(mRadius).subdivisions(16);
-			auto glColor = geom::Constant(geom::COLOR, mColor);
-			auto lambert = gl::ShaderDef().lambert().color();
-			auto shader = gl::getStockShader(lambert);
-			mSphere = gl::Batch::create(mesh >> glColor, shader);
+			auto mesh = ci::geom::Sphere().radius(mRadius).subdivisions(16);
+			auto glColor = ci::geom::Constant(ci::geom::COLOR, mColor);
+			auto lambert = ci::gl::ShaderDef().lambert().color();
+			auto shader = ci::gl::getStockShader(lambert);
+			mSphere = ci::gl::Batch::create(mesh >> glColor, shader);
 		}
 
 		float mRadius;
@@ -30,7 +31,7 @@ namespace sitara {
 			mDimensions(size),
 			mColor(color)
 		{
-			auto mesh = geom::Cube();
+			auto mesh = geom::Cube().size(mDimensions);
 			auto glColor = geom::Constant(geom::COLOR, mColor);
 			auto lambert = gl::ShaderDef().lambert().color();
 			auto shader = gl::getStockShader(lambert);
@@ -55,6 +56,8 @@ class PhysicsSystemExampleApp : public App {
 	entityx::EntityManager mEntities;
 	entityx::EventManager mEvents;
 	entityx::SystemManager mSystems;
+
+	ci::CameraPersp mCamera;
 };
 
 PhysicsSystemExampleApp::PhysicsSystemExampleApp() :
@@ -63,6 +66,7 @@ PhysicsSystemExampleApp::PhysicsSystemExampleApp() :
 }
 
 void PhysicsSystemExampleApp::setup() {
+	ci::app::setFrameRate(60);
 	auto physics = mSystems.add<sitara::ecs::PhysicsSystem>();
 	mSystems.configure();
 
@@ -70,15 +74,29 @@ void PhysicsSystemExampleApp::setup() {
 
 	auto ground = mEntities.create();
 	vec3 position = vec3(0, -56, 0);
-	ground.assign<sitara::ecs::RigidBody>(sitara::ecs::BOX, vec3(0, -56.0, 0), vec3(50, 50, 50));
-	ground.assign<sitara::Box>(vec3(50, 50, 50), Color(1, 1, 1));
+	vec3 size = vec3(500, 1, 500);
+	auto g = ground.assign<sitara::ecs::RigidBody>(sitara::ecs::BOX, vec3(0, -56.0, 0), size);
+	ground.assign<sitara::Box>(size, Color(1.0, 1.0, 1.0));
+	g->setElasticity(1.0);
 
-	for (int i = 0; i < 1; i++) {
-		auto ps = vec3(0, 0, 0);
+	for (int i = 0; i < 50; i++) {
+		auto ps = vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150));
 		auto ball = mEntities.create();
-		ball.assign<sitara::ecs::RigidBody>(sitara::ecs::SPHERE, vec3(0, 0, 0), vec3(1, 1, 1), 1.0);
-		ball.assign<sitara::Sphere>(1.0, Color(0.0, 1.0, 1.0));
+		vec3 size = vec3(10, 10, 10);
+		auto rigidBody = ball.assign<sitara::ecs::RigidBody>(sitara::ecs::SPHERE, ps, size, 1.0);
+		rigidBody->setElasticity(1.0);
+		ball.assign<sitara::Sphere>(size.x, Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
 	}
+
+	// setup camera orientation vectors
+	float cameraDistance = 400.0;
+	vec3 eye = cameraDistance * glm::normalize(vec3(1, 0.25, 1));
+	vec3 center = vec3(0.0f, 0.0f, 0.0f);
+	vec3 up = vec3(0.0f, 1.0f, 0.0f);
+	// setup the camera frustum
+
+	mCamera.setPerspective(60.0f, getWindowAspectRatio(), 5.0f, 10000.0f);
+	mCamera.lookAt(eye, center, up);
 }
 
 void PhysicsSystemExampleApp::mouseDown( MouseEvent event ) {
@@ -86,28 +104,38 @@ void PhysicsSystemExampleApp::mouseDown( MouseEvent event ) {
 
 void PhysicsSystemExampleApp::update() {
 	mSystems.update<sitara::ecs::PhysicsSystem>(1.0 / 60.0);
-
-	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
-	for (auto entity : mEntities.entities_with_components(body)) {
-		vec3 p = body->getPosition();
-		std::printf("Body Position: %f %f %f\n", p.x, p.y, p.z);
-	}
 }
 
 void PhysicsSystemExampleApp::draw() {
+	gl::clear(Color(0, 0, 0));
+	gl::enableAlphaBlending();
+
+	gl::setMatrices(mCamera);
+
+	// Enable the depth buffer.
+	gl::enableDepthRead();
+	gl::enableDepthWrite();
+
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
 	entityx::ComponentHandle<sitara::Sphere> sphere;
 	entityx::ComponentHandle<sitara::Box> box;
 
 	for (auto entity : mEntities.entities_with_components(body, sphere)) {
-		vec3 p = body->getPosition();
+		gl::pushModelMatrix();
+		gl::setModelMatrix(body->getWorldTransform());
 		sphere->mSphere->draw();
+		gl::popModelMatrix();
 	}
 
 	for (auto entity : mEntities.entities_with_components(body, box)) {
-		vec3 p = body->getPosition();
+		gl::pushModelMatrix();
+		gl::translate(body->getPosition());
 		box->mBox->draw();
+		gl::popModelMatrix();
 	}
+
+	gl::disableDepthWrite();
+	gl::disableDepthRead();
 }
 
-CINDER_APP( PhysicsSystemExampleApp, RendererGl )
+CINDER_APP( PhysicsSystemExampleApp, RendererGl, [=](cinder::app::App::Settings* settings) { settings->setConsoleWindowEnabled(); settings->setWindowSize(1280, 720); })
