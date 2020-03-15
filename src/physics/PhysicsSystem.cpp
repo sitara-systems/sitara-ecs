@@ -1,22 +1,39 @@
-#include "PhysicsSystem.h"
-#include "PhysicsBody.h"
+#include "physics/PhysicsSystem.h"
 
 using namespace sitara::ecs;
 
+void PhysicsSystem::configure(entityx::EntityManager &entities, entityx::EventManager &events) {
+	  ///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.
+	  mCollisionConfiguration = std::make_shared<btDefaultCollisionConfiguration>();
+	  ///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
+	  mDispatcher = std::make_shared<btCollisionDispatcher>(mCollisionConfiguration.get());
+	  ///btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
+	  mOverlappingPairCache = std::make_shared<btDbvtBroadphase>();
+	  ///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
+	  mBulletSolver = std::make_shared<btSequentialImpulseConstraintSolver>();
+	  mDynamicsWorld = std::make_shared<btDiscreteDynamicsWorld>(mDispatcher.get(), mOverlappingPairCache.get(), mBulletSolver.get(), mCollisionConfiguration.get());
+	  mDynamicsWorld->setGravity(btVector3(0.0, 0.0, 0.0));
+
+	  events.subscribe<entityx::ComponentAddedEvent<RigidBody>>(*this);
+}
+
 void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManager& events, entityx::TimeDelta dt) {
-  entityx::ComponentHandle<PhysicsBody> body;
-  for(auto e : entities.entities_with_components(body)) {
-    auto &b = *body.get();
-    auto current = b.mPosition;
-    auto velocity = (b.mPosition - b.mPreviousPosition) * static_cast<float>((dt / mPreviousDelta)) + b.mAcceleration * static_cast<float>(dt * dt);
-	if (glm::length(velocity) > mMaxSpeed) {
-		auto dir = glm::normalize(velocity);
-		velocity = mMaxSpeed * dir;
+	mDynamicsWorld->stepSimulation(static_cast<float>(dt), 10);
+}
+
+void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::RigidBody>& event) {
+	mDynamicsWorld->addRigidBody(event.component->getRigidBody().get());
+}
+
+void PhysicsSystem::setGravity(ci::vec3 gravity) {
+	if (mDynamicsWorld != nullptr) {
+		mDynamicsWorld->setGravity(btVector3(gravity.x, gravity.y, gravity.z));
 	}
-    //velocity *= (1.0 - b.mDrag); // Friction as viscous drag.
-    b.mPosition += velocity;
-    b.mPreviousPosition = current;
-    b.mAcceleration = ci::vec3(0); // clear acceleration
-    mPreviousDelta = dt;
-  }
-}	
+	else {
+		std::printf("sitara::ecs::PhysicsSystem ERROR -- must configure() system before you can set parameters.\n");
+	}
+}
+
+std::shared_ptr<btDiscreteDynamicsWorld> PhysicsSystem::getWorld() {
+	return mDynamicsWorld;
+}

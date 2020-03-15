@@ -9,5 +9,5 @@
 #include "transform/Transform.h"
 #include "transform/TransformSystem.h"
 
-#include "physics/PhysicsBody.h"
+#include "physics/RigidBody.h"
 #include "physics/PhysicsSystem.h"
