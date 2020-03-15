@@ -13,13 +13,13 @@ namespace sitara {
       void update(entityx::EntityManager& entities, entityx::EventManager& events, entityx::TimeDelta dt) override;
 	  void receive(const entityx::ComponentAddedEvent<sitara::ecs::RigidBody>& event);
 	  void setGravity(ci::vec3 gravity);
-	  std::shared_ptr<btDiscreteDynamicsWorld> getWorld();
+	  btDiscreteDynamicsWorld* getWorld();
     private:
-      std::shared_ptr<btDefaultCollisionConfiguration> mCollisionConfiguration;
-      std::shared_ptr<btCollisionDispatcher> mDispatcher;
-      std::shared_ptr<btBroadphaseInterface> mOverlappingPairCache;
-      std::shared_ptr<btSequentialImpulseConstraintSolver> mBulletSolver;
-      std::shared_ptr<btDiscreteDynamicsWorld> mDynamicsWorld;
+      btDefaultCollisionConfiguration* mCollisionConfiguration;
+      btCollisionDispatcher* mDispatcher;
+      btBroadphaseInterface* mOverlappingPairCache;
+      btSequentialImpulseConstraintSolver* mBulletSolver;
+      btDiscreteDynamicsWorld* mDynamicsWorld;
     };
   }
 }

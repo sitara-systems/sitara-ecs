@@ -4,14 +4,14 @@ using namespace sitara::ecs;
 
 void PhysicsSystem::configure(entityx::EntityManager &entities, entityx::EventManager &events) {
 	  ///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.
-	  mCollisionConfiguration = std::make_shared<btDefaultCollisionConfiguration>();
+	  mCollisionConfiguration = new btDefaultCollisionConfiguration();
 	  ///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
-	  mDispatcher = std::make_shared<btCollisionDispatcher>(mCollisionConfiguration.get());
+	  mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
 	  ///btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
-	  mOverlappingPairCache = std::make_shared<btDbvtBroadphase>();
+	  mOverlappingPairCache = new btDbvtBroadphase();
 	  ///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
-	  mBulletSolver = std::make_shared<btSequentialImpulseConstraintSolver>();
-	  mDynamicsWorld = std::make_shared<btDiscreteDynamicsWorld>(mDispatcher.get(), mOverlappingPairCache.get(), mBulletSolver.get(), mCollisionConfiguration.get());
+	  mBulletSolver = new btSequentialImpulseConstraintSolver();
+	  mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher, mOverlappingPairCache, mBulletSolver, mCollisionConfiguration);
 	  mDynamicsWorld->setGravity(btVector3(0.0, 0.0, 0.0));
 
 	  events.subscribe<entityx::ComponentAddedEvent<RigidBody>>(*this);
@@ -22,7 +22,7 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 }
 
 void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::RigidBody>& event) {
-	mDynamicsWorld->addRigidBody(event.component->getRigidBody().get());
+	mDynamicsWorld->addRigidBody(event.component->getRigidBody());
 }
 
 void PhysicsSystem::setGravity(ci::vec3 gravity) {
@@ -34,6 +34,6 @@ void PhysicsSystem::setGravity(ci::vec3 gravity) {
 	}
 }
 
-std::shared_ptr<btDiscreteDynamicsWorld> PhysicsSystem::getWorld() {
+btDiscreteDynamicsWorld* PhysicsSystem::getWorld() {
 	return mDynamicsWorld;
 }
