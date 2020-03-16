@@ -208,7 +208,8 @@ void PhysicsSystemExampleApp::createWorld() {
 		auto ps = vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150));
 		auto ball = mEntities.create();
 		vec3 size = vec3(10, 10, 10);
-		auto rigidBody = ball.assign<sitara::ecs::RigidBody>(sitara::ecs::SPHERE, ps, size, 1.0);
+		auto rigidBody = ball.assign<sitara::ecs::RigidBody>(sitara::ecs::SPHERE, ps, size);
+		rigidBody->setMassAndIntertia(5.0, vec3(1));
 		ball.assign<sitara::Sphere>(size.x, Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
 	}
 }

@@ -9,26 +9,21 @@ namespace sitara {
 	namespace ecs {
 		enum SHAPE {
 			SPHERE,
-			BOX
+			BOX,
+			CYLINDER,
+			CONE
 		};
 
 		class RigidBody {
 		public:
-			RigidBody::RigidBody() = default;
 			RigidBody::RigidBody(sitara::ecs::SHAPE shape, 
 									ci::vec3 position = ci::vec3(0.0f), 
-									ci::vec3 size = ci::vec3(1.0f), 
-									float mass = 0.0f, 
-									ci::vec3 inertia = ci::vec3(0.0f)) :
+									ci::vec3 size = ci::vec3(1.0f)) :
 				mShape(shape)
 			{
 				btTransform localTransform;
 				localTransform.setIdentity();
 				localTransform.setOrigin(physics::toBtVector3(position));
-
-				btScalar btMass(mass);
-				bool isDynamic = (mass != 0.f); //rigidbody is dynamic if and only if mass is non zero, otherwise static
-				btVector3 localInertia(physics::toBtVector3(inertia));
 		
 				btCollisionShape* mCollisionShape;
 				switch (shape) {
@@ -40,14 +35,9 @@ namespace sitara {
 						break;
 				}
 
-
-				if (isDynamic) {
-					mCollisionShape->calculateLocalInertia(mass, localInertia);
-				}
-
 				mMotionState = new btDefaultMotionState(localTransform);
 
-				btRigidBody::btRigidBodyConstructionInfo info(btMass, mMotionState, mCollisionShape, localInertia);
+				btRigidBody::btRigidBodyConstructionInfo info(0.0, mMotionState, mCollisionShape, btVector3(0,0,0));
 				info.m_restitution = 0.1;
 				info.m_friction = 0.1;
 
@@ -73,6 +63,7 @@ namespace sitara {
 					mRigidBody->setLinearVelocity(btVector3(0, 0, 0));
 					mRigidBody->setAngularVelocity(btVector3(0, 0, 0));
 					mRigidBody->clearForces();
+					mRigidBody->activate(true);
 				}
 			}
 
@@ -108,6 +99,20 @@ namespace sitara {
 
 			void setLinearVelocity(ci::vec3 velocity) {
 				mRigidBody->setLinearVelocity(physics::toBtVector3(velocity));
+			}
+
+			btRigidBody* setMassAndIntertia(float mass, ci::vec3 inertia = ci::vec3(0,0,0)) {
+				btScalar btMass(mass);
+				bool isDynamic = (mass != 0.f); //rigidbody is dynamic if and only if mass is non zero, otherwise static
+				btVector3 localInertia(physics::toBtVector3(inertia));
+
+				if (isDynamic) {
+					mCollisionShape->calculateLocalInertia(mass, localInertia);
+				}
+
+				mRigidBody->setMassProps(mass, physics::toBtVector3(inertia));
+
+				return mRigidBody;
 			}
 
 		private:
