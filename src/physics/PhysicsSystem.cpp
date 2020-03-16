@@ -2,6 +2,24 @@
 
 using namespace sitara::ecs;
 
+PhysicsSystem::~PhysicsSystem() {
+	if (mCollisionConfiguration != 0) {
+		delete mCollisionConfiguration;
+	}
+	if (mDispatcher != 0) {
+		delete mDispatcher;
+	}
+	if (mOverlappingPairCache != 0) {
+		delete mOverlappingPairCache;
+	}
+	if (mBulletSolver != 0) {
+		delete mBulletSolver;
+	}
+	if (mDynamicsWorld != 0) {
+		delete mDynamicsWorld;
+	}
+}
+
 void PhysicsSystem::configure(entityx::EntityManager &entities, entityx::EventManager &events) {
 	  ///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.
 	  mCollisionConfiguration = new btDefaultCollisionConfiguration();
@@ -19,6 +37,13 @@ void PhysicsSystem::configure(entityx::EntityManager &entities, entityx::EventMa
 
 void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManager& events, entityx::TimeDelta dt) {
 	mDynamicsWorld->stepSimulation(static_cast<float>(dt), 10);
+
+	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
+
+	for (auto entity : entities.entities_with_components(body)) {
+		ci::vec3 p = body->getPosition();
+		std::printf("Position of body: %f %f %f\n", p.x, p.y, p.z);
+	}
 }
 
 void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::RigidBody>& event) {

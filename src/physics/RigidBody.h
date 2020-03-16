@@ -7,48 +7,67 @@
 
 namespace sitara {
 	namespace ecs {
-		enum SHAPE {
-			SPHERE,
-			BOX,
-			CYLINDER,
-			CONE
-		};
 
 		class RigidBody {
 		public:
-			RigidBody::RigidBody(sitara::ecs::SHAPE shape, 
-									ci::vec3 position = ci::vec3(0.0f), 
-									ci::vec3 size = ci::vec3(1.0f)) :
-				mShape(shape)
-			{
-				btTransform localTransform;
-				localTransform.setIdentity();
-				localTransform.setOrigin(physics::toBtVector3(position));
-		
-				btCollisionShape* mCollisionShape;
-				switch (shape) {
-					case SPHERE:
-						mCollisionShape = new btSphereShape(size.x);
-						break;
-					case BOX:
-						mCollisionShape = new btBoxShape(physics::toBtVector3(size));
-						break;
+			RigidBody(btRigidBody* body) {
+				mRigidBody = body;
+			}
+
+			~RigidBody() {
+				if (mRigidBody != 0) {
+					delete mRigidBody;
 				}
-
-				mMotionState = new btDefaultMotionState(localTransform);
-
-				btRigidBody::btRigidBodyConstructionInfo info(0.0, mMotionState, mCollisionShape, btVector3(0,0,0));
-				info.m_restitution = 0.1;
-				info.m_friction = 0.1;
-
-				mRigidBody = new btRigidBody(info);
+				if (mMotionState != 0) {
+					delete mMotionState;
+				}
+				if (mCollisionShape != 0) {
+					delete mCollisionShape;
+				}
 			}
 
-			RigidBody::~RigidBody() {
-				delete mRigidBody;
-				delete mMotionState;
-				delete mCollisionShape;
+			static btRigidBody* createBox(const ci::vec3& size, float mass, const ci::vec3& position = ci::vec3(0), const ci::quat& rotation = ci::quat()) {
+				btVector3 halfSize = physics::toBtVector3(size) * 0.5f;
+				btCollisionShape* shape = new btBoxShape(halfSize);
+				btRigidBody* body = createRigidBody(shape, mass, position, rotation);
+				return body;
 			}
+
+			static btRigidBody* createSphere(float radius, float mass, const ci::vec3& position = ci::vec3(0), const ci::quat& rotation = ci::quat()) {
+				btCollisionShape* shape = new btSphereShape((btScalar)radius);
+				btRigidBody* body = createRigidBody(shape, mass, position, rotation);
+				return body;
+			}
+
+			static btRigidBody* createCone(float radius, float height, float mass, const ci::vec3& position = ci::vec3(0), const ci::quat& rotation = ci::quat()) {
+				btCollisionShape* shape = new btConeShape(radius, height);
+				btRigidBody* body = createRigidBody(shape, mass, position, rotation);
+				return body;
+			}
+
+			static btRigidBody* createCylinder(const ci::vec3& size, float mass, const ci::vec3& position = ci::vec3(0), const ci::quat& rotation = ci::quat()) {
+				btCollisionShape* shape = new btCylinderShape(physics::toBtVector3(size));
+				btRigidBody* body = createRigidBody(shape, mass, position, rotation);
+				return body;
+			}
+
+			static btRigidBody* createCapsule(float radius, float height, float mass, const ci::vec3& position = ci::vec3(0), const ci::quat& rotation = ci::quat()) {
+				btCollisionShape* shape = new btCapsuleShape(radius, height);
+				btRigidBody* body = createRigidBody(shape, mass, position, rotation);
+				return body;
+			}
+
+			/*
+			static btRigidBody* createHull(btConvexHullShape* shape, float mass, const ci::vec3& position = ci::vec3(0), const ci::quat& rotation = ci::quat()) {
+				btRigidBody* body = createRigidBody(shape, mass, position, rotation);
+				return body;
+			}
+
+			static btRigidBody* createMesh(btBvhTriangleMeshShape* shape, float mass, const ci::vec3& position = ci::vec3(0), const ci::quat& rotation = ci::quat()) {
+				btRigidBody* body = createRigidBody(shape, mass, position, rotation);
+				return body;
+			}
+			*/
 
 			void resetBody(ci::vec3 position) {
 				if (mRigidBody->getMotionState()) {
@@ -101,6 +120,7 @@ namespace sitara {
 				mRigidBody->setLinearVelocity(physics::toBtVector3(velocity));
 			}
 
+			/*
 			btRigidBody* setMassAndIntertia(float mass, ci::vec3 inertia = ci::vec3(0,0,0)) {
 				btScalar btMass(mass);
 				bool isDynamic = (mass != 0.f); //rigidbody is dynamic if and only if mass is non zero, otherwise static
@@ -114,12 +134,28 @@ namespace sitara {
 
 				return mRigidBody;
 			}
+			*/
 
-		private:
+		protected:
+			static btRigidBody* createRigidBody(btCollisionShape* shape, float mass, const ci::vec3& position = ci::vec3(0), const ci::quat& rotation = ci::quat()) {
+				btVector3 inertia(0.0f, 0.0f, 0.0f);
+				if (mass != 0.0f) {
+					shape->calculateLocalInertia(mass, inertia);
+				}
+
+				btQuaternion btRotation = physics::toBtQuaternion(rotation);
+				btVector3 btPosition = physics::toBtVector3(position);
+				btTransform worldTransform(btRotation, btPosition);
+				btDefaultMotionState* motionState = new btDefaultMotionState(worldTransform);
+				btRigidBody::btRigidBodyConstructionInfo info(mass, motionState, shape, inertia);
+
+				btRigidBody* body = new btRigidBody(info);
+				return body;
+			}
+
 			btCollisionShape* mCollisionShape;
 			btDefaultMotionState* mMotionState;
 			btRigidBody* mRigidBody;
-			sitara::ecs::SHAPE mShape;
 		};
 	}
 }

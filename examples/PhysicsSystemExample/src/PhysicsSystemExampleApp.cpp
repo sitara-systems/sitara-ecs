@@ -9,43 +9,6 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-namespace sitara {
-	struct Sphere {
-		Sphere(float diameter, Color color) :
-			mRadius(diameter / 2.0f),
-			mColor(color)
-		{
-			auto mesh = ci::geom::Sphere().radius(mRadius).subdivisions(16);
-			auto glColor = ci::geom::Constant(ci::geom::COLOR, mColor);
-			auto lambert = ci::gl::ShaderDef().lambert().color();
-			auto shader = ci::gl::getStockShader(lambert);
-			mSphere = ci::gl::Batch::create(mesh >> glColor, shader);
-		}
-
-		float mRadius;
-		Color mColor;
-		gl::BatchRef mSphere;
-	};
-
-	struct Box {
-		Box(vec3 size, Color color) :
-			mDimensions(size),
-			mColor(color)
-		{
-			auto mesh = geom::Cube().size(mDimensions);
-			auto glColor = geom::Constant(geom::COLOR, mColor);
-			auto lambert = gl::ShaderDef().lambert().color();
-			auto shader = gl::getStockShader(lambert);
-			mBox = gl::Batch::create(mesh >> glColor, shader);
-		}
-
-		vec3 mDimensions;
-		Color mColor;
-		gl::BatchRef mBox;
-	};
-
-}
-
 class PhysicsSystemExampleApp : public App {
   public:
 	PhysicsSystemExampleApp();
@@ -118,22 +81,15 @@ void PhysicsSystemExampleApp::draw() {
 	gl::enableDepthWrite();
 
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
-	entityx::ComponentHandle<sitara::Sphere> sphere;
-	entityx::ComponentHandle<sitara::Box> box;
+	entityx::ComponentHandle<sitara::ecs::Geometry> geom;
 
-	for (auto entity : mEntities.entities_with_components(body, sphere)) {
+	for (auto entity : mEntities.entities_with_components(body, geom)) {
 		gl::pushModelMatrix();
 		gl::setModelMatrix(body->getWorldTransform());
-		sphere->mSphere->draw();
+		geom->draw();
 		gl::popModelMatrix();
 	}
 
-	for (auto entity : mEntities.entities_with_components(body, box)) {
-		gl::pushModelMatrix();
-		gl::translate(body->getPosition());
-		box->mBox->draw();
-		gl::popModelMatrix();
-	}
 
 	gl::disableDepthWrite();
 	gl::disableDepthRead();
@@ -198,27 +154,26 @@ void PhysicsSystemExampleApp::createUserInterface() {
 
 void PhysicsSystemExampleApp::createWorld() {
 	auto ground = mEntities.create();
-	vec3 position = vec3(0, -56, 0);
 	vec3 size = vec3(500, 1, 500);
-	auto g = ground.assign<sitara::ecs::RigidBody>(sitara::ecs::BOX, vec3(0, -56.0, 0), size);
-	ground.assign<sitara::Box>(size, Color(1.0, 1.0, 1.0));
+	vec3 position = vec3(0, -100, 0);
+	auto g = ground.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createBox(size, 0.0, position));
+	ground.assign<sitara::ecs::Geometry>(ci::geom::Cube().size(size), Color(1.0, 1.0, 1.0));
 	g->setElasticity(1.0);
 
 	for (int i = 0; i < 50; i++) {
-		auto ps = vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150));
+		auto pos = vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150));
 		auto ball = mEntities.create();
-		vec3 size = vec3(10, 10, 10);
-		auto rigidBody = ball.assign<sitara::ecs::RigidBody>(sitara::ecs::SPHERE, ps, size);
-		rigidBody->setMassAndIntertia(5.0, vec3(1));
-		ball.assign<sitara::Sphere>(size.x, Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
+		float radius = 5.0;
+		auto rigidBody = ball.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createSphere(radius, 50.0, pos));
+		ball.assign<sitara::ecs::Geometry>(ci::geom::Sphere().radius(radius).subdivisions(16), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
 	}
 }
 
 void PhysicsSystemExampleApp::resetWorld() {
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
-	entityx::ComponentHandle<sitara::Sphere> sphere;
+	entityx::ComponentHandle<sitara::ecs::Geometry> geom;
 
-	for (auto entity : mEntities.entities_with_components(body, sphere)) {
+	for (auto entity : mEntities.entities_with_components(body, geom)) {
 		body->resetBody(ci::vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150)));
 	}
 }

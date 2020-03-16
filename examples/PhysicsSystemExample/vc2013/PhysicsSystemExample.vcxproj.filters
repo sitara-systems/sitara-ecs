@@ -130,9 +130,6 @@
     <ClInclude Include="..\..\..\src\physics\PhysicsSystem.h">
       <Filter>blocks\sitara-ecs\src\physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\physics\RigidBody.h">
-      <Filter>blocks\sitara-ecs\src\physics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\transform\Transform.h">
       <Filter>blocks\sitara-ecs\src\transform</Filter>
     </ClInclude>
@@ -140,6 +137,9 @@
       <Filter>blocks\sitara-ecs\src\transform</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\physics\PhysicsUtilities.h">
+      <Filter>blocks\sitara-ecs\src\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\physics\RigidBody.h">
       <Filter>blocks\sitara-ecs\src\physics</Filter>
     </ClInclude>
   </ItemGroup>
