@@ -1,5 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/params/Params.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
 #include "Ecs.h"
@@ -52,12 +53,23 @@ class PhysicsSystemExampleApp : public App {
 	void mouseDown( MouseEvent event ) override;
 	void update() override;
 	void draw() override;
+	void createWorld();
+	void destroyWorld();
 
 	entityx::EntityManager mEntities;
 	entityx::EventManager mEvents;
 	entityx::SystemManager mSystems;
 
+	ci::params::InterfaceGlRef mParams;
+	std::vector<std::string> mElasticEnums = { "On", "Off" };
+	int mElasticSelect = 1;
+	std::vector<std::string> mFrictionEnums = { "On", "Off" };
+	int mFrictionSelect = 0;
 	ci::CameraPersp mCamera;
+	float mCameraDistance;
+	vec3 mEye;
+	vec3 mUp;
+	vec3 mCenter;
 };
 
 PhysicsSystemExampleApp::PhysicsSystemExampleApp() :
@@ -72,31 +84,73 @@ void PhysicsSystemExampleApp::setup() {
 
 	physics->setGravity(vec3(0.0, -10.0, 0.0));
 
-	auto ground = mEntities.create();
-	vec3 position = vec3(0, -56, 0);
-	vec3 size = vec3(500, 1, 500);
-	auto g = ground.assign<sitara::ecs::RigidBody>(sitara::ecs::BOX, vec3(0, -56.0, 0), size);
-	ground.assign<sitara::Box>(size, Color(1.0, 1.0, 1.0));
-	g->setElasticity(1.0);
-
-	for (int i = 0; i < 50; i++) {
-		auto ps = vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150));
-		auto ball = mEntities.create();
-		vec3 size = vec3(10, 10, 10);
-		auto rigidBody = ball.assign<sitara::ecs::RigidBody>(sitara::ecs::SPHERE, ps, size, 1.0);
-		rigidBody->setElasticity(1.0);
-		ball.assign<sitara::Sphere>(size.x, Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
-	}
+	createWorld();
 
 	// setup camera orientation vectors
-	float cameraDistance = 400.0;
-	vec3 eye = cameraDistance * glm::normalize(vec3(1, 0.25, 1));
-	vec3 center = vec3(0.0f, 0.0f, 0.0f);
-	vec3 up = vec3(0.0f, 1.0f, 0.0f);
+	mCameraDistance = 400.0;
+	mEye = mCameraDistance * glm::normalize(vec3(1, 0.25, 1));
+	mCenter = vec3(0.0f, 0.0f, 0.0f);
+	mUp = vec3(0.0f, 1.0f, 0.0f);
 	// setup the camera frustum
 
 	mCamera.setPerspective(60.0f, getWindowAspectRatio(), 5.0f, 10000.0f);
-	mCamera.lookAt(eye, center, up);
+	mCamera.lookAt(mEye, mCenter, mUp);
+
+	mParams = ci::params::InterfaceGl::create("Physics System Example", vec2(250, 350));
+	//mParams->addParam("Scene Rotation", &mSceneRotation, "opened=1"); // the opened param opens the panel per default
+	mParams->addText("View Controls");
+	mParams->addButton("To Top View", [=]() {
+		mEye = mCameraDistance * glm::normalize(vec3(0, 1.0, 0));
+		mCenter = vec3(0.0f, 0.0f, 0.0f);
+		mUp = vec3(0.0f, 0.0f, 1.0f);
+		mCamera.lookAt(mEye, mCenter, mUp);
+	});
+	mParams->addButton("To Side View", [=]() {
+		mEye = mCameraDistance * glm::normalize(vec3(0, 0, 1.0));
+		mCenter = vec3(0.0f, 0.0f, 0.0f);
+		mUp = vec3(0.0f, 1.0f, 0.0f);
+		mCamera.lookAt(mEye, mCenter, mUp);
+	});
+	mParams->addButton("To Perspective View", [=]() {
+		mEye = mCameraDistance * glm::normalize(vec3(1, 0.25, 1));
+		mCenter = vec3(0.0f, 0.0f, 0.0f);
+		mUp = vec3(0.0f, 1.0f, 0.0f);
+		mCamera.lookAt(mEye, mCenter, mUp);
+	});
+
+	mParams->addText("Simulation Controls");
+	mParams->addButton("Reset Simulation", [=]() {
+		destroyWorld();
+		createWorld();
+	});
+	mParams->addParam("Set Elasticity", mElasticEnums, &mElasticSelect).updateFn([=]() {
+		entityx::ComponentHandle<sitara::ecs::RigidBody> body;
+		if (mElasticSelect == 0) {
+			for (auto entity : mEntities.entities_with_components(body)) {
+				body->setElasticity(1.0);
+			}
+		}
+		else if (mElasticSelect == 1) {
+			for (auto entity : mEntities.entities_with_components(body)) {
+				body->setElasticity(0.0);
+			}
+		}
+	});
+	mParams->addParam("Set Friction", mFrictionEnums, &mFrictionSelect).updateFn([=]() {
+		entityx::ComponentHandle<sitara::ecs::RigidBody> body;
+		if (mFrictionSelect == 0) {
+			for (auto entity : mEntities.entities_with_components(body)) {
+				body->setFriction(1.0);
+			}
+		}
+		else if (mFrictionSelect == 1) {
+			for (auto entity : mEntities.entities_with_components(body)) {
+				body->setFriction(0.0);
+			}
+		}
+	});
+
+
 }
 
 void PhysicsSystemExampleApp::mouseDown( MouseEvent event ) {
@@ -136,6 +190,33 @@ void PhysicsSystemExampleApp::draw() {
 
 	gl::disableDepthWrite();
 	gl::disableDepthRead();
+
+	mParams->draw();
+}
+
+void PhysicsSystemExampleApp::createWorld() {
+	auto ground = mEntities.create();
+	vec3 position = vec3(0, -56, 0);
+	vec3 size = vec3(500, 1, 500);
+	auto g = ground.assign<sitara::ecs::RigidBody>(sitara::ecs::BOX, vec3(0, -56.0, 0), size);
+	ground.assign<sitara::Box>(size, Color(1.0, 1.0, 1.0));
+	g->setElasticity(1.0);
+
+	for (int i = 0; i < 50; i++) {
+		auto ps = vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150));
+		auto ball = mEntities.create();
+		vec3 size = vec3(10, 10, 10);
+		auto rigidBody = ball.assign<sitara::ecs::RigidBody>(sitara::ecs::SPHERE, ps, size, 1.0);
+		ball.assign<sitara::Sphere>(size.x, Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
+	}
+}
+
+void PhysicsSystemExampleApp::destroyWorld() {
+	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
+
+	for (auto entity : mEntities.entities_with_components(body)) {
+		entity.destroy();
+	}
 }
 
 CINDER_APP( PhysicsSystemExampleApp, RendererGl, [=](cinder::app::App::Settings* settings) { settings->setConsoleWindowEnabled(); settings->setWindowSize(1280, 720); })

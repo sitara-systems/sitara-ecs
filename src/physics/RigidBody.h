@@ -55,9 +55,24 @@ namespace sitara {
 			}
 
 			RigidBody::~RigidBody() {
-				delete mCollisionShape;
-				delete mMotionState;
 				delete mRigidBody;
+				delete mMotionState;
+				delete mCollisionShape;
+			}
+
+			void setPosition(ci::vec3 position) {
+				if (mRigidBody->getMotionState()) {
+					btTransform transform;
+					transform.setIdentity();
+					transform.setOrigin(physics::toBtVector3(position));
+					mRigidBody->clearForces();
+					mRigidBody->setLinearVelocity(physics::toBtVector3(ci::vec3(0)));
+					mRigidBody->setAngularVelocity(physics::toBtVector3(ci::vec3(0)));
+
+
+					mRigidBody->setWorldTransform(transform);
+					mRigidBody->getMotionState()->setWorldTransform(transform);
+				}
 			}
 
 			ci::vec3 getPosition() {

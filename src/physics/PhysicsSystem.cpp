@@ -25,6 +25,12 @@ void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::Rigi
 	mDynamicsWorld->addRigidBody(event.component->getRigidBody());
 }
 
+void PhysicsSystem::receive(const entityx::ComponentRemovedEvent<sitara::ecs::RigidBody>& event) {
+	mDynamicsWorld->removeCollisionObject(event.component->getRigidBody());
+	mDynamicsWorld->removeRigidBody(event.component->getRigidBody());
+
+}
+
 void PhysicsSystem::setGravity(ci::vec3 gravity) {
 	if (mDynamicsWorld != nullptr) {
 		mDynamicsWorld->setGravity(physics::toBtVector3(gravity));
