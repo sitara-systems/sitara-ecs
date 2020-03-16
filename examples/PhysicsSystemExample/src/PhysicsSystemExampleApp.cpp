@@ -53,8 +53,9 @@ class PhysicsSystemExampleApp : public App {
 	void mouseDown( MouseEvent event ) override;
 	void update() override;
 	void draw() override;
+	void createUserInterface();
 	void createWorld();
-	void destroyWorld();
+	void resetWorld();
 
 	entityx::EntityManager mEntities;
 	entityx::EventManager mEvents;
@@ -96,61 +97,7 @@ void PhysicsSystemExampleApp::setup() {
 	mCamera.setPerspective(60.0f, getWindowAspectRatio(), 5.0f, 10000.0f);
 	mCamera.lookAt(mEye, mCenter, mUp);
 
-	mParams = ci::params::InterfaceGl::create("Physics System Example", vec2(250, 350));
-	//mParams->addParam("Scene Rotation", &mSceneRotation, "opened=1"); // the opened param opens the panel per default
-	mParams->addText("View Controls");
-	mParams->addButton("To Top View", [=]() {
-		mEye = mCameraDistance * glm::normalize(vec3(0, 1.0, 0));
-		mCenter = vec3(0.0f, 0.0f, 0.0f);
-		mUp = vec3(0.0f, 0.0f, 1.0f);
-		mCamera.lookAt(mEye, mCenter, mUp);
-	});
-	mParams->addButton("To Side View", [=]() {
-		mEye = mCameraDistance * glm::normalize(vec3(0, 0, 1.0));
-		mCenter = vec3(0.0f, 0.0f, 0.0f);
-		mUp = vec3(0.0f, 1.0f, 0.0f);
-		mCamera.lookAt(mEye, mCenter, mUp);
-	});
-	mParams->addButton("To Perspective View", [=]() {
-		mEye = mCameraDistance * glm::normalize(vec3(1, 0.25, 1));
-		mCenter = vec3(0.0f, 0.0f, 0.0f);
-		mUp = vec3(0.0f, 1.0f, 0.0f);
-		mCamera.lookAt(mEye, mCenter, mUp);
-	});
-
-	mParams->addText("Simulation Controls");
-	mParams->addButton("Reset Simulation", [=]() {
-		destroyWorld();
-		createWorld();
-	});
-	mParams->addParam("Set Elasticity", mElasticEnums, &mElasticSelect).updateFn([=]() {
-		entityx::ComponentHandle<sitara::ecs::RigidBody> body;
-		if (mElasticSelect == 0) {
-			for (auto entity : mEntities.entities_with_components(body)) {
-				body->setElasticity(1.0);
-			}
-		}
-		else if (mElasticSelect == 1) {
-			for (auto entity : mEntities.entities_with_components(body)) {
-				body->setElasticity(0.0);
-			}
-		}
-	});
-	mParams->addParam("Set Friction", mFrictionEnums, &mFrictionSelect).updateFn([=]() {
-		entityx::ComponentHandle<sitara::ecs::RigidBody> body;
-		if (mFrictionSelect == 0) {
-			for (auto entity : mEntities.entities_with_components(body)) {
-				body->setFriction(1.0);
-			}
-		}
-		else if (mFrictionSelect == 1) {
-			for (auto entity : mEntities.entities_with_components(body)) {
-				body->setFriction(0.0);
-			}
-		}
-	});
-
-
+	createUserInterface();
 }
 
 void PhysicsSystemExampleApp::mouseDown( MouseEvent event ) {
@@ -194,6 +141,61 @@ void PhysicsSystemExampleApp::draw() {
 	mParams->draw();
 }
 
+void PhysicsSystemExampleApp::createUserInterface() {
+	mParams = ci::params::InterfaceGl::create("Physics System Example", vec2(250, 350));
+	//mParams->addParam("Scene Rotation", &mSceneRotation, "opened=1"); // the opened param opens the panel per default
+	mParams->addText("View Controls");
+	mParams->addButton("To Top View", [=]() {
+		mEye = mCameraDistance * glm::normalize(vec3(0, 1.0, 0));
+		mCenter = vec3(0.0f, 0.0f, 0.0f);
+		mUp = vec3(0.0f, 0.0f, 1.0f);
+		mCamera.lookAt(mEye, mCenter, mUp);
+	});
+	mParams->addButton("To Side View", [=]() {
+		mEye = mCameraDistance * glm::normalize(vec3(0, 0, 1.0));
+		mCenter = vec3(0.0f, 0.0f, 0.0f);
+		mUp = vec3(0.0f, 1.0f, 0.0f);
+		mCamera.lookAt(mEye, mCenter, mUp);
+	});
+	mParams->addButton("To Perspective View", [=]() {
+		mEye = mCameraDistance * glm::normalize(vec3(1, 0.25, 1));
+		mCenter = vec3(0.0f, 0.0f, 0.0f);
+		mUp = vec3(0.0f, 1.0f, 0.0f);
+		mCamera.lookAt(mEye, mCenter, mUp);
+	});
+
+	mParams->addText("Simulation Controls");
+	mParams->addButton("Reset Simulation", [=]() {
+		resetWorld();
+	});
+	mParams->addParam("Set Elasticity", mElasticEnums, &mElasticSelect).updateFn([=]() {
+		entityx::ComponentHandle<sitara::ecs::RigidBody> body;
+		if (mElasticSelect == 0) {
+			for (auto entity : mEntities.entities_with_components(body)) {
+				body->setElasticity(1.0);
+			}
+		}
+		else if (mElasticSelect == 1) {
+			for (auto entity : mEntities.entities_with_components(body)) {
+				body->setElasticity(0.0);
+			}
+		}
+	});
+	mParams->addParam("Set Friction", mFrictionEnums, &mFrictionSelect).updateFn([=]() {
+		entityx::ComponentHandle<sitara::ecs::RigidBody> body;
+		if (mFrictionSelect == 0) {
+			for (auto entity : mEntities.entities_with_components(body)) {
+				body->setFriction(1.0);
+			}
+		}
+		else if (mFrictionSelect == 1) {
+			for (auto entity : mEntities.entities_with_components(body)) {
+				body->setFriction(0.0);
+			}
+		}
+	});
+}
+
 void PhysicsSystemExampleApp::createWorld() {
 	auto ground = mEntities.create();
 	vec3 position = vec3(0, -56, 0);
@@ -211,11 +213,12 @@ void PhysicsSystemExampleApp::createWorld() {
 	}
 }
 
-void PhysicsSystemExampleApp::destroyWorld() {
+void PhysicsSystemExampleApp::resetWorld() {
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
+	entityx::ComponentHandle<sitara::Sphere> sphere;
 
-	for (auto entity : mEntities.entities_with_components(body)) {
-		entity.destroy();
+	for (auto entity : mEntities.entities_with_components(body, sphere)) {
+		body->resetBody(ci::vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150)));
 	}
 }
 

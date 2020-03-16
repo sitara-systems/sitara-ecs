@@ -139,7 +139,7 @@
     <ClInclude Include="..\..\..\src\transform\TransformSystem.h">
       <Filter>blocks\sitara-ecs\src\transform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\physics\Utilities.h">
+    <ClInclude Include="..\..\..\src\physics\PhysicsUtilities.h">
       <Filter>blocks\sitara-ecs\src\physics</Filter>
     </ClInclude>
   </ItemGroup>
