@@ -48,6 +48,9 @@
     <Filter Include="blocks\sitara-ecs\libs\entityx\entityx\tags">
       <UniqueIdentifier>{5d94c21c-6d60-41c0-972e-c3ac7d367840}</UniqueIdentifier>
     </Filter>
+    <Filter Include="blocks\sitara-ecs\src\geometry">
+      <UniqueIdentifier>{9b9b9aeb-a221-4677-b3bd-53b1bfc3b300}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\PhysicsSystemExampleApp.cpp">
@@ -141,6 +144,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\physics\RigidBody.h">
       <Filter>blocks\sitara-ecs\src\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\physics\Geometry.h">
+      <Filter>blocks\sitara-ecs\src\geometry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
