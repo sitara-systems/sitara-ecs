@@ -16,21 +16,25 @@ namespace sitara {
 			}
 
 			Geometry(const ci::geom::Source& source, ci::Color color) {
-				auto glColor = ci::geom::Constant(ci::geom::COLOR, color);
-				auto lambert = ci::gl::ShaderDef().lambert().color();
-				auto shader = ci::gl::getStockShader(lambert);
-				mGeometryBatch = ci::gl::Batch::create(source >> glColor, shader);
 				mPrimitiveType = geometry::checkGeometryType(source);
+				auto glColor = ci::geom::Constant(ci::geom::COLOR, color);
+				ci::gl::GlslProgRef shader;
+
+				if (mPrimitiveType < 16) {
+					// if not a wireframe
+					shader = ci::gl::getStockShader(ci::gl::ShaderDef().lambert().color());
+				}
+				else {
+					// if a wireframe
+					shader = ci::gl::getStockShader(ci::gl::ShaderDef().color());
+				}
+				mGeometryBatch = ci::gl::Batch::create(source >> glColor, shader);
 			}
 
-			Geometry(geometry::Primitive primitive, geometry::Quality quality, geometry::ViewMode viewMode, geometry::TexturingMode texMode) {
-				/*
-				auto glColor = ci::geom::Constant(ci::geom::COLOR, mColor);
-				auto lambert = ci::gl::ShaderDef().lambert().color();
-				auto shader = ci::gl::getStockShader(lambert);
-				mGeometryBatch = ci::gl::Batch::create(source >> glColor, shader);
+			Geometry(const ci::geom::Source& source, ci::gl::GlslProgRef shader, ci::Color color = ci::Color(ci::Color::white())) {
 				mPrimitiveType = geometry::checkGeometryType(source);
-				*/
+				ci::geom::Constant glColor = ci::geom::Constant(ci::geom::COLOR, color);
+				mGeometryBatch = ci::gl::Batch::create(source, shader);
 			}
 
 			geometry::Primitive getPrimitive() {

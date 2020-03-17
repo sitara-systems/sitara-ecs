@@ -48,6 +48,10 @@ void PhysicsSystemExampleApp::setup() {
 
 	physics->setGravity(vec3(0.0, -10.0, 0.0));
 
+	ci::fs::path relativePath = "../../../assets";
+	ci::fs::path absolutePath = ci::fs::canonical(relativePath);
+	addAssetDirectory(absolutePath);
+
 	createWorld();
 
 	// setup camera orientation vectors
@@ -119,6 +123,19 @@ void PhysicsSystemExampleApp::createUserInterface() {
 		mUp = vec3(0.0f, 1.0f, 0.0f);
 		mCamera.lookAt(mEye, mCenter, mUp);
 	});
+	mParams->addButton("Toggle Wireframes", [=]() {
+		entityx::ComponentHandle<sitara::ecs::Geometry> geom;
+		for (auto entity : mEntities.entities_with_components(geom)) {
+			if (geom->getPrimitive() == sitara::ecs::geometry::Primitive::SPHERE) {
+				entity.remove<sitara::ecs::Geometry>();
+				entity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createWireSphere(5.0), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
+			}
+			else if (geom->getPrimitive() == sitara::ecs::geometry::Primitive::WIRE_SPHERE) {
+				entity.remove<sitara::ecs::Geometry>();
+				entity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(5.0), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
+			}
+		}
+	});
 
 	mParams->addText("Simulation Controls");
 	mParams->addButton("Reset Simulation", [=]() {
@@ -156,15 +173,15 @@ void PhysicsSystemExampleApp::createWorld() {
 	auto ground = mEntities.create();
 	vec3 size = vec3(500, 1, 500);
 	vec3 position = vec3(0, 0, 0);
-	auto g = ground.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createBox(size, 0.0, position));
-	ground.assign<sitara::ecs::Geometry>(ci::geom::Cube().size(size), Color(1.0, 1.0, 1.0));
+	ground.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createBox(size, 0.0, position));
+	ground.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createCube(size), Color(1.0, 1.0, 1.0));
 
 	for (int i = 0; i < 50; i++) {
 		auto pos = vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150));
 		auto ball = mEntities.create();
 		float radius = 5.0;
-		auto rigidBody = ball.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createSphere(radius, 50.0, pos));
-		ball.assign<sitara::ecs::Geometry>(ci::geom::Sphere().radius(radius).subdivisions(16), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
+		ball.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createSphere(radius, 50.0, pos));
+		ball.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(radius), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
 	}
 }
 

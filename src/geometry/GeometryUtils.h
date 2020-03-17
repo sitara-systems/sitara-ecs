@@ -3,16 +3,19 @@
 #include "cinder/gl/gl.h"
 #include "cinder/AxisAlignedBox.h"
 #include "cinder/TriMesh.h"
+#include "cinder/DataSource.h"
 #include <typeinfo>
 
 namespace sitara {
 	namespace ecs {
 		namespace geometry {
-			enum Primitive { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, TORUSKNOT, PLANE, RECT, ROUNDEDRECT, CIRCLE, RING, UNKNOWN, PRIMITIVE_COUNT };
-			enum Quality { LOW, DEFAULT, HIGH };
-			enum ViewMode { SHADED, WIREFRAME };
-			enum TexturingMode { NONE, PROCEDURAL, SAMPLER };
+			enum Primitive { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, TORUSKNOT, PLANE, RECT, ROUNDEDRECT, CIRCLE, RING,
+				WIRE_CAPSULE, WIRE_CONE, WIRE_CUBE, WIRE_CYLINDER, WIRE_ICOSAHEDRON, WIRE_SPHERE, WIRE_TORUS, WIRE_PLANE, WIRE_RECT, WIRE_ROUNDEDRECT, WIRE_CIRCLE,
+				UNKNOWN, PRIMITIVE_COUNT };
 
+			enum Quality { LOW, DEFAULT, HIGH };
+			enum TexturingMode { NONE, PROCEDURAL, SAMPLER };
+			
 			static Primitive checkGeometryType(const ci::geom::Source& source) {
 				if (typeid(ci::geom::Capsule) == typeid(source)) {
 					return Primitive::CAPSULE;
@@ -62,120 +65,214 @@ namespace sitara {
 				else if (typeid(ci::geom::Ring) == typeid(source)) {
 					return Primitive::RING;
 				}
+				else if (typeid(ci::geom::WireCapsule) == typeid(source)) {
+					return Primitive::WIRE_CAPSULE;
+				}
+				else if (typeid(ci::geom::WireCone) == typeid(source)) {
+					return Primitive::WIRE_CONE;
+				}
+				else if (typeid(ci::geom::WireCube) == typeid(source)) {
+					return Primitive::WIRE_CUBE;
+				}
+				else if (typeid(ci::geom::WireCylinder) == typeid(source)) {
+					return Primitive::WIRE_CYLINDER;
+				}
+				else if (typeid(ci::geom::WireIcosahedron) == typeid(source)) {
+					return Primitive::WIRE_ICOSAHEDRON;
+				}
+				else if (typeid(ci::geom::WireSphere) == typeid(source)) {
+					return Primitive::WIRE_SPHERE;
+				}
+				else if (typeid(ci::geom::WireTorus) == typeid(source)) {
+					return Primitive::WIRE_TORUS;
+				}
+				else if (typeid(ci::geom::WirePlane) == typeid(source)) {
+					return Primitive::WIRE_PLANE;
+				}
+				else if (typeid(ci::geom::WireRect) == typeid(source)) {
+					return Primitive::WIRE_RECT;
+				}
+				else if (typeid(ci::geom::WireRoundedRect) == typeid(source)) {
+					return Primitive::WIRE_ROUNDEDRECT;
+				}
+				else if (typeid(ci::geom::WireCircle) == typeid(source)) {
+					return Primitive::WIRE_CIRCLE;
+				}
 				else {
 					return Primitive::UNKNOWN;
 				}
 			}
 
-			static std::shared_ptr<ci::geom::Source> createSource(geometry::Primitive primitive, geometry::Quality quality) {
-				switch (primitive) {
-				case CAPSULE:
-					switch (quality) {
-					case DEFAULT:	loadGeomSource(geom::Capsule().radius(mCapsuleRadius).length(mCapsuleLength), geom::WireCapsule().radius(mCapsuleRadius).length(mCapsuleLength)); break;
-					case LOW:		loadGeomSource(geom::Capsule().radius(mCapsuleRadius).length(mCapsuleLength).subdivisionsAxis(6).subdivisionsHeight(1), geom::WireCapsule().radius(mCapsuleRadius).length(mCapsuleLength)); break;
-					case HIGH:		loadGeomSource(geom::Capsule().radius(mCapsuleRadius).length(mCapsuleLength).subdivisionsAxis(60).subdivisionsHeight(20), geom::WireCapsule().radius(mCapsuleRadius).length(mCapsuleLength)); break;
-					}
+			static ci::geom::Capsule createCapsule(float radius, float length, geometry::Quality quality = geometry::Quality::DEFAULT) {
+				switch (quality) {
+				case geometry::Quality::DEFAULT:
+					return ci::geom::Capsule().radius(radius).length(length);
 					break;
-				case CONE:
-					switch (quality) {
-					case DEFAULT:	loadGeomSource(geom::Cone().ratio(mConeRatio), geom::WireCone()); break;
-					case LOW:		loadGeomSource(geom::Cone().ratio(mConeRatio).subdivisionsAxis(6).subdivisionsHeight(1), geom::WireCone()); break;
-					case HIGH:		loadGeomSource(geom::Cone().ratio(mConeRatio).subdivisionsAxis(60).subdivisionsHeight(60), geom::WireCone()); break;
-					}
+				case geometry::Quality::LOW:
+					return ci::geom::Capsule().radius(radius).length(length).subdivisionsAxis(6).subdivisionsHeight(1);
 					break;
-				case CUBE:
-					switch (quality) {
-					case DEFAULT:	loadGeomSource(geom::Cube(), geom::WireCube()); break;
-					case LOW:		loadGeomSource(geom::Cube().subdivisions(1), geom::WireCube()); break;
-					case HIGH:		loadGeomSource(geom::Cube().subdivisions(10), geom::WireCube()); break;
-					}
-					break;
-				case CYLINDER:
-					switch (quality) {
-					case DEFAULT:	loadGeomSource(geom::Cylinder(), geom::WireCylinder()); break;
-					case LOW:		loadGeomSource(geom::Cylinder().subdivisionsAxis(6).subdivisionsCap(1), geom::WireCylinder()); break;
-					case HIGH:		loadGeomSource(geom::Cylinder().subdivisionsAxis(60).subdivisionsHeight(20).subdivisionsCap(10), geom::WireCylinder()); break;
-					}
-					break;
-				case HELIX:
-					switch (quality) {
-					case DEFAULT:	loadGeomSource(geom::Helix().ratio(mHelixRatio).coils(mHelixCoils).twist(mHelixTwist, mHelixOffset), geom::WireCube()); break;
-					case LOW:		loadGeomSource(geom::Helix().ratio(mHelixRatio).coils(mHelixCoils).twist(mHelixTwist, mHelixOffset).subdivisionsAxis(12).subdivisionsHeight(6), geom::WireCube()); break;
-					case HIGH:		loadGeomSource(geom::Helix().ratio(mHelixRatio).coils(mHelixCoils).twist(mHelixTwist, mHelixOffset).subdivisionsAxis(60).subdivisionsHeight(60), geom::WireCube()); break;
-					}
-					break;
-				case ICOSAHEDRON:
-					loadGeomSource(geom::Icosahedron(), geom::WireIcosahedron());
-					break;
-				case ICOSPHERE:
-					switch (quality) {
-					case DEFAULT:	loadGeomSource(geom::Icosphere(), geom::WireSphere()); break;
-					case LOW:		loadGeomSource(geom::Icosphere().subdivisions(1), geom::WireSphere()); break;
-					case HIGH:		loadGeomSource(geom::Icosphere().subdivisions(5), geom::WireSphere()); break;
-					}
-					break;
-				case SPHERE:
-					switch (quality) {
-					case DEFAULT:	loadGeomSource(geom::Sphere(), geom::WireSphere()); break;
-					case LOW:		loadGeomSource(geom::Sphere().subdivisions(6), geom::WireSphere()); break;
-					case HIGH:		loadGeomSource(geom::Sphere().subdivisions(60), geom::WireSphere()); break;
-					}
-					break;
-				case TEAPOT:
-					switch (quality) {
-					case DEFAULT:	loadGeomSource(geom::Teapot(), geom::WireCube()); break;
-					case LOW:		loadGeomSource(geom::Teapot().subdivisions(2), geom::WireCube()); break;
-					case HIGH:		loadGeomSource(geom::Teapot().subdivisions(12), geom::WireCube()); break;
-					}
-					break;
-				case TORUS:
-					switch (quality) {
-					case DEFAULT:	loadGeomSource(geom::Torus().twist(mTorusTwist, mTorusOffset).ratio(mTorusRatio), geom::WireTorus().ratio(mTorusRatio)); break;
-					case LOW:		loadGeomSource(geom::Torus().twist(mTorusTwist, mTorusOffset).ratio(mTorusRatio).subdivisionsAxis(12).subdivisionsHeight(6), geom::WireTorus().ratio(mTorusRatio)); break;
-					case HIGH:		loadGeomSource(geom::Torus().twist(mTorusTwist, mTorusOffset).ratio(mTorusRatio).subdivisionsAxis(60).subdivisionsHeight(60), geom::WireTorus().ratio(mTorusRatio)); break;
-					}
-					break;
-				case TORUSKNOT:
-					switch (quality) {
-					case DEFAULT:	loadGeomSource(geom::TorusKnot().parameters(mTorusKnotP, mTorusKnotQ).radius(mTorusKnotRadius).scale(mTorusKnotScale), geom::WireCube()); break;
-					case LOW:		loadGeomSource(geom::TorusKnot().parameters(mTorusKnotP, mTorusKnotQ).radius(mTorusKnotRadius).scale(mTorusKnotScale).subdivisionsAxis(6).subdivisionsHeight(64), geom::WireCube()); break;
-					case HIGH:		loadGeomSource(geom::TorusKnot().parameters(mTorusKnotP, mTorusKnotQ).radius(mTorusKnotRadius).scale(mTorusKnotScale).subdivisionsAxis(32).subdivisionsHeight(1024), geom::WireCube()); break;
-					}
-					break;
-				case PLANE:
-					switch (quality) {
-					case DEFAULT:	loadGeomSource(geom::Plane().subdivisions(ivec2(10, 10)), geom::WirePlane().subdivisions(ivec2(10, 10))); break;
-					case LOW:		loadGeomSource(geom::Plane().subdivisions(ivec2(2, 2)), geom::WirePlane().subdivisions(ivec2(2, 2))); break;
-					case HIGH:		loadGeomSource(geom::Plane().subdivisions(ivec2(100, 100)), geom::WirePlane().subdivisions(ivec2(100, 100))); break;
-					}
-					break;
-
-				case RECT:
-					loadGeomSource(geom::Rect(), geom::WireRect()); break;
-					break;
-				case ROUNDEDRECT:
-					switch (quality) {
-					case DEFAULT:	loadGeomSource(geom::RoundedRect().cornerRadius(mRoundedRectRadius).cornerSubdivisions(3), geom::WireRoundedRect().cornerRadius(mRoundedRectRadius).cornerSubdivisions(3)); break;
-					case LOW:		loadGeomSource(geom::RoundedRect().cornerRadius(mRoundedRectRadius).cornerSubdivisions(1), geom::WireRoundedRect().cornerRadius(mRoundedRectRadius).cornerSubdivisions(1)); break;
-					case HIGH:		loadGeomSource(geom::RoundedRect().cornerRadius(mRoundedRectRadius).cornerSubdivisions(9), geom::WireRoundedRect().cornerRadius(mRoundedRectRadius).cornerSubdivisions(9)); break;
-					}
-					break;
-				case CIRCLE:
-					switch (quality) {
-					case DEFAULT:	loadGeomSource(geom::Circle().subdivisions(24), geom::WireCircle().subdivisions(24)); break;
-					case LOW:		loadGeomSource(geom::Circle().subdivisions(8), geom::WireCircle().subdivisions(8)); break;
-					case HIGH:		loadGeomSource(geom::Circle().subdivisions(120), geom::WireCircle().subdivisions(120)); break;
-					}
-					break;
-				case RING:
-					switch (quality) {
-					case DEFAULT:	loadGeomSource(geom::Ring().width(mRingWidth).subdivisions(24), geom::WireCircle().subdivisions(24).radius(1 + 0.5f * mRingWidth)); break;
-					case LOW:		loadGeomSource(geom::Ring().width(mRingWidth).subdivisions(8), geom::WireCircle().subdivisions(8).radius(1 + 0.5f * mRingWidth)); break;
-					case HIGH:		loadGeomSource(geom::Ring().width(mRingWidth).subdivisions(120), geom::WireCircle().subdivisions(120).radius(1 + 0.5f * mRingWidth)); break;
-					}
+				case geometry::Quality::HIGH:
+					return ci::geom::Capsule().radius(radius).length(length).subdivisionsAxis(60).subdivisionsHeight(20);
 					break;
 				}
 			}
+
+			static ci::geom::WireCapsule createWireCapsule(float radius, float length, geometry::Quality quality = geometry::Quality::DEFAULT) {
+				switch (quality) {
+				case geometry::Quality::DEFAULT:
+					return ci::geom::WireCapsule().radius(radius).length(length);
+					break;
+				case geometry::Quality::LOW:
+					return ci::geom::WireCapsule().radius(radius).length(length).subdivisionsAxis(6).subdivisionsHeight(1);
+					break;
+				case geometry::Quality::HIGH:
+					return ci::geom::WireCapsule().radius(radius).length(length).subdivisionsAxis(60).subdivisionsHeight(20);
+					break;
+				}
+			}
+
+			static ci::geom::Cone createCone(float radius, float height, geometry::Quality quality = geometry::Quality::DEFAULT) {
+				switch (quality) {
+				case geometry::Quality::DEFAULT:
+					return ci::geom::Cone().radius(radius).height(height);
+					break;
+				case geometry::Quality::LOW:
+					return ci::geom::Cone().radius(radius).height(height).subdivisionsAxis(6).subdivisionsHeight(1);
+					break;
+				case geometry::Quality::HIGH:
+					return ci::geom::Cone().radius(radius).height(height).subdivisionsAxis(60).subdivisionsHeight(60);
+					break;
+				}
+			}
+
+			static ci::geom::WireCone createWireCone(float radius, float height, geometry::Quality quality = geometry::Quality::DEFAULT) {
+				switch (quality) {
+				case geometry::Quality::DEFAULT:
+					return ci::geom::WireCone().radius(radius).height(height);
+					break;
+				case geometry::Quality::LOW:
+					return ci::geom::WireCone().radius(radius).height(height).subdivisionsAxis(6).subdivisionsHeight(1);
+					break;
+				case geometry::Quality::HIGH:
+					return ci::geom::WireCone().radius(radius).height(height).subdivisionsAxis(60).subdivisionsHeight(60);
+					break;
+				}
+			}
+
+			static ci::geom::Cube createCube(ci::vec3 size, geometry::Quality quality = geometry::Quality::DEFAULT) {
+				switch (quality) {
+				case geometry::Quality::DEFAULT:
+					return ci::geom::Cube().size(size);
+					break;
+				case geometry::Quality::LOW:
+					return ci::geom::Cube().size(size).subdivisions(1);
+					break;
+				case geometry::Quality::HIGH:
+					return ci::geom::Cube().size(size).subdivisions(10);
+					break;
+				}
+			}
+
+			static ci::geom::WireCube createWireCube(ci::vec3 size, geometry::Quality quality = geometry::Quality::DEFAULT) {
+				switch (quality) {
+				case geometry::Quality::DEFAULT:
+					return ci::geom::WireCube().size(size);
+					break;
+				case geometry::Quality::LOW:
+					return ci::geom::WireCube().size(size).subdivisions(1);
+					break;
+				case geometry::Quality::HIGH:
+					return ci::geom::WireCube().size(size).subdivisions(10);
+					break;
+				}
+			}
+
+			static ci::geom::Cylinder createCylinder(float radius, float height, geometry::Quality quality = geometry::Quality::DEFAULT) {
+				switch (quality) {
+				case geometry::Quality::DEFAULT:
+					return ci::geom::Cylinder().radius(radius).height(height);
+					break;
+				case geometry::Quality::LOW:
+					return ci::geom::Cylinder().radius(radius).height(height).subdivisionsAxis(6).subdivisionsCap(1);
+					break;
+				case geometry::Quality::HIGH:
+					return ci::geom::Cylinder().radius(radius).height(height).subdivisionsAxis(60).subdivisionsCap(10).subdivisionsHeight(20);
+					break;
+				}
+			}
+
+			static ci::geom::WireCylinder createWireCylinder(float radius, float height, geometry::Quality quality = geometry::Quality::DEFAULT) {
+				switch (quality) {
+				case geometry::Quality::DEFAULT:
+					return ci::geom::WireCylinder().radius(radius).height(height);
+					break;
+				case geometry::Quality::LOW:
+					return ci::geom::WireCylinder().radius(radius).height(height).subdivisionsAxis(6);
+					break;
+				case geometry::Quality::HIGH:
+					return ci::geom::WireCylinder().radius(radius).height(height).subdivisionsAxis(60).subdivisionsHeight(20);
+					break;
+				}
+			}
+
+			static ci::geom::Plane createPlane(const ci::vec3& u, const ci::vec3& v, geometry::Quality quality = geometry::Quality::DEFAULT) {
+				switch (quality) {
+				case geometry::Quality::DEFAULT:
+					return ci::geom::Plane().axes(u, v).subdivisions(ci::vec2(10, 10));
+					break;
+				case geometry::Quality::LOW:
+					return ci::geom::Plane().axes(u, v).subdivisions(ci::vec2(2, 2));
+					break;
+				case geometry::Quality::HIGH:
+					return ci::geom::Plane().axes(u, v).subdivisions(ci::vec2(100, 100));
+					break;
+				}
+			}
+
+			static ci::geom::WirePlane createWirePlane(const ci::vec3& u, const ci::vec3& v, geometry::Quality quality = geometry::Quality::DEFAULT) {
+				switch (quality) {
+				case geometry::Quality::DEFAULT:
+					return ci::geom::WirePlane().axes(u, v).subdivisions(ci::vec2(10, 10));
+					break;
+				case geometry::Quality::LOW:
+					return ci::geom::WirePlane().axes(u, v).subdivisions(ci::vec2(2, 2));
+					break;
+				case geometry::Quality::HIGH:
+					return ci::geom::WirePlane().axes(u, v).subdivisions(ci::vec2(100, 100));
+					break;
+				}
+			}
+
+			static ci::geom::Rect createRect(ci::vec2 p1, ci::vec2 p2) {
+				// only one quality of Rectangle available
+				return ci::geom::Rect(ci::Rectf(p1, p2));
+			}
+
+			static ci::geom::WireRect createWireRect(ci::vec2 p1, ci::vec2 p2) {
+				// only one quality of Rectangle available
+				return ci::geom::WireRect(ci::Rectf(p1, p1));
+			}
+
+
+			static ci::geom::Sphere createSphere(float radius, geometry::Quality quality = geometry::Quality::DEFAULT) {
+				switch (quality) {
+				case geometry::Quality::DEFAULT:
+					return ci::geom::Sphere().radius(radius);
+					break;
+				case geometry::Quality::LOW:
+					return ci::geom::Sphere().radius(radius).subdivisions(1);
+					break;
+				case geometry::Quality::HIGH:
+					return ci::geom::Sphere().radius(radius).subdivisions(10);
+					break;
+				}
+			}
+
+			static ci::geom::WireSphere createWireSphere(float radius) {
+				// only one quality level of WireSphere, so just return it
+				return ci::geom::WireSphere().radius(radius);
+			}
+
 
 			static ci::TriMesh getMesh(const ci::geom::Source& source) {
 				ci::TriMesh::Format fmt = ci::TriMesh::Format().positions().normals().texCoords().tangents();
@@ -194,6 +291,37 @@ namespace sitara {
 
 			static ci::AxisAlignedBox getBoundingBox(const ci::TriMesh& mesh) {
 				return mesh.calcBoundingBox();
+			}
+
+			static ci::gl::GlslProgRef getWireframeShader() {
+				#if ! defined( CINDER_GL_ES )
+				ci::gl::GlslProg::Format format;
+				try {
+					format = ci::gl::GlslProg::Format()
+						.vertex(ci::app::loadAsset("shaders//wireframe//wireframe.vert"))
+						.geometry(ci::app::loadAsset("shaders//wireframe//wireframe.geom"))
+						.fragment(ci::app::loadAsset("shaders//wireframe//wireframe.frag"));
+				}
+				catch (ci::Exception &exc) {
+					std::printf("sitara::ecs::geometry ERROR | Error loading wireframe shader: %s\n", exc.what());
+				}
+				return ci::gl::GlslProg::create(format);
+				#endif // ! defined( CINDER_GL_ES )
+			}
+
+			static ci::gl::GlslProgRef getPhongShader() {
+				ci::gl::GlslProgRef shader;
+				try {
+					#if defined( CINDER_GL_ES )
+					shader = ci::gl::GlslProg::create(ci::app::loadAsset("shaders/wireframe/phong_es2.vert"), ci::app::loadAsset("shaders/wireframe/phong_es2.frag"));
+					#else
+					shader = ci::gl::GlslProg::create(ci::app::loadAsset("shaders/wireframe/phong.vert"), ci::app::loadAsset("shaders/wireframe/phong.frag"));
+					#endif
+				}
+				catch (ci::Exception &exc) {
+					std::printf("sitara::ecs::geometry ERROR | Error loading phong shader: %s\n", exc.what());
+				}
+				return shader;
 			}
 		}
 	}
