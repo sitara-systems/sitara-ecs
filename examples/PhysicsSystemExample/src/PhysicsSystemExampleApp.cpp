@@ -155,10 +155,9 @@ void PhysicsSystemExampleApp::createUserInterface() {
 void PhysicsSystemExampleApp::createWorld() {
 	auto ground = mEntities.create();
 	vec3 size = vec3(500, 1, 500);
-	vec3 position = vec3(0, -100, 0);
+	vec3 position = vec3(0, 0, 0);
 	auto g = ground.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createBox(size, 0.0, position));
 	ground.assign<sitara::ecs::Geometry>(ci::geom::Cube().size(size), Color(1.0, 1.0, 1.0));
-	g->setElasticity(1.0);
 
 	for (int i = 0; i < 50; i++) {
 		auto pos = vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150));
@@ -174,7 +173,9 @@ void PhysicsSystemExampleApp::resetWorld() {
 	entityx::ComponentHandle<sitara::ecs::Geometry> geom;
 
 	for (auto entity : mEntities.entities_with_components(body, geom)) {
-		body->resetBody(ci::vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150)));
+		if (geom->getPrimitive() == sitara::ecs::geometry::Primitive::SPHERE) {
+			body->resetBody(ci::vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150)));
+		}
 	}
 }
 

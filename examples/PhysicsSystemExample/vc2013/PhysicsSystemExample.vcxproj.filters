@@ -139,14 +139,17 @@
     <ClInclude Include="..\..\..\src\transform\TransformSystem.h">
       <Filter>blocks\sitara-ecs\src\transform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\physics\PhysicsUtilities.h">
-      <Filter>blocks\sitara-ecs\src\physics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\physics\RigidBody.h">
       <Filter>blocks\sitara-ecs\src\physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\physics\Geometry.h">
+    <ClInclude Include="..\..\..\src\geometry\Geometry.h">
       <Filter>blocks\sitara-ecs\src\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\geometry\GeometryUtils.h">
+      <Filter>blocks\sitara-ecs\src\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\physics\PhysicsUtils.h">
+      <Filter>blocks\sitara-ecs\src\physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

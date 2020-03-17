@@ -125,8 +125,9 @@
     <ClCompile Include="..\..\..\libs\entityx\entityx\System.cc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\physics\Geometry.h" />
-    <ClInclude Include="..\..\..\src\physics\PhysicsUtilities.h" />
+    <ClInclude Include="..\..\..\src\geometry\Geometry.h" />
+    <ClInclude Include="..\..\..\src\geometry\GeometryUtils.h" />
+    <ClInclude Include="..\..\..\src\physics\PhysicsUtils.h" />
     <ClInclude Include="..\..\..\src\physics\PhysicsSystem.h" />
     <ClInclude Include="..\..\..\src\physics\RigidBody.h" />
     <ClInclude Include="..\..\..\src\transform\Transform.h" />

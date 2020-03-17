@@ -3,7 +3,7 @@
 #include "entityx/Entity.h"
 #include "cinder/Vector.h"
 #include "bullet/btBulletDynamicsCommon.h"
-#include "physics/PhysicsUtilities.h"
+#include "physics/PhysicsUtils.h"
 
 namespace sitara {
 	namespace ecs {

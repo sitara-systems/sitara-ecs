@@ -42,7 +42,6 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 
 	for (auto entity : entities.entities_with_components(body)) {
 		ci::vec3 p = body->getPosition();
-		std::printf("Position of body: %f %f %f\n", p.x, p.y, p.z);
 	}
 }
 

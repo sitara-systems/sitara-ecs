@@ -11,6 +11,7 @@
 
 #include "physics/RigidBody.h"
 #include "physics/PhysicsSystem.h"
-#include "physics/PhysicsUtilities.h"
+#include "physics/PhysicsUtils.h"
 
 #include "geometry/Geometry.h"
+#include "geometry/GeometryUtils.h"
