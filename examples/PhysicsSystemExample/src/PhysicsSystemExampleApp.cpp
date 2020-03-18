@@ -34,6 +34,11 @@ class PhysicsSystemExampleApp : public App {
 	vec3 mEye;
 	vec3 mUp;
 	vec3 mCenter;
+
+	enum LayerNames {
+		GROUND,
+		BALL
+	};
 };
 
 PhysicsSystemExampleApp::PhysicsSystemExampleApp() :
@@ -175,6 +180,7 @@ void PhysicsSystemExampleApp::createWorld() {
 	vec3 position = vec3(0, 0, 0);
 	ground.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createBox(size, 0.0, position));
 	ground.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createCube(size), Color(1.0, 1.0, 1.0));
+	ground.assign<sitara::ecs::LogicalLayer>(LayerNames::GROUND);
 
 	for (int i = 0; i < 50; i++) {
 		auto pos = vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150));
@@ -182,15 +188,16 @@ void PhysicsSystemExampleApp::createWorld() {
 		float radius = 5.0;
 		ball.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createSphere(radius, 50.0, pos));
 		ball.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(radius), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
+		ball.assign<sitara::ecs::LogicalLayer>(LayerNames::BALL);
 	}
 }
 
 void PhysicsSystemExampleApp::resetWorld() {
+	entityx::ComponentHandle<sitara::ecs::LogicalLayer> layer;
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
-	entityx::ComponentHandle<sitara::ecs::Geometry> geom;
 
-	for (auto entity : mEntities.entities_with_components(body, geom)) {
-		if (geom->getPrimitive() == sitara::ecs::geometry::Primitive::SPHERE) {
+	for (auto entity : mEntities.entities_with_components(body, layer)) {
+		if (layer->mLayerId == LayerNames::BALL) {
 			body->resetBody(ci::vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150)));
 		}
 	}

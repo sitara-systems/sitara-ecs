@@ -127,6 +127,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\geometry\Geometry.h" />
     <ClInclude Include="..\..\..\src\geometry\GeometryUtils.h" />
+    <ClInclude Include="..\..\..\src\logic\LogicalLayer.h" />
     <ClInclude Include="..\..\..\src\physics\PhysicsUtils.h" />
     <ClInclude Include="..\..\..\src\physics\PhysicsSystem.h" />
     <ClInclude Include="..\..\..\src\physics\RigidBody.h" />

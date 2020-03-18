@@ -15,3 +15,5 @@
 
 #include "geometry/Geometry.h"
 #include "geometry/GeometryUtils.h"
+
+#include "logic/LogicalLayer.h"
