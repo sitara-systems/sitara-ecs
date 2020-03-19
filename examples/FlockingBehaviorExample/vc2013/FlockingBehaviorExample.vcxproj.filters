@@ -92,6 +92,9 @@
     <ClCompile Include="..\..\..\src\behavior\BehaviorSystem.cpp">
       <Filter>blocks\sitara-ecs\src\behavior</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\logic\StateSystem.cpp">
+      <Filter>blocks\sitara-ecs\src\logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
@@ -189,6 +192,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\behavior\NoiseField.h">
       <Filter>blocks\sitara-ecs\src\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\logic\LogicState.h">
+      <Filter>blocks\sitara-ecs\src\logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\logic\StateSystem.h">
+      <Filter>blocks\sitara-ecs\src\logic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -112,6 +112,7 @@
   <ItemGroup />
   <ItemGroup>
     <ClCompile Include="..\..\..\src\behavior\BehaviorSystem.cpp" />
+    <ClCompile Include="..\..\..\src\logic\StateSystem.cpp" />
     <ClCompile Include="..\..\..\src\physics\PhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\src\transform\TransformSystem.cpp" />
     <ClCompile Include="..\src\FlockingBehaviorExampleApp.cpp" />
@@ -134,6 +135,8 @@
     <ClInclude Include="..\..\..\src\geometry\Geometry.h" />
     <ClInclude Include="..\..\..\src\geometry\GeometryUtils.h" />
     <ClInclude Include="..\..\..\src\logic\LogicalLayer.h" />
+    <ClInclude Include="..\..\..\src\logic\LogicState.h" />
+    <ClInclude Include="..\..\..\src\logic\StateSystem.h" />
     <ClInclude Include="..\..\..\src\physics\PhysicsUtils.h" />
     <ClInclude Include="..\..\..\src\physics\PhysicsSystem.h" />
     <ClInclude Include="..\..\..\src\physics\RigidBody.h" />
