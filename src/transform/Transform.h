@@ -9,8 +9,6 @@ namespace sitara {
 	namespace ecs {
 		class Transform {
 		public:
-			//Transform() : mPosition(ci::vec3(0)), mScale(ci::vec3(1)), mAnchor(ci::vec3(0)), mOrientation(ci::quat()) {};
-
 			Transform(const ci::vec3 &position = ci::vec3(0), const ci::vec3 &scale = ci::vec3(1), const ci::vec3 &anchor = ci::vec3(0), const ci::quat &orientation = ci::quat())
 				: mPosition(position),
 				mScale(scale),

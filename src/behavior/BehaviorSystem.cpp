@@ -15,7 +15,8 @@ void BehaviorSystem::update(entityx::EntityManager &entities, entityx::EventMana
 	entityx::ComponentHandle<sitara::ecs::StaticTarget> staticTarget;
 
 	for (auto entity : entities.entities_with_components(movingTarget, staticTarget)) {
-		staticTarget->mTargetPosition = physics::fromBtVector3(movingTarget->mRigidBody->getRigidBody()->getCenterOfMassPosition() + 
+		// automatically updates the static target; uses velocity to be slightly predictive
+		staticTarget->mTargetPosition = physics::fromBtVector3(movingTarget->mRigidBody->getRigidBody()->getCenterOfMassPosition() +
 																movingTarget->mRigidBody->getRigidBody()->getLinearVelocity() * static_cast<float>(dt));
 	}
 }

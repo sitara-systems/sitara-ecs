@@ -26,6 +26,8 @@
 #include "behavior/BehaviorSystem.h"
 
 #include "logic/LogicalLayer.h"
+#include "logic/LogicState.h"
+#include "logic/StateSystem.h"
 
 #include "utilities/Units.h"
 
