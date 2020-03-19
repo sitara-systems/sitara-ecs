@@ -69,37 +69,18 @@ namespace sitara {
 			}
 			*/
 
-			void resetBody(ci::vec3 position) {
-				if (mRigidBody->getMotionState()) {
-					btTransform transform;
-					transform.setIdentity();
-					transform.setOrigin(physics::toBtVector3(position));
-					transform.setRotation(btQuaternion());
-
-					mRigidBody->setWorldTransform(transform);
-					mRigidBody->getMotionState()->setWorldTransform(transform);
-
-					mRigidBody->setLinearVelocity(btVector3(0, 0, 0));
-					mRigidBody->setAngularVelocity(btVector3(0, 0, 0));
-					mRigidBody->clearForces();
-					mRigidBody->activate(true);
-				}
-			}
-
-			ci::vec3 getPosition() {
-				btTransform trans;
-				if (mRigidBody->getMotionState()) {
-					mRigidBody->getMotionState()->getWorldTransform(trans);
-				}
-				return physics::fromBtVector3(trans.getOrigin());
-			}
-
+			/*
 			ci::mat4 getWorldTransform() {
 				btTransform trans;
 				if (mRigidBody->getMotionState()) {
 					mRigidBody->getMotionState()->getWorldTransform(trans);
 				}
 				return physics::fromBtTransform(trans);
+			}
+			*/
+
+			btMotionState* getMotionState() const {
+				return mRigidBody->getMotionState();
 			}
 
 			btRigidBody* getRigidBody() const {

@@ -10,8 +10,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{A1F4CE19-EC1D-4F56-9E22-FBD01D0D5955}</ProjectGuid>
-    <RootNamespace>BasicSystemExample</RootNamespace>
+    <ProjectGuid>{B4A2B17A-9E88-4136-A8D2-F9CD950D215E}</ProjectGuid>
+    <RootNamespace>FlockingBehaviorExample</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -33,6 +33,7 @@
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\config\sitara-ecs-example.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -109,10 +110,11 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup />
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\behavior\BehaviorSystem.cpp" />
+    <ClCompile Include="..\..\..\src\physics\PhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\src\transform\TransformSystem.cpp" />
-    <ClCompile Include="..\src\BasicSystemExampleApp.cpp" />
+    <ClCompile Include="..\src\FlockingBehaviorExampleApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\libs\entityx\entityx\Entity.cc" />
@@ -122,9 +124,19 @@
     <ClCompile Include="..\..\..\libs\entityx\entityx\System.cc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\behavior\Alignment.h" />
+    <ClInclude Include="..\..\..\src\behavior\BehaviorSystem.h" />
+    <ClInclude Include="..\..\..\src\behavior\Cohesion.h" />
+    <ClInclude Include="..\..\..\src\behavior\Separation.h" />
+    <ClInclude Include="..\..\..\src\behavior\Target.h" />
+    <ClInclude Include="..\..\..\src\geometry\Geometry.h" />
+    <ClInclude Include="..\..\..\src\geometry\GeometryUtils.h" />
+    <ClInclude Include="..\..\..\src\logic\LogicalLayer.h" />
+    <ClInclude Include="..\..\..\src\physics\PhysicsUtils.h" />
+    <ClInclude Include="..\..\..\src\physics\PhysicsSystem.h" />
+    <ClInclude Include="..\..\..\src\physics\RigidBody.h" />
     <ClInclude Include="..\..\..\src\transform\Transform.h" />
     <ClInclude Include="..\..\..\src\transform\TransformSystem.h" />
-    <ClInclude Include="..\include\Resources.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\libs\entityx\entityx\3rdparty\catch.hpp" />
@@ -141,6 +153,10 @@
     <ClInclude Include="..\..\..\libs\entityx\entityx\System.h" />
     <ClInclude Include="..\..\..\libs\entityx\entityx\tags\TagsComponent.h" />
     <ClInclude Include="..\..\..\src\Ecs.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\utilities\Units.h" />
+    <ClInclude Include="..\include\Resources.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

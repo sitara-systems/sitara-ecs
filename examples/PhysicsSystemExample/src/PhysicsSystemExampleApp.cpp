@@ -48,7 +48,9 @@ PhysicsSystemExampleApp::PhysicsSystemExampleApp() :
 
 void PhysicsSystemExampleApp::setup() {
 	ci::app::setFrameRate(60);
+	sitara::ecs::configureSystems(mSystems);
 	auto physics = mSystems.add<sitara::ecs::PhysicsSystem>();
+	mSystems.add<sitara::ecs::TransformSystem>();
 	mSystems.configure();
 
 	physics->setGravity(vec3(0.0, -10.0, 0.0));
@@ -77,6 +79,7 @@ void PhysicsSystemExampleApp::mouseDown( MouseEvent event ) {
 
 void PhysicsSystemExampleApp::update() {
 	mSystems.update<sitara::ecs::PhysicsSystem>(1.0 / 60.0);
+	mSystems.update<sitara::ecs::TransformSystem>(1.0 / 60.0);
 }
 
 void PhysicsSystemExampleApp::draw() {
@@ -89,12 +92,12 @@ void PhysicsSystemExampleApp::draw() {
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 
-	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
+	entityx::ComponentHandle<sitara::ecs::Transform> transform;
 	entityx::ComponentHandle<sitara::ecs::Geometry> geom;
 
-	for (auto entity : mEntities.entities_with_components(body, geom)) {
+	for (auto entity : mEntities.entities_with_components(transform, geom)) {
 		gl::pushModelMatrix();
-		gl::setModelMatrix(body->getWorldTransform());
+		gl::setModelMatrix(transform->getWorldTransform());
 		geom->draw();
 		gl::popModelMatrix();
 	}
@@ -198,7 +201,7 @@ void PhysicsSystemExampleApp::resetWorld() {
 
 	for (auto entity : mEntities.entities_with_components(body, layer)) {
 		if (layer->mLayerId == LayerNames::BALL) {
-			body->resetBody(ci::vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150)));
+			mSystems.system<sitara::ecs::PhysicsSystem>()->resetBody(body, ci::vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150)));
 		}
 	}
 }

@@ -1,4 +1,5 @@
 #include "physics/PhysicsSystem.h"
+#include "transform/Transform.h"
 
 using namespace sitara::ecs;
 
@@ -39,9 +40,16 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 	mDynamicsWorld->stepSimulation(static_cast<float>(dt), 10);
 
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
+	entityx::ComponentHandle<sitara::ecs::Transform> transform;
 
-	for (auto entity : entities.entities_with_components(body)) {
-		ci::vec3 p = body->getPosition();
+	for (auto entity : entities.entities_with_components(body, transform)) {
+		btTransform trans;
+		if (body->getMotionState()) {
+			body->getMotionState()->getWorldTransform(trans);
+		}
+
+		transform->mPosition = physics::fromBtVector3(trans.getOrigin());
+		transform->mOrientation = physics::fromBtQuaternion(trans.getRotation());
 	}
 }
 
@@ -66,4 +74,21 @@ void PhysicsSystem::setGravity(ci::vec3 gravity) {
 
 btDiscreteDynamicsWorld* PhysicsSystem::getWorld() {
 	return mDynamicsWorld;
+}
+
+void PhysicsSystem::resetBody(entityx::ComponentHandle<sitara::ecs::RigidBody> body, ci::vec3 position) {
+	if (body->getMotionState()) {
+		btTransform transform;
+		transform.setIdentity();
+		transform.setOrigin(physics::toBtVector3(position));
+		transform.setRotation(btQuaternion());
+
+		body->getRigidBody()->setWorldTransform(transform);
+		body->getRigidBody()->getMotionState()->setWorldTransform(transform);
+
+		body->getRigidBody()->setLinearVelocity(btVector3(0, 0, 0));
+		body->getRigidBody()->setAngularVelocity(btVector3(0, 0, 0));
+		body->getRigidBody()->clearForces();
+		body->getRigidBody()->activate(true);
+	}
 }

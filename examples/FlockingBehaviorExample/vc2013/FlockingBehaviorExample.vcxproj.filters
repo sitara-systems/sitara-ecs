@@ -24,6 +24,9 @@
     <Filter Include="blocks\sitara-ecs\src\transform">
       <UniqueIdentifier>{097e7be3-8a62-4e10-8e0b-3d01926ec742}</UniqueIdentifier>
     </Filter>
+    <Filter Include="blocks\sitara-ecs\src\physics">
+      <UniqueIdentifier>{76554fb1-b1c6-45ba-a46d-15146f73c4b1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="blocks\sitara-ecs\libs">
       <UniqueIdentifier>{b25e23fd-b6e1-473e-a5e1-1096fd5c3873}</UniqueIdentifier>
     </Filter>
@@ -45,12 +48,24 @@
     <Filter Include="blocks\sitara-ecs\libs\entityx\entityx\tags">
       <UniqueIdentifier>{5d94c21c-6d60-41c0-972e-c3ac7d367840}</UniqueIdentifier>
     </Filter>
+    <Filter Include="blocks\sitara-ecs\src\geometry">
+      <UniqueIdentifier>{9b9b9aeb-a221-4677-b3bd-53b1bfc3b300}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\sitara-ecs\src\logic">
+      <UniqueIdentifier>{f9fff970-d6c2-4b48-9347-5f64a7e9278a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\sitara-ecs\src\utilities">
+      <UniqueIdentifier>{e81e77fd-2a6f-4750-ab28-1bf2b07e80e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\sitara-ecs\src\behavior">
+      <UniqueIdentifier>{5f96cc8f-dfd1-4976-bd3e-44ad88efc6a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\BasicSystemExampleApp.cpp">
+    <ClCompile Include="..\src\FlockingBehaviorExampleApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\BasicSystemExampleApp.cpp">
+    <ClCompile Include="..\src\FlockingBehaviorExampleApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\libs\entityx\entityx\Entity.cc">
@@ -68,11 +83,14 @@
     <ClCompile Include="..\..\..\libs\entityx\entityx\help\Timer.cc">
       <Filter>blocks\sitara-ecs\libs\entityx\entityx\help</Filter>
     </ClCompile>
-    <ClInclude Include="..\include\Resources.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClCompile Include="..\..\..\src\physics\PhysicsSystem.cpp">
+      <Filter>blocks\sitara-ecs\src\physics</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\transform\TransformSystem.cpp">
       <Filter>blocks\sitara-ecs\src\transform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\behavior\BehaviorSystem.cpp">
+      <Filter>blocks\sitara-ecs\src\behavior</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -121,11 +139,47 @@
     <ClInclude Include="..\..\..\libs\entityx\entityx\tags\TagsComponent.h">
       <Filter>blocks\sitara-ecs\libs\entityx\entityx\tags</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\physics\PhysicsSystem.h">
+      <Filter>blocks\sitara-ecs\src\physics</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\transform\Transform.h">
       <Filter>blocks\sitara-ecs\src\transform</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\transform\TransformSystem.h">
       <Filter>blocks\sitara-ecs\src\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\physics\RigidBody.h">
+      <Filter>blocks\sitara-ecs\src\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\geometry\Geometry.h">
+      <Filter>blocks\sitara-ecs\src\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\geometry\GeometryUtils.h">
+      <Filter>blocks\sitara-ecs\src\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\physics\PhysicsUtils.h">
+      <Filter>blocks\sitara-ecs\src\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\logic\LogicalLayer.h">
+      <Filter>blocks\sitara-ecs\src\logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\utilities\Units.h">
+      <Filter>blocks\sitara-ecs\src\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\behavior\Target.h">
+      <Filter>blocks\sitara-ecs\src\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\behavior\Separation.h">
+      <Filter>blocks\sitara-ecs\src\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\behavior\Cohesion.h">
+      <Filter>blocks\sitara-ecs\src\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\behavior\Alignment.h">
+      <Filter>blocks\sitara-ecs\src\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\behavior\BehaviorSystem.h">
+      <Filter>blocks\sitara-ecs\src\behavior</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

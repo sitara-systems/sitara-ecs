@@ -9,8 +9,8 @@
 namespace sitara {
 	namespace ecs {
 		namespace geometry {
-			enum Primitive { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, TORUSKNOT, PLANE, RECT, ROUNDEDRECT, CIRCLE, RING,
-				WIRE_CAPSULE, WIRE_CONE, WIRE_CUBE, WIRE_CYLINDER, WIRE_ICOSAHEDRON, WIRE_SPHERE, WIRE_TORUS, WIRE_PLANE, WIRE_RECT, WIRE_ROUNDEDRECT, WIRE_CIRCLE,
+			enum Primitive { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, TORUSKNOT, PLANE,
+				WIRE_CAPSULE, WIRE_CONE, WIRE_CUBE, WIRE_CYLINDER, WIRE_ICOSAHEDRON, WIRE_SPHERE, WIRE_TORUS, WIRE_PLANE,
 				UNKNOWN, PRIMITIVE_COUNT };
 
 			enum Quality { LOW, DEFAULT, HIGH };
@@ -53,18 +53,6 @@ namespace sitara {
 				else if (typeid(ci::geom::Plane) == typeid(source)) {
 					return Primitive::PLANE;
 				}
-				else if (typeid(ci::geom::Rect) == typeid(source)) {
-					return Primitive::RECT;
-				}
-				else if (typeid(ci::geom::RoundedRect) == typeid(source)) {
-					return Primitive::ROUNDEDRECT;
-				}
-				else if (typeid(ci::geom::Circle) == typeid(source)) {
-					return Primitive::CIRCLE;
-				}
-				else if (typeid(ci::geom::Ring) == typeid(source)) {
-					return Primitive::RING;
-				}
 				else if (typeid(ci::geom::WireCapsule) == typeid(source)) {
 					return Primitive::WIRE_CAPSULE;
 				}
@@ -88,15 +76,6 @@ namespace sitara {
 				}
 				else if (typeid(ci::geom::WirePlane) == typeid(source)) {
 					return Primitive::WIRE_PLANE;
-				}
-				else if (typeid(ci::geom::WireRect) == typeid(source)) {
-					return Primitive::WIRE_RECT;
-				}
-				else if (typeid(ci::geom::WireRoundedRect) == typeid(source)) {
-					return Primitive::WIRE_ROUNDEDRECT;
-				}
-				else if (typeid(ci::geom::WireCircle) == typeid(source)) {
-					return Primitive::WIRE_CIRCLE;
 				}
 				else {
 					return Primitive::UNKNOWN;
@@ -215,44 +194,33 @@ namespace sitara {
 				}
 			}
 
-			static ci::geom::Plane createPlane(const ci::vec3& u, const ci::vec3& v, geometry::Quality quality = geometry::Quality::DEFAULT) {
+			static ci::geom::Plane createPlane(const ci::vec3& u, const ci::vec3& v, const ci::vec2& size, geometry::Quality quality = geometry::Quality::DEFAULT) {
 				switch (quality) {
 				case geometry::Quality::DEFAULT:
-					return ci::geom::Plane().axes(u, v).subdivisions(ci::vec2(10, 10));
+					return ci::geom::Plane().axes(u, v).size(size).subdivisions(ci::vec2(10, 10));
 					break;
 				case geometry::Quality::LOW:
-					return ci::geom::Plane().axes(u, v).subdivisions(ci::vec2(2, 2));
+					return ci::geom::Plane().axes(u, v).size(size).subdivisions(ci::vec2(2, 2));
 					break;
 				case geometry::Quality::HIGH:
-					return ci::geom::Plane().axes(u, v).subdivisions(ci::vec2(100, 100));
+					return ci::geom::Plane().axes(u, v).size(size).subdivisions(ci::vec2(100, 100));
 					break;
 				}
 			}
 
-			static ci::geom::WirePlane createWirePlane(const ci::vec3& u, const ci::vec3& v, geometry::Quality quality = geometry::Quality::DEFAULT) {
+			static ci::geom::WirePlane createWirePlane(const ci::vec3& u, const ci::vec3& v, const ci::vec2& size, geometry::Quality quality = geometry::Quality::DEFAULT) {
 				switch (quality) {
 				case geometry::Quality::DEFAULT:
-					return ci::geom::WirePlane().axes(u, v).subdivisions(ci::vec2(10, 10));
+					return ci::geom::WirePlane().axes(u, v).size(size).subdivisions(ci::vec2(10, 10));
 					break;
 				case geometry::Quality::LOW:
-					return ci::geom::WirePlane().axes(u, v).subdivisions(ci::vec2(2, 2));
+					return ci::geom::WirePlane().axes(u, v).size(size).subdivisions(ci::vec2(2, 2));
 					break;
 				case geometry::Quality::HIGH:
-					return ci::geom::WirePlane().axes(u, v).subdivisions(ci::vec2(100, 100));
+					return ci::geom::WirePlane().axes(u, v).size(size).subdivisions(ci::vec2(100, 100));
 					break;
 				}
 			}
-
-			static ci::geom::Rect createRect(ci::vec2 p1, ci::vec2 p2) {
-				// only one quality of Rectangle available
-				return ci::geom::Rect(ci::Rectf(p1, p2));
-			}
-
-			static ci::geom::WireRect createWireRect(ci::vec2 p1, ci::vec2 p2) {
-				// only one quality of Rectangle available
-				return ci::geom::WireRect(ci::Rectf(p1, p1));
-			}
-
 
 			static ci::geom::Sphere createSphere(float radius, geometry::Quality quality = geometry::Quality::DEFAULT) {
 				switch (quality) {

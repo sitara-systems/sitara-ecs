@@ -55,8 +55,8 @@ class BasicSystemExampleApp : public App {
 	  void mouseDown( MouseEvent event ) override;
 	  void update() override;
 	  void draw() override;
-	  entityx::Entity createSolarSystem(entityx::EntityManager &entities, const ci::vec3 &center);
-	  entityx::Entity createPlanetoid(entityx::EntityManager &entities);
+	  entityx::Entity createSolarSystem(const ci::vec3 &center);
+	  entityx::Entity createPlanetoid(entityx::Entity& sun);
 
 	  entityx::EntityManager mEntities;
 	  entityx::EventManager mEvents;
@@ -73,7 +73,7 @@ void BasicSystemExampleApp::setup() {
 	mSystems.add<sitara::RotationSystem>();
 	mSystems.configure();
 
-	createSolarSystem(mEntities, vec3(getWindowCenter(), 0.0f));
+	createSolarSystem(vec3(getWindowCenter(), 0.0f));
 }
 
 void BasicSystemExampleApp::mouseDown( MouseEvent event ) {
@@ -101,33 +101,34 @@ void BasicSystemExampleApp::draw() {
 	}
 }
 
-entityx::Entity BasicSystemExampleApp::createSolarSystem(entityx::EntityManager &entities, const ci::vec3 &center) {
-	auto sun = entities.create();
+entityx::Entity BasicSystemExampleApp::createSolarSystem(const ci::vec3 &center) {
+	auto sun = mEntities.create();
 	sun.assign<sitara::Sphere>(50.0f, Color(1.0, 0.5, 0.0));
-	sun.assign<sitara::ecs::Transform>(sun, center);
+	sun.assign<sitara::ecs::Transform>(center);
 
 	for (auto i = 0; i < 15; i ++) {
-		sitara::ecs::attachChild(sun, createPlanetoid(entities));
+		createPlanetoid(sun);
 	}
 
 	return sun;
 }
 
-entityx::Entity BasicSystemExampleApp::createPlanetoid(entityx::EntityManager &entities) {
-	auto planet = entities.create();
+entityx::Entity BasicSystemExampleApp::createPlanetoid(entityx::Entity& sun) {
+	auto planet = mEntities.create();
 	auto size = randFloat(20.0f, 40.0f);
 	auto distance = randFloat(100.0f, 360.0f);
 	auto theta = randFloat(2.0 * M_PI);
 	auto planet_pos = vec3(cos(theta) * distance, sin(theta) * distance, 0.0f);
-	planet.assign<sitara::ecs::Transform>(planet, planet_pos, vec3(1.0f), -planet_pos);
+	planet.assign<sitara::ecs::Transform>(planet_pos, vec3(1.0f), -planet_pos);
+	mSystems.system<sitara::ecs::TransformSystem>()->attachChild(sun, planet);
 	planet.assign<sitara::Sphere>(size, Color(0.0, 1.0, 1.0));
 	planet.assign<sitara::Rotation>(vec3(0.0, 0.0, 1.0), randFloat(0.5));
 
 	auto moon_pos = vec3(size, size, 0.0f) * randFloat(1.0f, 1.5f);
-	auto moon = entities.create();
-	moon.assign<sitara::ecs::Transform>(moon, moon_pos, vec3(1.0f), -moon_pos);
+	auto moon = mEntities.create();
+	moon.assign<sitara::ecs::Transform>(moon_pos, vec3(1.0f), -moon_pos);
 	moon.assign<sitara::Sphere>(size * 0.33f, Color(1.0, 1.0, 1.0));
-	sitara::ecs::attachChild(planet, moon);
+	mSystems.system<sitara::ecs::TransformSystem>()->attachChild(planet, moon);
 	moon.assign<sitara::Rotation>(vec3(0.0, 0.0, 1.0), randFloat(1.0));
 
 	return planet;

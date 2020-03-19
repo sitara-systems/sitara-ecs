@@ -5,6 +5,7 @@
 #include "entityx/Entity.h"
 #include "entityx/System.h"
 #include "entityx/quick.h"
+#include "entityx/deps/Dependencies.h"
 
 #include "transform/Transform.h"
 #include "transform/TransformSystem.h"
@@ -16,4 +17,20 @@
 #include "geometry/Geometry.h"
 #include "geometry/GeometryUtils.h"
 
+#include "behavior/Target.h"
+#include "behavior/Separation.h"
+#include "behavior/Cohesion.h"
+#include "behavior/Alignment.h"
+#include "behavior/BehaviorSystem.h"
+
 #include "logic/LogicalLayer.h"
+
+#include "utilities/Units.h"
+
+namespace sitara {
+	namespace ecs {
+		void configureSystems(entityx::SystemManager& systems) {
+			systems.add<entityx::deps::Dependency<RigidBody, Transform>>();
+		}
+	}
+}
