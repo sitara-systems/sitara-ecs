@@ -15,7 +15,6 @@ Bullet3 is included as a static library.
 
 ### Transform System
 - World and Local Transforms with Parent/Child Relationships
-- Hierarchy System is NOT working atm (need to refactor)
 
 ### Rigid Body System
 - Bullet Physics for rigid body collisions
