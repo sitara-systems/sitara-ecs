@@ -45,8 +45,8 @@ namespace sitara {
 				return body;
 			}
 
-			static btRigidBody* createCylinder(const ci::vec3& size, float mass, const ci::vec3& position = ci::vec3(0), const ci::quat& rotation = ci::quat()) {
-				btCollisionShape* shape = new btCylinderShape(physics::toBtVector3(size));
+			static btRigidBody* createCylinder(float radius, float height, float mass, const ci::vec3& position = ci::vec3(0), const ci::quat& rotation = ci::quat()) {
+				btCollisionShape* shape = new btCylinderShape(physics::toBtVector3(ci::vec3(radius, radius, 0.5f * height)));
 				btRigidBody* body = createRigidBody(shape, mass, position, rotation);
 				return body;
 			}
@@ -129,8 +129,11 @@ namespace sitara {
 				btTransform worldTransform(btRotation, btPosition);
 				btDefaultMotionState* motionState = new btDefaultMotionState(worldTransform);
 				btRigidBody::btRigidBodyConstructionInfo info(mass, motionState, shape, inertia);
+				info.m_restitution = 0.0f;
+				info.m_friction = 0.0f;
 
 				btRigidBody* body = new btRigidBody(info);
+
 				return body;
 			}
 

@@ -5,9 +5,15 @@
 namespace sitara {
 	namespace ecs {
 		struct Alignment {
-			float mWeight;
+			Alignment(float zoneRadius = 100.0f, float weight = 10.0f) :
+				mZoneRadius(zoneRadius),
+				mWeight(weight)
+			{
+
+			}
+
 			float mZoneRadius;
-			float mZoneAngle;
+			float mWeight;
 		};
 	}
 }

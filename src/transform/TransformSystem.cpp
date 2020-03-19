@@ -59,5 +59,4 @@ void TransformSystem::descend(entityx::ComponentHandle<Transform> rootHandle, co
 
 void TransformSystem::receive(const entityx::ComponentRemovedEvent<Transform>& event) {
 	removeFromParent(event.component);
-
 }

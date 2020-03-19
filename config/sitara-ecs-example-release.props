@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <BLOCK_ROOT>..\..\..</BLOCK_ROOT>
+    <ENTITYX_ROOT>\libs\entityx</ENTITYX_ROOT>
+    <BULLET3_ROOT>\libs\bullet3</BULLET3_ROOT>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(BLOCK_ROOT)\src;$(BLOCK_ROOT)$(ENTITYX_ROOT);$(BLOCK_ROOT)$(BULLET3_ROOT)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DISABLE_EXTENDED_ALIGNED_STORAGE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>Bullet3Common.lib;BulletCollision.lib;BulletDynamics.lib;BulletInverseDynamics.lib;BulletSoftBody.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(BLOCK_ROOT)$(BULLET3_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="BLOCK_ROOT">
+      <Value>$(BLOCK_ROOT)</Value>
+    </BuildMacro>
+    <BuildMacro Include="ENTITYX_ROOT">
+      <Value>$(ENTITYX_ROOT)</Value>
+    </BuildMacro>
+    <BuildMacro Include="BULLET3_ROOT">
+      <Value>$(BULLET3_ROOT)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

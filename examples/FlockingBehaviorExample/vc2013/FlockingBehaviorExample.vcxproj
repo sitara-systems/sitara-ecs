@@ -33,7 +33,7 @@
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\config\sitara-ecs-example.props" />
+    <Import Project="..\..\..\config\sitara-ecs-example-release.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -127,8 +127,10 @@
     <ClInclude Include="..\..\..\src\behavior\Alignment.h" />
     <ClInclude Include="..\..\..\src\behavior\BehaviorSystem.h" />
     <ClInclude Include="..\..\..\src\behavior\Cohesion.h" />
+    <ClInclude Include="..\..\..\src\behavior\MovingTarget.h" />
+    <ClInclude Include="..\..\..\src\behavior\NoiseField.h" />
     <ClInclude Include="..\..\..\src\behavior\Separation.h" />
-    <ClInclude Include="..\..\..\src\behavior\Target.h" />
+    <ClInclude Include="..\..\..\src\behavior\StaticTarget.h" />
     <ClInclude Include="..\..\..\src\geometry\Geometry.h" />
     <ClInclude Include="..\..\..\src\geometry\GeometryUtils.h" />
     <ClInclude Include="..\..\..\src\logic\LogicalLayer.h" />
@@ -155,6 +157,7 @@
     <ClInclude Include="..\..\..\src\Ecs.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\utilities\Simplex.h" />
     <ClInclude Include="..\..\..\src\utilities\Units.h" />
     <ClInclude Include="..\include\Resources.h" />
   </ItemGroup>

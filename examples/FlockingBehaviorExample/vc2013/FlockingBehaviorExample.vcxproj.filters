@@ -166,9 +166,6 @@
     <ClInclude Include="..\..\..\src\utilities\Units.h">
       <Filter>blocks\sitara-ecs\src\utilities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\behavior\Target.h">
-      <Filter>blocks\sitara-ecs\src\behavior</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\behavior\Separation.h">
       <Filter>blocks\sitara-ecs\src\behavior</Filter>
     </ClInclude>
@@ -179,6 +176,18 @@
       <Filter>blocks\sitara-ecs\src\behavior</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\behavior\BehaviorSystem.h">
+      <Filter>blocks\sitara-ecs\src\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\behavior\MovingTarget.h">
+      <Filter>blocks\sitara-ecs\src\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\behavior\StaticTarget.h">
+      <Filter>blocks\sitara-ecs\src\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\utilities\Simplex.h">
+      <Filter>blocks\sitara-ecs\src\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\behavior\NoiseField.h">
       <Filter>blocks\sitara-ecs\src\behavior</Filter>
     </ClInclude>
   </ItemGroup>

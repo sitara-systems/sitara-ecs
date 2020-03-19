@@ -18,6 +18,7 @@ Bullet3 is included as a static library.
 
 ### Rigid Body System
 - Bullet Physics for rigid body collisions
+- Automatically adds Transforms to read position and orientation data from.
 
 ### Geometry System
 - Drawing wireframe and solid shapes

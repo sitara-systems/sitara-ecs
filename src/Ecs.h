@@ -17,7 +17,9 @@
 #include "geometry/Geometry.h"
 #include "geometry/GeometryUtils.h"
 
-#include "behavior/Target.h"
+#include "behavior/StaticTarget.h"
+#include "behavior/MovingTarget.h"
+#include "behavior/NoiseField.h"
 #include "behavior/Separation.h"
 #include "behavior/Cohesion.h"
 #include "behavior/Alignment.h"
@@ -31,6 +33,7 @@ namespace sitara {
 	namespace ecs {
 		void configureSystems(entityx::SystemManager& systems) {
 			systems.add<entityx::deps::Dependency<RigidBody, Transform>>();
+			systems.add<entityx::deps::Dependency<MovingTarget, StaticTarget>>();
 		}
 	}
 }

@@ -15,6 +15,7 @@ namespace sitara {
 		  void receive(const entityx::ComponentAddedEvent<RigidBody>& event);
 		  void receive(const entityx::ComponentRemovedEvent<RigidBody>& event);
 		  void setGravity(ci::vec3 gravity);
+		  void setMaximumVelocity(float velocity);
 		  void resetBody(entityx::ComponentHandle<sitara::ecs::RigidBody> body, ci::vec3 position);
 		  btDiscreteDynamicsWorld* getWorld();
 		private:
@@ -23,6 +24,7 @@ namespace sitara {
 		  btBroadphaseInterface* mOverlappingPairCache;
 		  btSequentialImpulseConstraintSolver* mBulletSolver;
 		  btDiscreteDynamicsWorld* mDynamicsWorld;
+		  float mMaximumVelocity = 0;
     };
   }
 }

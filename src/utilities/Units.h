@@ -76,7 +76,7 @@ namespace sitara {
 				return meters;
 			}
 
-			float mFeetPerMeter = 3.28084;
+			float mFeetPerMeter = 3.28;
 			float mPixelsPerMeter = 100;
 			float mPixelsPerFoot = 30.48;
 		};

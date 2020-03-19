@@ -37,12 +37,22 @@ void PhysicsSystem::configure(entityx::EntityManager &entities, entityx::EventMa
 }
 
 void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManager& events, entityx::TimeDelta dt) {
-	mDynamicsWorld->stepSimulation(static_cast<float>(dt), 10);
-
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
 	entityx::ComponentHandle<sitara::ecs::Transform> transform;
 
+	mDynamicsWorld->stepSimulation(static_cast<float>(dt), 10);
+
 	for (auto entity : entities.entities_with_components(body, transform)) {
+		// check for maximum velocity
+		if (mMaximumVelocity) {
+			std::printf("Limiting Velocity\n");
+			ci::vec3 currentVelocity = physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
+			if (glm::length(currentVelocity) > mMaximumVelocity) {
+				body->getRigidBody()->setLinearVelocity(physics::toBtVector3(mMaximumVelocity * glm::normalize(currentVelocity)));
+			}
+		}
+
+		// update transform component with new world transform
 		btTransform trans;
 		if (body->getMotionState()) {
 			body->getMotionState()->getWorldTransform(trans);
@@ -70,6 +80,10 @@ void PhysicsSystem::setGravity(ci::vec3 gravity) {
 	else {
 		std::printf("sitara::ecs::PhysicsSystem ERROR -- must configure() system before you can set parameters.\n");
 	}
+}
+
+void PhysicsSystem::setMaximumVelocity(float velocity) {
+	mMaximumVelocity = velocity;
 }
 
 btDiscreteDynamicsWorld* PhysicsSystem::getWorld() {
