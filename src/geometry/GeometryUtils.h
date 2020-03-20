@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/AxisAlignedBox.h"
 #include "cinder/TriMesh.h"

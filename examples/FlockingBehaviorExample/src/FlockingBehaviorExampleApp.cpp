@@ -214,7 +214,7 @@ void FlockingBehaviorExampleApp::createWorld() {
 	for (int i = 0; i < 10; i++) {
 		auto obstacle = mEntities.create();
 		float radius = ci::randFloat(mUnits.getPixelsfromMeters(5));
-		obstacle.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createSphere(radius, 0.0, 
+		obstacle.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createSphere(radius, 0.0,
 																						0.25f * worldSize * ci::randVec3()));
 		obstacle.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(radius), Color(0.0f, ci::randFloat(), ci::randFloat()));
 		obstacle.assign<sitara::ecs::LogicalLayer>(LayerNames::OBSTACLES);
@@ -264,7 +264,7 @@ entityx::Entity FlockingBehaviorExampleApp::createWall(float size, vec3 dimensio
 	vec3 wSize = size * dimensions;
 	vec3 position = 0.5f * size * glm::cross(u, v);
 	wall.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createBox(wSize, 0.0f, position));
-	wall.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createWirePlane(u, v, vec2(size, size), sitara::ecs::geometry::Quality::LOW), 
+	wall.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createWirePlane(u, v, vec2(size, size), sitara::ecs::geometry::Quality::LOW),
 										Color(1.0, 1.0, 1.0));
 	wall.assign<sitara::ecs::LogicalLayer>(LayerNames::WALLS);
 	return wall;

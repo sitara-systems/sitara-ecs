@@ -7,6 +7,7 @@
 #include "behavior/Alignment.h"
 #include "physics/RigidBody.h"
 #include "cinder/app/App.h"
+#include "cinder/Rand.h"
 
 using namespace sitara::ecs;
 
@@ -27,7 +28,15 @@ void BehaviorSystem::seek(entityx::EntityManager& entities) {
 
 	for (auto entity : entities.entities_with_components(body, target)) {
 		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
-		ci::vec3 desiredVelocity = target->mWeight * glm::normalize(target->mTargetPosition - position);
+		ci::vec3 targetOffset = target->mTargetPosition - position;
+		ci::vec3 norm;
+		if (glm::length(targetOffset) == 0) {
+			norm = ci::vec3(0);
+		}
+		else {
+			norm = glm::normalize(targetOffset);
+		}
+		ci::vec3 desiredVelocity = target->mWeight * norm;
 		ci::vec3 desiredAcceleration = desiredVelocity - physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
 		body->getRigidBody()->applyCentralForce(physics::toBtVector3(desiredAcceleration));
 	}
@@ -39,7 +48,15 @@ void BehaviorSystem::flee(entityx::EntityManager& entities) {
 
 	for (auto entity : entities.entities_with_components(body, target)) {
 		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
-		ci::vec3 desiredVelocity = target->mWeight * glm::normalize(position - target->mTargetPosition);
+		ci::vec3 targetOffset = position - target->mTargetPosition;
+		ci::vec3 norm;
+		if (glm::length(targetOffset) == 0) {
+			norm = ci::randVec3();
+		}
+		else {
+			norm = glm::normalize(targetOffset);
+		}
+		ci::vec3 desiredVelocity = target->mWeight * norm;
 		ci::vec3 desiredAcceleration = desiredVelocity - physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
 		body->getRigidBody()->applyCentralForce(physics::toBtVector3(desiredAcceleration));
 	}
@@ -53,14 +70,22 @@ void BehaviorSystem::arrive(entityx::EntityManager& entities) {
 		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
 		ci::vec3 targetOffset = target->mTargetPosition - position;
 		float distance = glm::length(targetOffset);
+		ci::vec3 norm;
+		if(glm::length(targetOffset) < 1) {
+			norm = ci::vec3(0);
+		}
+		else {
+			norm = glm::normalize(targetOffset);
+		}
+		
 		ci::vec3 desiredVelocity;
 		if (distance < target->mSlowingDistance) {
 			// slow down
-			desiredVelocity = target->mWeight * (distance / target->mSlowingDistance) * glm::normalize(target->mTargetPosition - position);
+			desiredVelocity = target->mWeight * (distance / target->mSlowingDistance) * norm;
 		}
 		else {
 			// regular seek behavior
-			desiredVelocity = target->mWeight * glm::normalize(target->mTargetPosition - position);
+			desiredVelocity = target->mWeight * norm;
 		}
 		ci::vec3 desiredAcceleration = desiredVelocity - physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
 		body->getRigidBody()->applyCentralForce(physics::toBtVector3(desiredAcceleration));
@@ -78,7 +103,15 @@ void BehaviorSystem::wander(entityx::EntityManager& entities) {
 			Simplex::noise(ci::vec2(position.y + noise->mOffsets.y, ci::app::getElapsedSeconds() + noise->mOffsets.w)),
 			Simplex::noise(ci::vec2(position.z + noise->mOffsets.z, ci::app::getElapsedSeconds() + noise->mOffsets.w))
 		);
-		ci::vec3 desiredAcceleration = noise->mWeight * glm::normalize(direction);
+		ci::vec3 norm;
+		if (glm::length(direction) == 0) {
+			norm = ci::vec3(0);
+		}
+		else {
+			norm = glm::normalize(direction);
+		}
+
+		ci::vec3 desiredAcceleration = noise->mWeight * norm;
 		body->getRigidBody()->applyCentralForce(physics::toBtVector3(desiredAcceleration));
 	}
 
@@ -127,7 +160,7 @@ void BehaviorSystem::cohere(entityx::EntityManager& entities) {
 				}
 			}
 		}
-		target /= entityCount;
+		target /= float(entityCount);
 		ci::vec3 position = physics::fromBtVector3(b1->getRigidBody()->getCenterOfMassPosition());
 		ci::vec3 desiredVelocity = cohesion->mWeight * glm::normalize(physics::fromBtVector3(target) - position);
 		ci::vec3 desiredAcceleration = desiredVelocity - physics::fromBtVector3(b1->getRigidBody()->getLinearVelocity());
@@ -156,7 +189,7 @@ void BehaviorSystem::align(entityx::EntityManager& entities) {
 				}
 			}
 		}
-		desiredVelocity /= entityCount;
+		desiredVelocity /= float(entityCount);
 		desiredVelocity *= alignment->mWeight;
 		ci::vec3 desiredAcceleration = physics::fromBtVector3(desiredVelocity - b1->getRigidBody()->getLinearVelocity());
 		b1->getRigidBody()->applyCentralForce(physics::toBtVector3(desiredAcceleration));

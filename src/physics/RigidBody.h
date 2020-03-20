@@ -133,6 +133,9 @@ namespace sitara {
 				info.m_friction = 0.0f;
 
 				btRigidBody* body = new btRigidBody(info);
+				body->setLinearVelocity(btVector3(0, 0, 0));
+				body->setAngularVelocity(btVector3(0, 0, 0));
+				body->clearForces();
 
 				return body;
 			}

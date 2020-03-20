@@ -31,7 +31,7 @@ void PhysicsSystem::configure(entityx::EntityManager &entities, entityx::EventMa
 	  ///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
 	  mBulletSolver = new btSequentialImpulseConstraintSolver();
 	  mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher, mOverlappingPairCache, mBulletSolver, mCollisionConfiguration);
-	  mDynamicsWorld->setGravity(btVector3(0.0, 0.0, 0.0));
+	  mDynamicsWorld->setGravity(btVector3(0.0f, 0.0f, 0.0f));
 
 	  events.subscribe<entityx::ComponentAddedEvent<RigidBody>>(*this);
 }
@@ -40,16 +40,21 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
 	entityx::ComponentHandle<sitara::ecs::Transform> transform;
 
-	mDynamicsWorld->stepSimulation(static_cast<float>(dt), 10);
-
 	for (auto entity : entities.entities_with_components(body, transform)) {
 		// check for maximum velocity
 		if (mMaximumVelocity) {
-			std::printf("Limiting Velocity\n");
+			//std::printf("Limiting Velocity\n");
 			ci::vec3 currentVelocity = physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
 			if (glm::length(currentVelocity) > mMaximumVelocity) {
 				body->getRigidBody()->setLinearVelocity(physics::toBtVector3(mMaximumVelocity * glm::normalize(currentVelocity)));
 			}
+
+			ci::vec3 currentForce = physics::fromBtVector3(body->getRigidBody()->getTotalForce());
+			if (glm::length(currentForce) > mMaximumVelocity) {
+				body->getRigidBody()->clearForces();
+				body->getRigidBody()->applyCentralForce(physics::toBtVector3(mMaximumVelocity * glm::normalize(currentForce)));
+			}
+
 		}
 
 		// update transform component with new world transform
@@ -58,9 +63,14 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 			body->getMotionState()->getWorldTransform(trans);
 		}
 
+		ci::vec3 f = physics::fromBtVector3(body->getRigidBody()->getTotalForce());
+		std::printf("Total Force: %f %f %f\n", f.x, f.y, f.z);
+
 		transform->mPosition = physics::fromBtVector3(trans.getOrigin());
 		transform->mOrientation = physics::fromBtQuaternion(trans.getRotation());
 	}
+
+	mDynamicsWorld->stepSimulation(static_cast<float>(dt), 10);
 }
 
 void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::RigidBody>& event) {

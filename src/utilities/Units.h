@@ -21,8 +21,15 @@ namespace sitara {
 				mPixelsPerFoot = ppm / mFeetPerMeter;
 			}
 
-			float getPixelsfromMeters(float meters) {
+			float getPixelsFromMeters(float meters) {
 				return checkLengthUnits(meters) * mPixelsPerMeter;
+			}
+
+			ci::vec3 getPixelsFromMeters(ci::vec3 meters) {
+				return ci::vec3(checkLengthUnits(meters.x) * mPixelsPerMeter,
+					checkLengthUnits(meters.y) * mPixelsPerMeter,
+					checkLengthUnits(meters.z) * mPixelsPerMeter
+					);
 			}
 
 			float getMeters(float pixels) {
@@ -34,7 +41,7 @@ namespace sitara {
 				mPixelsPerFoot = 100.0f * ppcm / mFeetPerMeter;
 			}
 
-			float getPixelsfromCentimeters(float centimeters) {
+			float getPixelsFromCentimeters(float centimeters) {
 				return checkLengthUnits(centimeters / 100.0f) * mPixelsPerMeter;
 			}
 
@@ -47,7 +54,7 @@ namespace sitara {
 				mPixelsPerMeter = ppf * mFeetPerMeter;
 			}
 
-			float getPixelsfromFeet(float feet) {
+			float getPixelsFromFeet(float feet) {
 				return checkLengthUnits(feet / mFeetPerMeter) * mPixelsPerFoot;
 			}
 
@@ -56,11 +63,11 @@ namespace sitara {
 			}
 
 			void setPixelsPerInch(float ppi) {
-				mPixelsPerMeter = ppi * 12.0 * mFeetPerMeter;
+				mPixelsPerMeter = ppi * 12.0f * mFeetPerMeter;
 				mPixelsPerFoot = ppi * 12.0f;
 			}
 
-			float getPixelsfromInches(float inches) {
+			float getPixelsFromInches(float inches) {
 				return checkLengthUnits((inches / 12.0f) / mFeetPerMeter) * (mPixelsPerFoot / 12.0f);
 			}
 
@@ -76,9 +83,9 @@ namespace sitara {
 				return meters;
 			}
 
-			float mFeetPerMeter = 3.28;
-			float mPixelsPerMeter = 100;
-			float mPixelsPerFoot = 30.48;
+			float mFeetPerMeter = 3.28f;
+			float mPixelsPerMeter = 100.0f;
+			float mPixelsPerFoot = 30.48f;
 		};
 	}
 }
