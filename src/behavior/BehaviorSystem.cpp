@@ -37,12 +37,13 @@ void BehaviorSystem::seek(entityx::EntityManager& entities) {
 			norm = glm::normalize(targetOffset);
 		}
 		ci::vec3 desiredVelocity = target->mWeight * norm;
-		ci::vec3 desiredAcceleration = desiredVelocity - physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
+		ci::vec3 currentVelocity = physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
+		ci::vec3 desiredAcceleration = desiredVelocity - currentVelocity;
 		body->getRigidBody()->applyCentralForce(physics::toBtVector3(desiredAcceleration));
 	}
 }
 
-void BehaviorSystem::flee(entityx::EntityManager& entities) {
+void BehaviorSystem::flee(entityx::EntityManager& entities, ci::vec3 nullDirection) {
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
 	entityx::ComponentHandle<sitara::ecs::StaticTarget> target;
 
@@ -50,14 +51,15 @@ void BehaviorSystem::flee(entityx::EntityManager& entities) {
 		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
 		ci::vec3 targetOffset = position - target->mTargetPosition;
 		ci::vec3 norm;
-		if (glm::length(targetOffset) == 0) {
-			norm = ci::randVec3();
+		if (glm::length(targetOffset) < 10) {
+			norm = nullDirection;
 		}
 		else {
 			norm = glm::normalize(targetOffset);
 		}
 		ci::vec3 desiredVelocity = target->mWeight * norm;
-		ci::vec3 desiredAcceleration = desiredVelocity - physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
+		ci::vec3 currentVelocity = physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
+		ci::vec3 desiredAcceleration = desiredVelocity - currentVelocity;
 		body->getRigidBody()->applyCentralForce(physics::toBtVector3(desiredAcceleration));
 	}
 }
@@ -68,10 +70,19 @@ void BehaviorSystem::arrive(entityx::EntityManager& entities) {
 
 	for (auto entity : entities.entities_with_components(body, target)) {
 		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
-		ci::vec3 targetOffset = target->mTargetPosition - position;
+
+		btTransform trans;
+		if (body->getMotionState()) {
+			body->getMotionState()->getWorldTransform(trans);
+		}
+
+		ci::vec3 origin = physics::fromBtVector3(trans.getOrigin());
+			
+		ci::vec3 t_p = target->mTargetPosition;
+		ci::vec3 targetOffset = t_p - position;
 		float distance = glm::length(targetOffset);
 		ci::vec3 norm;
-		if(glm::length(targetOffset) < 1) {
+		if(glm::length(targetOffset) < 10) {
 			norm = ci::vec3(0);
 		}
 		else {
@@ -87,7 +98,8 @@ void BehaviorSystem::arrive(entityx::EntityManager& entities) {
 			// regular seek behavior
 			desiredVelocity = target->mWeight * norm;
 		}
-		ci::vec3 desiredAcceleration = desiredVelocity - physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
+		ci::vec3 currentVelocity = physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
+		ci::vec3 desiredAcceleration = desiredVelocity - currentVelocity;
 		body->getRigidBody()->applyCentralForce(physics::toBtVector3(desiredAcceleration));
 	}
 }

@@ -120,6 +120,7 @@ namespace sitara {
 		protected:
 			static btRigidBody* createRigidBody(btCollisionShape* shape, float mass, const ci::vec3& position = ci::vec3(0), const ci::quat& rotation = ci::quat()) {
 				btVector3 inertia(0.0f, 0.0f, 0.0f);
+
 				if (mass != 0.0f) {
 					shape->calculateLocalInertia(mass, inertia);
 				}
@@ -133,9 +134,6 @@ namespace sitara {
 				info.m_friction = 0.0f;
 
 				btRigidBody* body = new btRigidBody(info);
-				body->setLinearVelocity(btVector3(0, 0, 0));
-				body->setAngularVelocity(btVector3(0, 0, 0));
-				body->clearForces();
 
 				return body;
 			}

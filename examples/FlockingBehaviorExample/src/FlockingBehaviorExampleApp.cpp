@@ -34,7 +34,7 @@ class FlockingBehaviorExampleApp : public App {
 
 	ci::params::InterfaceGlRef mParams;
 	std::vector<std::string> mBehaviorList = { "Seek", "Flee", "Arrive", "Wander", "Flock"};
-	int mBehaviorSelect = 4;
+	int mBehaviorSelect = 0;
 
 	sitara::ecs::Units mUnits;
 
@@ -67,7 +67,7 @@ void FlockingBehaviorExampleApp::setup() {
 
 	mUnits = sitara::ecs::Units(10.0);
 
-	mCameraDistance = mUnits.getPixelsfromMeters(75.0f);
+	mCameraDistance = mUnits.getPixelsFromMeters(75.0f);
 	mEye = mCameraDistance * glm::normalize(vec3(1, 0.25, 1));
 	mCenter = vec3(0.0f, 0.0f, 0.0f);
 	mUp = vec3(0.0f, 1.0f, 0.0f);
@@ -98,10 +98,9 @@ void FlockingBehaviorExampleApp::update() {
 		mSystems.system<sitara::ecs::BehaviorSystem>()->wander(mEntities);
 	}
 	else if (mBehaviorSelect == 4) {
-		mSystems.system<sitara::ecs::BehaviorSystem>()->seek(mEntities);
 		mSystems.system<sitara::ecs::BehaviorSystem>()->separate(mEntities);
 		mSystems.system<sitara::ecs::BehaviorSystem>()->cohere(mEntities);
-		//mSystems.system<sitara::ecs::BehaviorSystem>()->align(mEntities);
+		mSystems.system<sitara::ecs::BehaviorSystem>()->align(mEntities);
 	}
 
 	entityx::ComponentHandle<sitara::ecs::StaticTarget> target;
@@ -110,14 +109,14 @@ void FlockingBehaviorExampleApp::update() {
 
 	for (auto entity : mEntities.entities_with_components(target, layer, transform)) {
 		if (layer->mLayerId == LayerNames::TARGET) {
-			target->mTargetPosition = ci::vec3(mUnits.getPixelsfromMeters(20.0) * std::cos(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
-												mUnits.getPixelsfromMeters(20.0) * std::sin(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
+			target->mTargetPosition = ci::vec3(mUnits.getPixelsFromMeters(20.0) * std::cos(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
+												mUnits.getPixelsFromMeters(20.0) * std::sin(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
 												0.0);
 			transform->mPosition = target->mTargetPosition;
 		}
 		else if (layer->mLayerId == LayerNames::BOIDS) {
-			target->mTargetPosition = ci::vec3(mUnits.getPixelsfromMeters(20.0) * std::cos(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
-				mUnits.getPixelsfromMeters(20.0) * std::sin(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
+			target->mTargetPosition = ci::vec3(mUnits.getPixelsFromMeters(20.0) * std::cos(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
+				mUnits.getPixelsFromMeters(20.0) * std::sin(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
 				0.0);
 		}
 	}
@@ -200,7 +199,7 @@ void FlockingBehaviorExampleApp::createUserInterface() {
 }
 
 void FlockingBehaviorExampleApp::createWorld() {
-	float worldSize = mUnits.getPixelsfromMeters(50);
+	float worldSize = mUnits.getPixelsFromMeters(50);
 
 	// create walls
 	auto floor = createWall(worldSize, vec3(1, 1, 0), vec3(1, 0, 0), vec3(0, 1, 0));
@@ -213,7 +212,7 @@ void FlockingBehaviorExampleApp::createWorld() {
 	// create obstacles
 	for (int i = 0; i < 10; i++) {
 		auto obstacle = mEntities.create();
-		float radius = ci::randFloat(mUnits.getPixelsfromMeters(5));
+		float radius = ci::randFloat(mUnits.getPixelsFromMeters(5));
 		obstacle.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createSphere(radius, 0.0,
 																						0.25f * worldSize * ci::randVec3()));
 		obstacle.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(radius), Color(0.0f, ci::randFloat(), ci::randFloat()));
@@ -222,27 +221,27 @@ void FlockingBehaviorExampleApp::createWorld() {
 
 	for (int i = 0; i < 15; i++) {
 		auto boid = mEntities.create();
-		float radius = mUnits.getPixelsfromMeters(1);
+		float radius = mUnits.getPixelsFromMeters(1);
 		boid.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createSphere(radius, 1.0, 0.4f * worldSize * ci::randVec3()));
 		boid.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(radius), Color(0.8, 0, 1));
 		boid.assign<sitara::ecs::LogicalLayer>(LayerNames::BOIDS);
-		boid.assign<sitara::ecs::StaticTarget>(ci::vec3(0), 250.0f, mUnits.getPixelsfromMeters(50));
+		boid.assign<sitara::ecs::StaticTarget>(ci::vec3(0), 250.0f, mUnits.getPixelsFromMeters(50));
 		boid.assign<sitara::ecs::NoiseField>(ci::vec4(ci::randVec3(), ci::randFloat()));
-		boid.assign<sitara::ecs::Separation>(mUnits.getPixelsfromMeters(15), mSeparationStrength);
-		boid.assign<sitara::ecs::Cohesion>(mUnits.getPixelsfromMeters(15), mCohesionStrength);
-		boid.assign<sitara::ecs::Alignment>(mUnits.getPixelsfromMeters(15), mAlignmentStrength);
+		boid.assign<sitara::ecs::Separation>(mUnits.getPixelsFromMeters(15), mSeparationStrength);
+		boid.assign<sitara::ecs::Cohesion>(mUnits.getPixelsFromMeters(15), mCohesionStrength);
+		boid.assign<sitara::ecs::Alignment>(mUnits.getPixelsFromMeters(15), mAlignmentStrength);
 	}
 
 	auto target = mEntities.create();
-	float targetSize = mUnits.getPixelsfromMeters(1);
-	target.assign<sitara::ecs::StaticTarget>(ci::vec3(0), 250.0f, mUnits.getPixelsfromMeters(50));
+	float targetSize = mUnits.getPixelsFromMeters(1);
+	target.assign<sitara::ecs::StaticTarget>(ci::vec3(0), 250.0f, mUnits.getPixelsFromMeters(50));
 	target.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(targetSize), Color(1, 1, 0));
 	target.assign<sitara::ecs::LogicalLayer>(LayerNames::TARGET);
 	target.assign<sitara::ecs::Transform>();
 }
 
 void FlockingBehaviorExampleApp::resetWorld() {
-	float worldSize = mUnits.getPixelsfromMeters(50);
+	float worldSize = mUnits.getPixelsFromMeters(50);
 
 	entityx::ComponentHandle<sitara::ecs::LogicalLayer> layer;
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body;

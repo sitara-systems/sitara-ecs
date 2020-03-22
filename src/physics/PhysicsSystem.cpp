@@ -43,14 +43,15 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 	for (auto entity : entities.entities_with_components(body, transform)) {
 		// check for maximum velocity
 		if (mMaximumVelocity) {
-			//std::printf("Limiting Velocity\n");
 			ci::vec3 currentVelocity = physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
 			if (glm::length(currentVelocity) > mMaximumVelocity) {
+				std::printf("Limiting Velocity\n");
 				body->getRigidBody()->setLinearVelocity(physics::toBtVector3(mMaximumVelocity * glm::normalize(currentVelocity)));
 			}
 
 			ci::vec3 currentForce = physics::fromBtVector3(body->getRigidBody()->getTotalForce());
 			if (glm::length(currentForce) > mMaximumVelocity) {
+				std::printf("Limiting Force\n");
 				body->getRigidBody()->clearForces();
 				body->getRigidBody()->applyCentralForce(physics::toBtVector3(mMaximumVelocity * glm::normalize(currentForce)));
 			}
