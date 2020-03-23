@@ -45,13 +45,12 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 		if (mMaximumVelocity) {
 			ci::vec3 currentVelocity = physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
 			if (glm::length(currentVelocity) > mMaximumVelocity) {
-				std::printf("Limiting Velocity\n");
+				//std::printf("Limiting Velocity\n");
 				body->getRigidBody()->setLinearVelocity(physics::toBtVector3(mMaximumVelocity * glm::normalize(currentVelocity)));
 			}
 
 			ci::vec3 currentForce = physics::fromBtVector3(body->getRigidBody()->getTotalForce());
 			if (glm::length(currentForce) > mMaximumVelocity) {
-				std::printf("Limiting Force\n");
 				body->getRigidBody()->clearForces();
 				body->getRigidBody()->applyCentralForce(physics::toBtVector3(mMaximumVelocity * glm::normalize(currentForce)));
 			}
@@ -63,9 +62,6 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 		if (body->getMotionState()) {
 			body->getMotionState()->getWorldTransform(trans);
 		}
-
-		ci::vec3 f = physics::fromBtVector3(body->getRigidBody()->getTotalForce());
-		std::printf("Total Force: %f %f %f\n", f.x, f.y, f.z);
 
 		transform->mPosition = physics::fromBtVector3(trans.getOrigin());
 		transform->mOrientation = physics::fromBtQuaternion(trans.getRotation());
@@ -96,6 +92,17 @@ void PhysicsSystem::setGravity(ci::vec3 gravity) {
 void PhysicsSystem::setMaximumVelocity(float velocity) {
 	mMaximumVelocity = velocity;
 }
+
+void PhysicsSystem::clearForces(entityx::EntityManager& entities) {
+	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
+
+	for (auto entity : entities.entities_with_components(body)) {
+		body->getRigidBody()->clearForces();
+		body->getRigidBody()->setLinearVelocity(btVector3(0, 0, 0));
+		body->getRigidBody()->setAngularVelocity(btVector3(0, 0, 0));
+	}
+}
+
 
 btDiscreteDynamicsWorld* PhysicsSystem::getWorld() {
 	return mDynamicsWorld;

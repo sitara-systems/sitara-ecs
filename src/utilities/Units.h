@@ -32,6 +32,12 @@ namespace sitara {
 					);
 			}
 
+			ci::vec2 getPixelsFromMeters(ci::vec2 meters) {
+				return ci::vec2(checkLengthUnits(meters.x) * mPixelsPerMeter,
+					checkLengthUnits(meters.y) * mPixelsPerMeter
+				);
+			}
+
 			float getMeters(float pixels) {
 				return pixels / mPixelsPerMeter;
 			}
@@ -77,8 +83,8 @@ namespace sitara {
 
 		private:
 			float checkLengthUnits(float meters) {
-				if (meters < 0.2) {
-					std::printf("sitara::ecs::geometry WARNING | Bullet Physics may misbehave with units smaller than 20 cm; please scale your world size up.\n");
+				if (meters < 0.2 && meters != 0) {
+					//std::printf("sitara::ecs::geometry WARNING | Bullet Physics may misbehave with units smaller than 20 cm; please scale your world size up.\n");
 				}
 				return meters;
 			}

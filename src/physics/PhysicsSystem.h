@@ -16,6 +16,7 @@ namespace sitara {
 		  void receive(const entityx::ComponentRemovedEvent<RigidBody>& event);
 		  void setGravity(ci::vec3 gravity);
 		  void setMaximumVelocity(float velocity);
+		  void clearForces(entityx::EntityManager& entities);
 		  void resetBody(entityx::ComponentHandle<sitara::ecs::RigidBody> body, ci::vec3 position);
 		  btDiscreteDynamicsWorld* getWorld();
 		private:

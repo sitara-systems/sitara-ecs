@@ -6,38 +6,50 @@ namespace sitara {
 	namespace ecs {
 		struct LogicState {
 		public:
-			LogicState(int stateId = 0) : mStateId(stateId) {
+			LogicState(int stateId = 0) : mStateId(stateId), mOnEnterFn(nullptr), mOnUpdateFn(nullptr), mOnExitFn(nullptr) {
 			}
 
-			int getState() {
+			const int getState() {
 				return mStateId;
+			}
+
+			void setState(int stateId) {
+				exit();
+				mStateId = stateId;
+				enter();
+			}
+
+			void update() {
+				if (mOnUpdateFn) {
+					mOnUpdateFn();
+				}
 			}
 
 			void setEnterFn(std::function<void()> fn) {
 				mOnEnterFn = fn;
 			}
 
-			void enter() {
-				mOnEnterFn();
-			}
-
 			void setUpdateFn(std::function<void()> fn) {
 				mOnUpdateFn = fn;
-			}
-
-			void update() {
-				mOnUpdateFn();
 			}
 
 			void setExitFn(std::function<void()> fn) {
 				mOnExitFn = fn;
 			}
 
-			void exit() {
-				mOnExitFn();
+		private:
+			void enter() {
+				if (mOnEnterFn) {
+					mOnEnterFn();
+				}
 			}
 
-		private:
+			void exit() {
+				if (mOnExitFn) {
+					mOnExitFn();
+				}
+			}
+
 			int mStateId;
 			std::function<void()> mOnEnterFn;
 			std::function<void()> mOnUpdateFn;
