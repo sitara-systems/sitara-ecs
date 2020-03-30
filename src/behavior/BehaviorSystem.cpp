@@ -14,11 +14,14 @@ using namespace sitara::ecs;
 void BehaviorSystem::update(entityx::EntityManager &entities, entityx::EventManager &events, entityx::TimeDelta dt) {
 	entityx::ComponentHandle<sitara::ecs::MovingTarget> movingTarget;
 	entityx::ComponentHandle<sitara::ecs::StaticTarget> staticTarget;
+	entityx::ComponentHandle<sitara::ecs::Transform> transform;
 
 	for (auto entity : entities.entities_with_components(movingTarget, staticTarget)) {
-		// automatically updates the static target; uses velocity to be slightly predictive
-		staticTarget->mTargetPosition = physics::fromBtVector3(movingTarget->mRigidBody->getRigidBody()->getCenterOfMassPosition() +
-																movingTarget->mRigidBody->getRigidBody()->getLinearVelocity() * static_cast<float>(dt));
+		// compute velocity from last frame
+		movingTarget->mPreviousPosition = staticTarget->getTarget();
+		ci::vec3 velocity = (movingTarget->mTargetTransform->mPosition - movingTarget->mPreviousPosition);
+		// update estimate of current position using velocity
+		staticTarget->setTarget(movingTarget->mTargetTransform->mPosition + velocity);
 	}
 }
 
@@ -28,7 +31,7 @@ void BehaviorSystem::seek(entityx::EntityManager& entities) {
 
 	for (auto entity : entities.entities_with_components(body, target)) {
 		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
-		ci::vec3 targetOffset = target->mTargetPosition - position;
+		ci::vec3 targetOffset = target->getTarget() - position;
 		ci::vec3 norm;
 		if (glm::length(targetOffset) == 0) {
 			norm = ci::vec3(0);
@@ -49,7 +52,7 @@ void BehaviorSystem::flee(entityx::EntityManager& entities, ci::vec3 nullDirecti
 
 	for (auto entity : entities.entities_with_components(body, target)) {
 		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
-		ci::vec3 targetOffset = position - target->mTargetPosition;
+		ci::vec3 targetOffset = position - target->getTarget();
 		ci::vec3 norm;
 		if (glm::length(targetOffset) < 10) {
 			norm = nullDirection;
@@ -78,7 +81,7 @@ void BehaviorSystem::arrive(entityx::EntityManager& entities) {
 
 		ci::vec3 origin = physics::fromBtVector3(trans.getOrigin());
 			
-		ci::vec3 t_p = target->mTargetPosition;
+		ci::vec3 t_p = target->getTarget();
 		ci::vec3 targetOffset = t_p - position;
 		float distance = glm::length(targetOffset);
 		ci::vec3 norm;

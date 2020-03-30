@@ -2,16 +2,17 @@
 #pragma once
 
 #include "cinder/gl/gl.h"
-#include "physics/RigidBody.h"
+#include "transform/Transform.h"
 
 namespace sitara {
 	namespace ecs {
 		struct MovingTarget {
-			MovingTarget(entityx::ComponentHandle<RigidBody> bodyHandle) : mRigidBody(bodyHandle) {
+			MovingTarget(entityx::ComponentHandle<Transform> targetTransform) : mTargetTransform(targetTransform) {
 
 			}
 
-			entityx::ComponentHandle<RigidBody> mRigidBody;
+			ci::vec3 mPreviousPosition;
+			entityx::ComponentHandle<Transform> mTargetTransform;
 		};
 	}
 }

@@ -13,47 +13,43 @@ namespace sitara {
 				return mStateId;
 			}
 
-			void setState(int stateId) {
-				exit();
-				mStateId = stateId;
-				enter();
-			}
-
-			void update() {
+			void update(entityx::ComponentHandle<LogicState> handle) {
 				if (mOnUpdateFn) {
-					mOnUpdateFn();
+					mOnUpdateFn(handle);
 				}
 			}
 
-			void setEnterFn(std::function<void()> fn) {
+			void setEnterFn(std::function<void(entityx::ComponentHandle<LogicState>)> fn) {
 				mOnEnterFn = fn;
 			}
 
-			void setUpdateFn(std::function<void()> fn) {
+			void setUpdateFn(std::function<void(entityx::ComponentHandle<LogicState>)> fn) {
 				mOnUpdateFn = fn;
 			}
 
-			void setExitFn(std::function<void()> fn) {
+			void setExitFn(std::function<void(entityx::ComponentHandle<LogicState>)> fn) {
 				mOnExitFn = fn;
 			}
 
 		private:
-			void enter() {
+			void enter(entityx::ComponentHandle<LogicState> handle) {
 				if (mOnEnterFn) {
-					mOnEnterFn();
+					mOnEnterFn(handle);
 				}
 			}
 
-			void exit() {
+			void exit(entityx::ComponentHandle<LogicState> handle) {
 				if (mOnExitFn) {
-					mOnExitFn();
+					mOnExitFn(handle);
 				}
 			}
 
 			int mStateId;
-			std::function<void()> mOnEnterFn;
-			std::function<void()> mOnUpdateFn;
-			std::function<void()> mOnExitFn;
+			std::function<void(entityx::ComponentHandle<LogicState>)> mOnEnterFn;
+			std::function<void(entityx::ComponentHandle<LogicState>)> mOnUpdateFn;
+			std::function<void(entityx::ComponentHandle<LogicState>)> mOnExitFn;
+
+			friend class StateSystem;
 		};
 	}
 }

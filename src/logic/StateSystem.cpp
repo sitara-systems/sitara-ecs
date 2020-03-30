@@ -10,6 +10,12 @@ void StateSystem::update(entityx::EntityManager &entities, entityx::EventManager
 	entityx::ComponentHandle<sitara::ecs::LogicState> state;
 
 	for (entityx::Entity e : entities.entities_with_components(state)) {
-		state->update();
+		state->update(state);
 	}
+}
+
+void StateSystem::setState(entityx::ComponentHandle<LogicState> handle, int stateId) {
+	handle->exit(handle);
+	handle->mStateId = stateId;
+	handle->enter(handle);
 }

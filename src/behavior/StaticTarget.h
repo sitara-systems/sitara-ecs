@@ -10,12 +10,22 @@ namespace sitara {
 				mWeight(weight),
 				mSlowingDistance(slowingDistance)
 			{
+			}
 
+			void setTarget(ci::vec3 target) {
+				mTargetPosition = target;
+			}
+
+			ci::vec3 getTarget() {
+				return mTargetPosition;
 			}
 
 			float mWeight;
-			ci::vec3 mTargetPosition;
 			float mSlowingDistance;
+		private:
+			ci::vec3 mTargetPosition;
+
+			friend class BehaviorSystem;
 		};
 	}
 }
