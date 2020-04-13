@@ -14,6 +14,7 @@ namespace sitara {
 		  void update(entityx::EntityManager& entities, entityx::EventManager& events, entityx::TimeDelta dt) override;
 		  void receive(const entityx::ComponentAddedEvent<RigidBody>& event);
 		  void receive(const entityx::ComponentRemovedEvent<RigidBody>& event);
+		  double getElapsedSimulationTime();
 		  void setGravity(ci::vec3 gravity);
 		  void setMaximumVelocity(float velocity);
 		  void clearForces(entityx::EntityManager& entities);
@@ -25,7 +26,8 @@ namespace sitara {
 		  btBroadphaseInterface* mOverlappingPairCache;
 		  btSequentialImpulseConstraintSolver* mBulletSolver;
 		  btDiscreteDynamicsWorld* mDynamicsWorld;
-		  float mMaximumVelocity = 0;
+		  float mMaximumVelocity;
+		  double mElapsedSimulationTime;
     };
   }
 }

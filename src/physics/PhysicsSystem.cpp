@@ -33,6 +33,9 @@ void PhysicsSystem::configure(entityx::EntityManager &entities, entityx::EventMa
 	  mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher, mOverlappingPairCache, mBulletSolver, mCollisionConfiguration);
 	  mDynamicsWorld->setGravity(btVector3(0.0f, 0.0f, 0.0f));
 
+	  mMaximumVelocity = 0;
+	  mElapsedSimulationTime = 0.0f;
+
 	  events.subscribe<entityx::ComponentAddedEvent<RigidBody>>(*this);
 }
 
@@ -67,7 +70,9 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 		transform->mOrientation = physics::fromBtQuaternion(trans.getRotation());
 	}
 
-	mDynamicsWorld->stepSimulation(static_cast<float>(dt), 10);
+	float timeStep = static_cast<float>(dt);
+	mDynamicsWorld->stepSimulation(timeStep, 10);
+	mElapsedSimulationTime += timeStep;
 }
 
 void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::RigidBody>& event) {
@@ -79,6 +84,11 @@ void PhysicsSystem::receive(const entityx::ComponentRemovedEvent<sitara::ecs::Ri
 	mDynamicsWorld->removeRigidBody(event.component->getRigidBody());
 
 }
+
+double PhysicsSystem::getElapsedSimulationTime() {
+	return mElapsedSimulationTime;
+}
+
 
 void PhysicsSystem::setGravity(ci::vec3 gravity) {
 	if (mDynamicsWorld != nullptr) {
