@@ -8,13 +8,13 @@ namespace sitara {
 		class BehaviorSystem : public entityx::System<BehaviorSystem> {
 		public:
 			void update(entityx::EntityManager &entities, entityx::EventManager &events, entityx::TimeDelta dt) override;
-			void seek(entityx::EntityManager& entities);
-			void flee(entityx::EntityManager& entities, ci::vec3 nullDirection = ci::vec3(0, 0, 1));
-			void arrive(entityx::EntityManager& entities);
-			void wander(entityx::EntityManager& entities);
-			void separate(entityx::EntityManager& entities);
-			void cohere(entityx::EntityManager& entities);
-			void align(entityx::EntityManager& entities);
+			void seek(entityx::Entity& entity);
+			void flee(entityx::Entity& entity, ci::vec3 nullDirection = ci::vec3(0, 0, 1));
+			void arrive(entityx::Entity& entity);
+			void wander(entityx::Entity& entity);
+			void separate(entityx::Entity& entity, entityx::EntityManager& entities);
+			void cohere(entityx::Entity& entity, entityx::EntityManager& entities);
+			void align(entityx::Entity& entity, entityx::EntityManager& entities);
 		private:
 		};
 	}

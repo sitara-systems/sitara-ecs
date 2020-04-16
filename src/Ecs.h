@@ -33,7 +33,7 @@
 
 namespace sitara {
 	namespace ecs {
-		void configureSystems(entityx::SystemManager& systems) {
+		inline void configureSystems(entityx::SystemManager& systems) {
 			systems.add<entityx::deps::Dependency<MovingTarget, StaticTarget>>();
 			systems.add<entityx::deps::Dependency<RigidBody, Transform>>();
 		}

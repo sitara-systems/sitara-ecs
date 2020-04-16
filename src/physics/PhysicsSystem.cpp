@@ -48,7 +48,7 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 		if (mMaximumVelocity) {
 			ci::vec3 currentVelocity = physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
 			if (glm::length(currentVelocity) > mMaximumVelocity) {
-				//std::printf("Limiting Velocity\n");
+				std::printf("Limiting Velocity\n");
 				body->getRigidBody()->setLinearVelocity(physics::toBtVector3(mMaximumVelocity * glm::normalize(currentVelocity)));
 			}
 

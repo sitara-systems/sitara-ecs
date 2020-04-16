@@ -40,6 +40,10 @@ namespace sitara {
 			geometry::Primitive getPrimitive() {
 				return mPrimitiveType;
 			}
+
+			ci::gl::BatchRef getBatch() {
+				return mGeometryBatch;
+			}
 			/*
 			~Geometry() {
 				delete mGeometrySource;

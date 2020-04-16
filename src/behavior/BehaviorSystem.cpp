@@ -25,11 +25,11 @@ void BehaviorSystem::update(entityx::EntityManager &entities, entityx::EventMana
 	}
 }
 
-void BehaviorSystem::seek(entityx::EntityManager& entities) {
-	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
-	entityx::ComponentHandle<sitara::ecs::StaticTarget> target;
+void BehaviorSystem::seek(entityx::Entity& entity) {
+	entityx::ComponentHandle<sitara::ecs::RigidBody> body = entity.component<sitara::ecs::RigidBody>();
+	entityx::ComponentHandle<sitara::ecs::StaticTarget> target = entity.component<sitara::ecs::StaticTarget>();
 
-	for (auto entity : entities.entities_with_components(body, target)) {
+	if (body.valid() && target.valid()) {
 		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
 		ci::vec3 targetOffset = target->getTarget() - position;
 		ci::vec3 norm;
@@ -46,11 +46,11 @@ void BehaviorSystem::seek(entityx::EntityManager& entities) {
 	}
 }
 
-void BehaviorSystem::flee(entityx::EntityManager& entities, ci::vec3 nullDirection) {
-	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
-	entityx::ComponentHandle<sitara::ecs::StaticTarget> target;
+void BehaviorSystem::flee(entityx::Entity& entity, ci::vec3 nullDirection) {
+	entityx::ComponentHandle<sitara::ecs::RigidBody> body = entity.component<sitara::ecs::RigidBody>();
+	entityx::ComponentHandle<sitara::ecs::StaticTarget> target = entity.component<sitara::ecs::StaticTarget>();
 
-	for (auto entity : entities.entities_with_components(body, target)) {
+	if (body.valid() && target.valid()) {
 		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
 		ci::vec3 targetOffset = position - target->getTarget();
 		ci::vec3 norm;
@@ -67,11 +67,11 @@ void BehaviorSystem::flee(entityx::EntityManager& entities, ci::vec3 nullDirecti
 	}
 }
 
-void BehaviorSystem::arrive(entityx::EntityManager& entities) {
-	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
-	entityx::ComponentHandle<sitara::ecs::StaticTarget> target;
+void BehaviorSystem::arrive(entityx::Entity& entity) {
+	entityx::ComponentHandle<sitara::ecs::RigidBody> body = entity.component<sitara::ecs::RigidBody>();
+	entityx::ComponentHandle<sitara::ecs::StaticTarget> target = entity.component<sitara::ecs::StaticTarget>();
 
-	for (auto entity : entities.entities_with_components(body, target)) {
+	if (body.valid() && target.valid()) {
 		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
 
 		btTransform trans;
@@ -107,11 +107,11 @@ void BehaviorSystem::arrive(entityx::EntityManager& entities) {
 	}
 }
 
-void BehaviorSystem::wander(entityx::EntityManager& entities) {
-	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
-	entityx::ComponentHandle<sitara::ecs::NoiseField> noise;
+void BehaviorSystem::wander(entityx::Entity& entity) {
+	entityx::ComponentHandle<sitara::ecs::RigidBody> body = entity.component<sitara::ecs::RigidBody>();
+	entityx::ComponentHandle<sitara::ecs::NoiseField> noise = entity.component<sitara::ecs::NoiseField>();
 
-	for (auto entity : entities.entities_with_components(body, noise)) {
+	if (body.valid() && noise.valid()) {
 		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
 		ci::vec3 direction = ci::vec3(
 			Simplex::noise(ci::vec2(position.x + noise->mOffsets.x, ci::app::getElapsedSeconds() + noise->mOffsets.w)),
@@ -132,15 +132,15 @@ void BehaviorSystem::wander(entityx::EntityManager& entities) {
 
 }
 
-void BehaviorSystem::separate(entityx::EntityManager& entities) {
-	entityx::ComponentHandle<sitara::ecs::RigidBody> b1;
-	entityx::ComponentHandle<sitara::ecs::Separation> separation;
+void BehaviorSystem::separate(entityx::Entity& entity, entityx::EntityManager& entities) {
+	entityx::ComponentHandle<sitara::ecs::RigidBody> b1 = entity.component<sitara::ecs::RigidBody>();
+	entityx::ComponentHandle<sitara::ecs::Separation> separation = entity.component<sitara::ecs::Separation>();
 
 	// this is implemented in an inefficient way; I should come back and find an elegant resolution with iterators
-	for (auto e1 : entities.entities_with_components(b1, separation)) {
+	if(b1.valid() && separation.valid()) {
 		entityx::ComponentHandle<sitara::ecs::RigidBody> b2;
 		for (auto e2 : entities.entities_with_components(b2)) {
-			if (e1 != e2) {
+			if (entity != e2) {
 				ci::vec3 p1 = physics::fromBtVector3(b1->getRigidBody()->getCenterOfMassPosition());
 				ci::vec3 p2 = physics::fromBtVector3(b2->getRigidBody()->getCenterOfMassPosition());
 				ci::vec3 offset = p1 - p2;
@@ -154,18 +154,17 @@ void BehaviorSystem::separate(entityx::EntityManager& entities) {
 	}
 }
 
-void BehaviorSystem::cohere(entityx::EntityManager& entities) {
-	entityx::ComponentHandle<sitara::ecs::RigidBody> b1;
-	entityx::ComponentHandle<sitara::ecs::Cohesion> cohesion;
-
+void BehaviorSystem::cohere(entityx::Entity& entity, entityx::EntityManager& entities) {
+	entityx::ComponentHandle<sitara::ecs::RigidBody> b1 = entity.component<sitara::ecs::RigidBody>();
+	entityx::ComponentHandle<sitara::ecs::Cohesion> cohesion = entity.component<sitara::ecs::Cohesion>();
 	// this is implemented in an inefficient way; I should come back and find an elegant resolution with iterators
-	for (auto e1 : entities.entities_with_components(b1, cohesion)) {
+	if (b1.valid() && cohesion.valid()) {
 		entityx::ComponentHandle<sitara::ecs::RigidBody> b2;
 		entityx::ComponentHandle<sitara::ecs::Cohesion> c2;
 		btVector3 target(0,0,0);
 		int entityCount = 0;
 		for (auto e2 : entities.entities_with_components(b2, c2)) {
-			if (e1 != e2) {
+			if (entity != e2) {
 				ci::vec3 p1 = physics::fromBtVector3(b1->getRigidBody()->getCenterOfMassPosition());
 				ci::vec3 p2 = physics::fromBtVector3(b2->getRigidBody()->getCenterOfMassPosition());
 				ci::vec3 offset = p1 - p2;
@@ -176,7 +175,12 @@ void BehaviorSystem::cohere(entityx::EntityManager& entities) {
 				}
 			}
 		}
-		target /= float(entityCount);
+		if (entityCount == 0) {
+			target = btVector3(0, 0, 0);
+		}
+		else {
+			target /= float(entityCount);
+		}
 		ci::vec3 position = physics::fromBtVector3(b1->getRigidBody()->getCenterOfMassPosition());
 		ci::vec3 normalizedVelocity = ci::vec3(0);
 		ci::vec3 targetOffset = physics::fromBtVector3(target) - position;
@@ -192,16 +196,16 @@ void BehaviorSystem::cohere(entityx::EntityManager& entities) {
 	}
 }
 
-void BehaviorSystem::align(entityx::EntityManager& entities) {
-	entityx::ComponentHandle<sitara::ecs::RigidBody> b1;
-	entityx::ComponentHandle<sitara::ecs::Alignment> alignment;
+void BehaviorSystem::align(entityx::Entity& entity, entityx::EntityManager& entities) {
+	entityx::ComponentHandle<sitara::ecs::RigidBody> b1 = entity.component<sitara::ecs::RigidBody>();
+	entityx::ComponentHandle<sitara::ecs::Alignment> alignment = entity.component<sitara::ecs::Alignment>();
 
 	// this is implemented in an inefficient way; I should come back and find an elegant resolution with iterators
-	for (auto e1 : entities.entities_with_components(b1, alignment)) {
+	if (b1.valid() && alignment.valid()) {
 		entityx::ComponentHandle<sitara::ecs::RigidBody> b2;
 		btVector3 groupVelocity(0,0,0);
 		for (auto e2 : entities.entities_with_components(b2)) {
-			if (e1 != e2) {
+			if (entity != e2) {
 				ci::vec3 p1 = physics::fromBtVector3(b1->getRigidBody()->getCenterOfMassPosition());
 				ci::vec3 p2 = physics::fromBtVector3(b2->getRigidBody()->getCenterOfMassPosition());
 				ci::vec3 offset = p1 - p2;

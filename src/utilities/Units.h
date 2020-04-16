@@ -11,10 +11,15 @@ namespace sitara {
 
 		class Units {
 		public:
-			Units(float pixelsPerMeter = 100.0f) {
-				setPixelsPerMeter(pixelsPerMeter);
-			};
+			static Units& getInstance(float pixelsPerMeter = 100.0f) {
+				static Units instance(pixelsPerMeter);
+				return instance;
+			}
 
+			Units(Units const&) = delete;             // Copy construct
+			Units(Units&&) = delete;                  // Move construct
+			Units& operator=(Units const&) = delete;  // Copy assign
+			Units& operator=(Units &&) = delete;      // Move assign
 
 			void setPixelsPerMeter(float ppm) {
 				mPixelsPerMeter = ppm;
@@ -82,6 +87,10 @@ namespace sitara {
 			}
 
 		private:
+			Units(float pixelsPerMeter) {
+				setPixelsPerMeter(pixelsPerMeter);
+			};
+
 			float checkLengthUnits(float meters) {
 				if (meters < 0.2 && meters != 0) {
 					//std::printf("sitara::ecs::geometry WARNING | Bullet Physics may misbehave with units smaller than 20 cm; please scale your world size up.\n");
