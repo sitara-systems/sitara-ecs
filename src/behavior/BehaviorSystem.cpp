@@ -1,6 +1,5 @@
 #include "behavior/BehaviorSystem.h"
-#include "behavior/StaticTarget.h"
-#include "behavior/MovingTarget.h"
+#include "behavior/Target.h"
 #include "behavior/NoiseField.h"
 #include "behavior/Separation.h"
 #include "behavior/Cohesion.h"
@@ -21,7 +20,7 @@ void BehaviorSystem::update(entityx::EntityManager &entities, entityx::EventMana
 
 void BehaviorSystem::seek(entityx::Entity& entity) {
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body = entity.component<sitara::ecs::RigidBody>();
-	entityx::ComponentHandle<sitara::ecs::StaticTarget> target = entity.component<sitara::ecs::StaticTarget>();
+	entityx::ComponentHandle<sitara::ecs::Target> target = entity.component<sitara::ecs::Target>();
 
 	if (body.valid() && target.valid()) {
 		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
@@ -42,7 +41,7 @@ void BehaviorSystem::seek(entityx::Entity& entity) {
 
 void BehaviorSystem::flee(entityx::Entity& entity, ci::vec3 nullDirection) {
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body = entity.component<sitara::ecs::RigidBody>();
-	entityx::ComponentHandle<sitara::ecs::StaticTarget> target = entity.component<sitara::ecs::StaticTarget>();
+	entityx::ComponentHandle<sitara::ecs::Target> target = entity.component<sitara::ecs::Target>();
 
 	if (body.valid() && target.valid()) {
 		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
@@ -63,7 +62,7 @@ void BehaviorSystem::flee(entityx::Entity& entity, ci::vec3 nullDirection) {
 
 void BehaviorSystem::arrive(entityx::Entity& entity) {
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body = entity.component<sitara::ecs::RigidBody>();
-	entityx::ComponentHandle<sitara::ecs::StaticTarget> target = entity.component<sitara::ecs::StaticTarget>();
+	entityx::ComponentHandle<sitara::ecs::Target> target = entity.component<sitara::ecs::Target>();
 
 	if (body.valid() && target.valid()) {
 		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
