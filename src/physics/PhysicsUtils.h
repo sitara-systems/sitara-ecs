@@ -22,7 +22,7 @@ namespace sitara {
 			}
 
 			static ci::quat fromBtQuaternion(const btQuaternion &quat) {
-				return ci::quat(quat.getX(), quat.getY(), quat.getZ(), quat.getW());
+				return ci::quat(quat.getW(), quat.getX(), quat.getY(), quat.getZ());
 			}
 
 			static btVector3 toBtVector3(const ci::vec3 &vector) {

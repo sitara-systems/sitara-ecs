@@ -252,7 +252,6 @@ namespace sitara {
 				return ci::geom::WireSphere().radius(radius);
 			}
 
-
 			static ci::geom::Teapot createTeapot(float radius, geometry::Quality quality = geometry::Quality::DEFAULT) {
 				switch (quality) {
 					case DEFAULT:
