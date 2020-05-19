@@ -26,7 +26,6 @@ namespace sitara {
 
 			void update() {
 				if (mTargetTransform.valid()) {
-					std::printf("Valid Transform, checking position\n");
 					ci::vec3 velocity = mTargetTransform->mPosition - mPreviousPosition;
 					mTargetPosition = mTargetTransform->mPosition + velocity;
 					mPreviousPosition = mTargetTransform->mPosition;
@@ -34,7 +33,6 @@ namespace sitara {
 			}
 
 			void setTarget(entityx::ComponentHandle<sitara::ecs::Transform> targetTransform) {
-				std::printf("Setting target to follow transform\n");
 				mTargetTransform = targetTransform;
 			}
 

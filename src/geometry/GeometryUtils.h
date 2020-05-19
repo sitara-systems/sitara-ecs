@@ -195,6 +195,16 @@ namespace sitara {
 				}
 			}
 
+			static ci::geom::Icosahedron createIcosahedron() {
+				// only one quality level of Icosahedron, so just return it
+				return ci::geom::Icosahedron();
+			}
+
+			static ci::geom::WireIcosahedron createWireIcosahedron() {
+				// only one quality level of WireIcosahedron, so just return it
+				return ci::geom::WireIcosahedron();
+			}
+
 			static ci::geom::Plane createPlane(const ci::vec3& u, const ci::vec3& v, const ci::vec2& size, geometry::Quality quality = geometry::Quality::DEFAULT) {
 				switch (quality) {
 				case geometry::Quality::DEFAULT:
@@ -229,10 +239,10 @@ namespace sitara {
 					return ci::geom::Sphere().radius(radius);
 					break;
 				case geometry::Quality::LOW:
-					return ci::geom::Sphere().radius(radius).subdivisions(1);
+					return ci::geom::Sphere().radius(radius).subdivisions(6);
 					break;
 				case geometry::Quality::HIGH:
-					return ci::geom::Sphere().radius(radius).subdivisions(10);
+					return ci::geom::Sphere().radius(radius).subdivisions(60);
 					break;
 				}
 			}
@@ -242,6 +252,20 @@ namespace sitara {
 				return ci::geom::WireSphere().radius(radius);
 			}
 
+
+			static ci::geom::Teapot createTeapot(float radius, geometry::Quality quality = geometry::Quality::DEFAULT) {
+				switch (quality) {
+					case DEFAULT:
+						return ci::geom::Teapot();
+						break;
+					case LOW:
+						return ci::geom::Teapot().subdivisions(2);
+						break;
+					case HIGH:
+						return ci::geom::Teapot().subdivisions(12);
+						break;
+				}
+			}
 
 			static ci::TriMesh getMesh(const ci::geom::Source& source) {
 				ci::TriMesh::Format fmt = ci::TriMesh::Format().positions().normals().texCoords().tangents();

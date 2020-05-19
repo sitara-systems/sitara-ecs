@@ -97,6 +97,11 @@ namespace sitara {
 				return mRigidBody;
 			}
 
+			btRigidBody* setDamping(float linearDamping, float angularDamping) {
+				mRigidBody->setDamping(linearDamping, angularDamping);
+				return mRigidBody;
+			}
+
 			void setLinearVelocity(ci::vec3 velocity) {
 				mRigidBody->setLinearVelocity(physics::toBtVector3(velocity));
 			}
