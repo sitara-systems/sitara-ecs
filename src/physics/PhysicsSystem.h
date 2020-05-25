@@ -16,9 +16,9 @@ namespace sitara {
 		  void receive(const entityx::ComponentRemovedEvent<RigidBody>& event);
 		  double getElapsedSimulationTime();
 		  void setGravity(ci::vec3 gravity);
-		  void setMaximumVelocity(float velocity);
 		  void clearForces(entityx::EntityManager& entities);
 		  void resetBody(entityx::ComponentHandle<sitara::ecs::RigidBody> body, ci::vec3 position);
+		  void addOnUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback);
 		  btDiscreteDynamicsWorld* getWorld();
 		private:
 		  btDefaultCollisionConfiguration* mCollisionConfiguration;
@@ -26,8 +26,8 @@ namespace sitara {
 		  btBroadphaseInterface* mOverlappingPairCache;
 		  btSequentialImpulseConstraintSolver* mBulletSolver;
 		  btDiscreteDynamicsWorld* mDynamicsWorld;
-		  float mMaximumVelocity;
 		  double mElapsedSimulationTime;
+		  std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mOnUpdateFns;
     };
   }
 }

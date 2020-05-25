@@ -33,7 +33,6 @@ void PhysicsSystem::configure(entityx::EntityManager &entities, entityx::EventMa
 	  mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher, mOverlappingPairCache, mBulletSolver, mCollisionConfiguration);
 	  mDynamicsWorld->setGravity(btVector3(0.0f, 0.0f, 0.0f));
 
-	  mMaximumVelocity = 0;
 	  mElapsedSimulationTime = 0.0f;
 
 	  events.subscribe<entityx::ComponentAddedEvent<RigidBody>>(*this);
@@ -44,20 +43,8 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 	entityx::ComponentHandle<sitara::ecs::Transform> transform;
 
 	for (auto entity : entities.entities_with_components(body, transform)) {
-		// check for maximum velocity
-		if (mMaximumVelocity) {
-			ci::vec3 currentVelocity = physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
-			if (glm::length(currentVelocity) > mMaximumVelocity) {
-				//std::printf("Limiting Velocity\n");
-				body->getRigidBody()->setLinearVelocity(physics::toBtVector3(mMaximumVelocity * glm::normalize(currentVelocity)));
-			}
-
-			ci::vec3 currentForce = physics::fromBtVector3(body->getRigidBody()->getTotalForce());
-			if (glm::length(currentForce) > mMaximumVelocity) {
-				body->getRigidBody()->clearForces();
-				body->getRigidBody()->applyCentralForce(physics::toBtVector3(mMaximumVelocity * glm::normalize(currentForce)));
-			}
-
+		for (auto callback : mOnUpdateFns) {
+			callback(body);
 		}
 
 		// update transform component with new world transform
@@ -99,10 +86,6 @@ void PhysicsSystem::setGravity(ci::vec3 gravity) {
 	}
 }
 
-void PhysicsSystem::setMaximumVelocity(float velocity) {
-	mMaximumVelocity = velocity;
-}
-
 void PhysicsSystem::clearForces(entityx::EntityManager& entities) {
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
 
@@ -133,4 +116,8 @@ void PhysicsSystem::resetBody(entityx::ComponentHandle<sitara::ecs::RigidBody> b
 		body->getRigidBody()->clearForces();
 		body->getRigidBody()->activate(true);
 	}
+}
+
+void PhysicsSystem::addOnUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
+	mOnUpdateFns.push_back(callback);
 }
