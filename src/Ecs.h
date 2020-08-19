@@ -11,6 +11,7 @@
 #include "transform/TransformSystem.h"
 
 #include "physics/RigidBody.h"
+#include "physics/GhostBody.h"
 #include "physics/PhysicsSystem.h"
 #include "physics/PhysicsUtils.h"
 
@@ -35,6 +36,7 @@ namespace sitara {
 		inline void configureSystems(entityx::SystemManager& systems) {
 			//systems.add<entityx::deps::Dependency<Target, Transform>>();
 			systems.add<entityx::deps::Dependency<RigidBody, Transform>>();
+			systems.add<entityx::deps::Dependency<GhostBody, Transform>>();
 		}
 	}
 }

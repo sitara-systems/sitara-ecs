@@ -13,20 +13,20 @@
     <ProjectGuid>{B4A2B17A-9E88-4136-A8D2-F9CD950D215E}</ProjectGuid>
     <RootNamespace>FlockingBehaviorExample</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -64,6 +64,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>"..\..\..\..\cinder\include";..\include</AdditionalIncludeDirectories>
@@ -87,6 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -128,15 +130,15 @@
     <ClInclude Include="..\..\..\src\behavior\Alignment.h" />
     <ClInclude Include="..\..\..\src\behavior\BehaviorSystem.h" />
     <ClInclude Include="..\..\..\src\behavior\Cohesion.h" />
-    <ClInclude Include="..\..\..\src\behavior\MovingTarget.h" />
     <ClInclude Include="..\..\..\src\behavior\NoiseField.h" />
     <ClInclude Include="..\..\..\src\behavior\Separation.h" />
-    <ClInclude Include="..\..\..\src\behavior\StaticTarget.h" />
+    <ClInclude Include="..\..\..\src\behavior\Target.h" />
     <ClInclude Include="..\..\..\src\geometry\Geometry.h" />
     <ClInclude Include="..\..\..\src\geometry\GeometryUtils.h" />
     <ClInclude Include="..\..\..\src\logic\LogicalLayer.h" />
     <ClInclude Include="..\..\..\src\logic\LogicState.h" />
     <ClInclude Include="..\..\..\src\logic\StateSystem.h" />
+    <ClInclude Include="..\..\..\src\physics\GhostBody.h" />
     <ClInclude Include="..\..\..\src\physics\PhysicsUtils.h" />
     <ClInclude Include="..\..\..\src\physics\PhysicsSystem.h" />
     <ClInclude Include="..\..\..\src\physics\RigidBody.h" />

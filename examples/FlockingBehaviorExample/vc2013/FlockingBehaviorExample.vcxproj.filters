@@ -181,12 +181,6 @@
     <ClInclude Include="..\..\..\src\behavior\BehaviorSystem.h">
       <Filter>blocks\sitara-ecs\src\behavior</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\behavior\MovingTarget.h">
-      <Filter>blocks\sitara-ecs\src\behavior</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\behavior\StaticTarget.h">
-      <Filter>blocks\sitara-ecs\src\behavior</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\utilities\Simplex.h">
       <Filter>blocks\sitara-ecs\src\utilities</Filter>
     </ClInclude>
@@ -198,6 +192,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\logic\StateSystem.h">
       <Filter>blocks\sitara-ecs\src\logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\behavior\Target.h">
+      <Filter>blocks\sitara-ecs\src\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\physics\GhostBody.h">
+      <Filter>blocks\sitara-ecs\src\physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

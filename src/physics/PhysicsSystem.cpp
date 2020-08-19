@@ -3,6 +3,16 @@
 
 using namespace sitara::ecs;
 
+PhysicsSystem::PhysicsSystem() {
+	mCollisionConfiguration = nullptr;
+	mDispatcher = nullptr;
+	mOverlappingPairCache = nullptr;
+	mBulletSolver = nullptr;
+	mDynamicsWorld = nullptr;
+	mElapsedSimulationTime = 0.0;
+}
+
+
 PhysicsSystem::~PhysicsSystem() {
 	if (mCollisionConfiguration != 0) {
 		delete mCollisionConfiguration;
@@ -21,21 +31,25 @@ PhysicsSystem::~PhysicsSystem() {
 	}
 }
 
-void PhysicsSystem::configure(entityx::EntityManager &entities, entityx::EventManager &events) {
-	  ///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.
-	  mCollisionConfiguration = new btDefaultCollisionConfiguration();
-	  ///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
-	  mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
-	  ///btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
-	  mOverlappingPairCache = new btDbvtBroadphase();
-	  ///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
-	  mBulletSolver = new btSequentialImpulseConstraintSolver();
-	  mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher, mOverlappingPairCache, mBulletSolver, mCollisionConfiguration);
-	  mDynamicsWorld->setGravity(btVector3(0.0f, 0.0f, 0.0f));
+void PhysicsSystem::configure(entityx::EntityManager& entities, entityx::EventManager& events) {
+	///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.
+	mCollisionConfiguration = new btDefaultCollisionConfiguration();
+	///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
+	mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
+	///btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
+	mOverlappingPairCache = new btDbvtBroadphase();
+	mOverlappingPairCache->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
+	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
+	mBulletSolver = new btSequentialImpulseConstraintSolver();
+	mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher, mOverlappingPairCache, mBulletSolver, mCollisionConfiguration);
+	mDynamicsWorld->setGravity(btVector3(0.0f, 0.0f, 0.0f));
 
-	  mElapsedSimulationTime = 0.0f;
+	mElapsedSimulationTime = 0.0f;
 
-	  events.subscribe<entityx::ComponentAddedEvent<RigidBody>>(*this);
+	events.subscribe<entityx::ComponentAddedEvent<RigidBody>>(*this);
+	events.subscribe<entityx::ComponentRemovedEvent<RigidBody>>(*this);
+	events.subscribe<entityx::ComponentAddedEvent<GhostBody>>(*this);
+	events.subscribe<entityx::ComponentRemovedEvent<GhostBody>>(*this);
 }
 
 void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManager& events, entityx::TimeDelta dt) {
@@ -43,7 +57,7 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 	entityx::ComponentHandle<sitara::ecs::Transform> transform;
 
 	for (auto entity : entities.entities_with_components(body, transform)) {
-		for (auto callback : mOnUpdateFns) {
+		for (auto callback : mRigidBodyUpdateFns) {
 			callback(body);
 		}
 
@@ -55,6 +69,26 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 
 		transform->mPosition = physics::fromBtVector3(trans.getOrigin());
 		transform->mOrientation = physics::fromBtQuaternion(trans.getRotation());
+	}
+
+	entityx::ComponentHandle<sitara::ecs::GhostBody> ghost;
+	for (auto entity : entities.entities_with_components(ghost, transform)) {
+		// update transform component with new world transform
+		btTransform trans = ghost->getDetector()->getWorldTransform();
+
+		transform->mPosition = physics::fromBtVector3(trans.getOrigin());
+		transform->mOrientation = physics::fromBtQuaternion(trans.getRotation());
+	}
+
+	auto ghostCollisions = getGhostBodyCollisions();
+	for (auto& ghost : ghostCollisions) {
+		for (int i = 0; i < ghost.size(); i++) {
+			auto collision = ghost[i];
+			auto rigidBody = btRigidBody::upcast(collision);
+			if (rigidBody) {
+				// do something
+			}
+		}
 	}
 
 	float timeStep = static_cast<float>(dt);
@@ -69,13 +103,19 @@ void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::Rigi
 void PhysicsSystem::receive(const entityx::ComponentRemovedEvent<sitara::ecs::RigidBody>& event) {
 	mDynamicsWorld->removeCollisionObject(event.component->getRigidBody());
 	mDynamicsWorld->removeRigidBody(event.component->getRigidBody());
+}
 
+void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::GhostBody>& event) {
+	mDynamicsWorld->addCollisionObject(event.component->getDetector(), btBroadphaseProxy::SensorTrigger, btBroadphaseProxy::AllFilter & ~btBroadphaseProxy::SensorTrigger);
+}
+
+void PhysicsSystem::receive(const entityx::ComponentRemovedEvent<sitara::ecs::GhostBody>& event) {
+	mDynamicsWorld->removeCollisionObject(event.component->getDetector());
 }
 
 double PhysicsSystem::getElapsedSimulationTime() {
 	return mElapsedSimulationTime;
 }
-
 
 void PhysicsSystem::setGravity(ci::vec3 gravity) {
 	if (mDynamicsWorld != nullptr) {
@@ -96,9 +136,23 @@ void PhysicsSystem::clearForces(entityx::EntityManager& entities) {
 	}
 }
 
-
 btDiscreteDynamicsWorld* PhysicsSystem::getWorld() {
 	return mDynamicsWorld;
+}
+
+std::vector<btCollisionObjectArray> PhysicsSystem::getGhostBodyCollisions() {
+	std::vector<btCollisionObjectArray> proximityDetectors;
+	btCollisionObjectArray collisionObjects = mDynamicsWorld->getCollisionObjectArray();
+	for (int i = 0; i < collisionObjects.size(); i++) {
+		btCollisionObject* obj = collisionObjects[i];
+		btGhostObject* ghost = btGhostObject::upcast(obj);
+		if (ghost) {
+			std::printf("Adding object to prox detector list\n");
+			proximityDetectors.push_back(ghost->getOverlappingPairs());
+		}
+	}
+	std::printf("Size of list : %d\n", proximityDetectors.size());
+	return proximityDetectors;
 }
 
 void PhysicsSystem::resetBody(entityx::ComponentHandle<sitara::ecs::RigidBody> body, ci::vec3 position) {
@@ -118,6 +172,6 @@ void PhysicsSystem::resetBody(entityx::ComponentHandle<sitara::ecs::RigidBody> b
 	}
 }
 
-void PhysicsSystem::addOnUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
-	mOnUpdateFns.push_back(callback);
+void PhysicsSystem::addRigidBodyUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
+	mRigidBodyUpdateFns.push_back(callback);
 }

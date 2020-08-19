@@ -23,7 +23,7 @@ Install Bullet3 using `vcpkg` using the instructions at [https://github.com/bull
 - Coming Soon : Shader Support
 
 ### Logic System
-- Logical Layers
+- Logical Layers provide simple layer labels for objects
 - Logical States and State Machine
 
 ### Physics System
