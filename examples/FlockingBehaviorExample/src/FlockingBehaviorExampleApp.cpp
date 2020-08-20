@@ -228,11 +228,11 @@ void FlockingBehaviorExampleApp::createWorld() {
 		auto geometry = e.component<sitara::ecs::Geometry>();
 		geometry->setColor(ci::Color(1, 1, 1));
 		});
-	ghostBody->addDuringGhostCollisionFn([&](entityx::ComponentHandle<sitara::ecs::RigidBody> body) {
-		std::printf("Collision is happening at %d\n", ci::app::getElapsedFrames());
-		});
 	ghostBody->addOnEndGhostCollisionFn([&](entityx::ComponentHandle<sitara::ecs::RigidBody> body) {
 		std::printf("Collision ended at %d\n", ci::app::getElapsedFrames());
+		auto e = body.entity();
+		auto geometry = e.component<sitara::ecs::Geometry>();
+		geometry->setColor(ci::Color(0.8, 0.0, 1));
 		});
 	proximity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createWireCube(ci::vec3(edge)), Color(1, 1, 1));
 	proximity.assign<sitara::ecs::LogicalLayer>(LayerNames::OBSTACLES);
