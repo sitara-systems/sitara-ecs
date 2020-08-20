@@ -179,6 +179,7 @@ void PhysicsSystem::checkGhostBodyCollisions() {
 	btCollisionObjectArray collisionObjects = mDynamicsWorld->getCollisionObjectArray();
 	for (int i = 0; i < collisionObjects.size(); i++) {
 		btCollisionObject* obj = collisionObjects[i];
+		// filter for ghost objects by upcasting
 		btGhostObject* ghostBody = btGhostObject::upcast(obj);
 		if (ghostBody) {
 			auto gb_it = mGhostBodyMap.find(ghostBody);

@@ -63,7 +63,7 @@ namespace sitara {
 
 			void setCollisionState(bool collision) {
 				mLastCollisionState = mCollisionState;
-				mCollisionState = collision;
+				mCollisionState = collision;				
 			}
 
 			void addOnEnterGhostCollisionFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
@@ -74,9 +74,11 @@ namespace sitara {
 				mDuringGhostCollisionFns.push_back(callback);
 			}
 
+			/*
 			void addOnEndGhostCollisionFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
 				mOnEndGhostCollisionFns.push_back(callback);
 			}
+			*/
 
 			void applyCollisionFunctions(entityx::ComponentHandle<sitara::ecs::RigidBody> rigidBody) {
 				if (mCollisionState && !mLastCollisionState) {
@@ -91,12 +93,14 @@ namespace sitara {
 						callback(rigidBody);
 					}
 				}
-				else if ((!mCollisionState && mLastCollisionState)) {
+				/*
+				if (!mCollisionState && mLastCollisionState) {
 					// exiting collision
 					for (auto& callback : mOnEndGhostCollisionFns) {
 						callback(rigidBody);
 					}
 				}
+				*/
 			}
 
 		protected:
@@ -119,7 +123,7 @@ namespace sitara {
 			btGhostObject* mGhostObject;
 			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mOnEnterGhostCollisionFns;
 			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mDuringGhostCollisionFns;
-			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mOnEndGhostCollisionFns;
+			//std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mOnEndGhostCollisionFns;
 		};
 	}
 }
