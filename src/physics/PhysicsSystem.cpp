@@ -38,7 +38,9 @@ void PhysicsSystem::configure(entityx::EntityManager& entities, entityx::EventMa
 	mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
 	///btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
 	mOverlappingPairCache = new btDbvtBroadphase();
-	mOverlappingPairCache->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
+	if (mEnableGhostCollisions) {
+		mOverlappingPairCache->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
+	}
 	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
 	mBulletSolver = new btSequentialImpulseConstraintSolver();
 	mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher, mOverlappingPairCache, mBulletSolver, mCollisionConfiguration);
@@ -71,22 +73,41 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 		transform->mOrientation = physics::fromBtQuaternion(trans.getRotation());
 	}
 
-	entityx::ComponentHandle<sitara::ecs::GhostBody> ghost;
-	for (auto entity : entities.entities_with_components(ghost, transform)) {
-		// update transform component with new world transform
-		btTransform trans = ghost->getDetector()->getWorldTransform();
+	if (mEnableGhostCollisions) {
+		// update Ghost Object transforms into ecs world
+		entityx::ComponentHandle<sitara::ecs::GhostBody> ghost;
+		for (auto entity : entities.entities_with_components(ghost, transform)) {
+			// update transform component with new world transform
+			btTransform trans = ghost->getGhostBody()->getWorldTransform();
 
-		transform->mPosition = physics::fromBtVector3(trans.getOrigin());
-		transform->mOrientation = physics::fromBtQuaternion(trans.getRotation());
-	}
+			transform->mPosition = physics::fromBtVector3(trans.getOrigin());
+			transform->mOrientation = physics::fromBtQuaternion(trans.getRotation());
+		}
 
-	auto ghostCollisions = getGhostBodyCollisions();
-	for (auto& ghost : ghostCollisions) {
-		for (int i = 0; i < ghost.size(); i++) {
-			auto collision = ghost[i];
-			auto rigidBody = btRigidBody::upcast(collision);
-			if (rigidBody) {
-				// do something
+		// check for Ghost Collisions and callbacks
+		checkGhostBodyCollisions();
+		for (int ghostBodyIndex = 0; ghostBodyIndex < mGhostCollisions.size(); ghostBodyIndex++) {
+			btGhostObject* ghostBody = mActiveGhostObjects[ghostBodyIndex];
+			auto collisions = mGhostCollisions[ghostBodyIndex];
+			for (int i = 0; i < collisions.size(); i++) {
+				btCollisionObject* collisionObject = collisions[i];
+				btRigidBody* collisionBody = btRigidBody::upcast(collisionObject);
+				if (collisionBody) {
+					entityx::ComponentHandle<RigidBody> rigidBodyComponent;
+					entityx::ComponentHandle<GhostBody> ghostBodyComponent;
+					auto rb_it = mRigidBodyMap.find(collisionBody);
+					auto gb_it = mGhostBodyMap.find(ghostBody);
+
+					if (rb_it != mRigidBodyMap.end()) {
+						rigidBodyComponent = rb_it->second;
+					}
+					if (gb_it != mGhostBodyMap.end()) {
+						ghostBodyComponent = gb_it->second;
+					}
+					if (rigidBodyComponent.valid() && ghostBodyComponent.valid()) {
+						ghostBodyComponent->applyCollisionFunctions(rigidBodyComponent);
+					}
+				}
 			}
 		}
 	}
@@ -98,23 +119,32 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 
 void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::RigidBody>& event) {
 	mDynamicsWorld->addRigidBody(event.component->getRigidBody());
+	mRigidBodyMap.insert(std::make_pair(event.component->getRigidBody(), event.component));
 }
 
 void PhysicsSystem::receive(const entityx::ComponentRemovedEvent<sitara::ecs::RigidBody>& event) {
+	mRigidBodyMap.erase(event.component->getRigidBody());
 	mDynamicsWorld->removeCollisionObject(event.component->getRigidBody());
 	mDynamicsWorld->removeRigidBody(event.component->getRigidBody());
 }
 
 void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::GhostBody>& event) {
-	mDynamicsWorld->addCollisionObject(event.component->getDetector(), btBroadphaseProxy::SensorTrigger, btBroadphaseProxy::AllFilter & ~btBroadphaseProxy::SensorTrigger);
+	mDynamicsWorld->addCollisionObject(event.component->getGhostBody(), btBroadphaseProxy::SensorTrigger, btBroadphaseProxy::AllFilter & ~btBroadphaseProxy::SensorTrigger);
+	mGhostBodyMap.insert(std::make_pair(event.component->getGhostBody(), event.component));
 }
 
 void PhysicsSystem::receive(const entityx::ComponentRemovedEvent<sitara::ecs::GhostBody>& event) {
-	mDynamicsWorld->removeCollisionObject(event.component->getDetector());
+	mGhostBodyMap.erase(event.component->getGhostBody());
+	mDynamicsWorld->removeCollisionObject(event.component->getGhostBody());
 }
 
 double PhysicsSystem::getElapsedSimulationTime() {
 	return mElapsedSimulationTime;
+}
+
+bool PhysicsSystem::setGhostCollisions(bool enable) {
+	mEnableGhostCollisions = enable;
+	return mEnableGhostCollisions;
 }
 
 void PhysicsSystem::setGravity(ci::vec3 gravity) {
@@ -140,19 +170,39 @@ btDiscreteDynamicsWorld* PhysicsSystem::getWorld() {
 	return mDynamicsWorld;
 }
 
-std::vector<btCollisionObjectArray> PhysicsSystem::getGhostBodyCollisions() {
-	std::vector<btCollisionObjectArray> proximityDetectors;
+void PhysicsSystem::checkGhostBodyCollisions() {
+	mActiveGhostObjects.clear();
+	mGhostCollisions.clear();
+
+	entityx::ComponentHandle<GhostBody> ghostBodyComponent;
+
 	btCollisionObjectArray collisionObjects = mDynamicsWorld->getCollisionObjectArray();
 	for (int i = 0; i < collisionObjects.size(); i++) {
 		btCollisionObject* obj = collisionObjects[i];
-		btGhostObject* ghost = btGhostObject::upcast(obj);
-		if (ghost) {
-			std::printf("Adding object to prox detector list\n");
-			proximityDetectors.push_back(ghost->getOverlappingPairs());
+		btGhostObject* ghostBody = btGhostObject::upcast(obj);
+		if (ghostBody) {
+			auto gb_it = mGhostBodyMap.find(ghostBody);
+
+			if (gb_it != mGhostBodyMap.end()) {
+				ghostBodyComponent = gb_it->second;
+			}
+
+			if (ghostBody->getNumOverlappingObjects() > 1) {
+				// collision active
+				mActiveGhostObjects.push_back(ghostBody);
+				mGhostCollisions.push_back(ghostBody->getOverlappingPairs());
+				if (ghostBodyComponent.valid()) {
+					ghostBodyComponent->setCollisionState(true);
+				}
+			}
+			else {
+				// no collision
+				if (ghostBodyComponent.valid()) {
+					ghostBodyComponent->setCollisionState(false);
+				}
+			}
 		}
 	}
-	std::printf("Size of list : %d\n", proximityDetectors.size());
-	return proximityDetectors;
 }
 
 void PhysicsSystem::resetBody(entityx::ComponentHandle<sitara::ecs::RigidBody> body, ci::vec3 position) {
