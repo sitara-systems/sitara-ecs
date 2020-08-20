@@ -187,7 +187,7 @@ void PhysicsSystem::checkGhostBodyCollisions() {
 				ghostBodyComponent = gb_it->second;
 			}
 
-			if (ghostBody->getNumOverlappingObjects() > 1) {
+			if (ghostBody->getNumOverlappingObjects() > 0) {
 				// collision active
 				mActiveGhostObjects.push_back(ghostBody);
 				mGhostCollisions.push_back(ghostBody->getOverlappingPairs());

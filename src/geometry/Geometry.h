@@ -17,7 +17,7 @@ namespace sitara {
 
 			Geometry(const ci::geom::Source& source, ci::Color color) {
 				mPrimitiveType = geometry::checkGeometryType(source);
-				auto glColor = ci::geom::Constant(ci::geom::COLOR, color);
+				mColor = color;
 				ci::gl::GlslProgRef shader;
 
 				if (mPrimitiveType < geometry::Primitive::PLANE) {
@@ -28,12 +28,11 @@ namespace sitara {
 					// if a wireframe
 					shader = ci::gl::getStockShader(ci::gl::ShaderDef().color());
 				}
-				mGeometryBatch = ci::gl::Batch::create(source >> glColor, shader);
+				mGeometryBatch = ci::gl::Batch::create(source, shader);
 			}
 
 			Geometry(const ci::geom::Source& source, ci::gl::GlslProgRef shader, ci::Color color = ci::Color(ci::Color::white())) {
 				mPrimitiveType = geometry::checkGeometryType(source);
-				ci::geom::Constant glColor = ci::geom::Constant(ci::geom::COLOR, color);
 				mGeometryBatch = ci::gl::Batch::create(source, shader);
 			}
 
@@ -44,6 +43,23 @@ namespace sitara {
 			ci::gl::BatchRef getBatch() {
 				return mGeometryBatch;
 			}
+
+			void setColor(ci::Color color) {
+				mColor = color;
+			}
+
+			ci::Color& getColor() {
+				return mColor;
+			}
+
+			void setShader(ci::gl::GlslProgRef shaderProgram) {
+				mGeometryBatch->replaceGlslProg(shaderProgram);
+			}
+
+			ci::gl::GlslProgRef getShader() {
+				return mGeometryBatch->getGlslProg();
+			}
+
 			/*
 			~Geometry() {
 				delete mGeometrySource;
@@ -51,10 +67,12 @@ namespace sitara {
 			*/
 
 			void draw() {
+				ci::gl::color(mColor);
 				mGeometryBatch->draw();
 			}
 
 		private:
+			ci::Color mColor;
 			ci::gl::BatchRef mGeometryBatch;
 			sitara::ecs::geometry::Primitive mPrimitiveType;
 		};

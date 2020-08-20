@@ -55,6 +55,7 @@ FlockingBehaviorExampleApp::FlockingBehaviorExampleApp() :
 }
 
 void FlockingBehaviorExampleApp::setup() {
+	ci::Rand::randomize();
 	ci::app::setFrameRate(60);
 
 	sitara::ecs::configureSystems(mSystems);
@@ -211,27 +212,29 @@ void FlockingBehaviorExampleApp::createWorld() {
 		auto obstacle = mEntities.create();
 		float radius = ci::randFloat(sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(5));
 		obstacle.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createSphere(radius, 0.0,
-																						0.25f * worldSize * ci::randVec3()));
+																						0.5f * worldSize * ci::vec3(ci::randFloat(-1, 1), ci::randFloat(0.25, 0.75), ci::randFloat(-1, 1))));
 		obstacle.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(radius), Color(0.0f, ci::randFloat(), ci::randFloat()));
 		obstacle.assign<sitara::ecs::LogicalLayer>(LayerNames::OBSTACLES);
 	}
 
 	// create proximity detector
 	auto proximity = mEntities.create();
-	float radius = sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(8);
-	ci::vec3 proxPosition = 0.75f * worldSize * ci::randVec3();
-	proxPosition.z = 0;
-	auto ghostBody = proximity.assign<sitara::ecs::GhostBody>(sitara::ecs::GhostBody::createSphere(radius, proxPosition));
+	float edge = sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(22);
+	ci::vec3 proxPosition = 0.5f * worldSize * ci::vec3(0.0, -0.5, 0.0);
+	auto ghostBody = proximity.assign<sitara::ecs::GhostBody>(sitara::ecs::GhostBody::createBox(ci::vec3(edge), proxPosition));
 	ghostBody->addOnEnterGhostCollisionFn([&](entityx::ComponentHandle<sitara::ecs::RigidBody> body) {
 		std::printf("Collision Began at %d\n", ci::app::getElapsedFrames());
+		auto e = body.entity();
+		auto geometry = e.component<sitara::ecs::Geometry>();
+		geometry->setColor(ci::Color(1, 1, 1));
 		});
-	ghostBody->addOnGhostCollisionFn([&](entityx::ComponentHandle<sitara::ecs::RigidBody> body) {
+	ghostBody->addDuringGhostCollisionFn([&](entityx::ComponentHandle<sitara::ecs::RigidBody> body) {
 		std::printf("Collision is happening at %d\n", ci::app::getElapsedFrames());
 		});
 	ghostBody->addOnEndGhostCollisionFn([&](entityx::ComponentHandle<sitara::ecs::RigidBody> body) {
 		std::printf("Collision ended at %d\n", ci::app::getElapsedFrames());
 		});
-	proximity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createWireSphere(radius), Color(1, 1, 1));
+	proximity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createWireCube(ci::vec3(edge)), Color(1, 1, 1));
 	proximity.assign<sitara::ecs::LogicalLayer>(LayerNames::OBSTACLES);
 
 	// create boids
@@ -269,6 +272,7 @@ void FlockingBehaviorExampleApp::resetWorld() {
 		}
 		*/
 		if (layer->mLayerId == LayerNames::BOIDS) {
+			entity.component<sitara::ecs::Geometry>()->setColor(Color(0.8, 0, 1));
 			mSystems.system<sitara::ecs::PhysicsSystem>()->resetBody(body, 0.4f * worldSize * ci::randVec3());
 		}
 	}
