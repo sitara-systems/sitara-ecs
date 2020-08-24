@@ -75,8 +75,11 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 
 	if (mEnableGhostCollisions) {
 		// update Ghost Object transforms into ecs world
+		checkGhostBodyCollisions();
+
 		entityx::ComponentHandle<sitara::ecs::GhostBody> ghost;
 		for (auto entity : entities.entities_with_components(ghost, transform)) {
+			ghost->applyCollisionFunctions();
 			// update transform component with new world transform
 			btTransform trans = ghost->getGhostBody()->getWorldTransform();
 
@@ -84,32 +87,6 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 			transform->mOrientation = physics::fromBtQuaternion(trans.getRotation());
 		}
 
-		// check for Ghost Collisions and callbacks
-		checkGhostBodyCollisions();
-		for (int ghostBodyIndex = 0; ghostBodyIndex < mGhostCollisions.size(); ghostBodyIndex++) {
-			btGhostObject* ghostBody = mActiveGhostObjects[ghostBodyIndex];
-			auto collisions = mGhostCollisions[ghostBodyIndex];
-			for (int i = 0; i < collisions.size(); i++) {
-				btCollisionObject* collisionObject = collisions[i];
-				btRigidBody* collisionBody = btRigidBody::upcast(collisionObject);
-				if (collisionBody) {
-					entityx::ComponentHandle<RigidBody> rigidBodyComponent;
-					entityx::ComponentHandle<GhostBody> ghostBodyComponent;
-					auto rb_it = mRigidBodyMap.find(collisionBody);
-					auto gb_it = mGhostBodyMap.find(ghostBody);
-
-					if (rb_it != mRigidBodyMap.end()) {
-						rigidBodyComponent = rb_it->second;
-					}
-					if (gb_it != mGhostBodyMap.end()) {
-						ghostBodyComponent = gb_it->second;
-					}
-					if (rigidBodyComponent.valid() && ghostBodyComponent.valid()) {
-						ghostBodyComponent->applyCollisionFunctions(rigidBodyComponent);
-					}
-				}
-			}
-		}
 	}
 
 	float timeStep = static_cast<float>(dt);
@@ -172,10 +149,10 @@ btDiscreteDynamicsWorld* PhysicsSystem::getWorld() {
 
 void PhysicsSystem::checkGhostBodyCollisions() {
 	mActiveGhostObjects.clear();
-	mGhostCollisions.clear();
 
 	entityx::ComponentHandle<GhostBody> ghostBodyComponent;
 
+	// one pass to collate all collision objects
 	btCollisionObjectArray collisionObjects = mDynamicsWorld->getCollisionObjectArray();
 	for (int i = 0; i < collisionObjects.size(); i++) {
 		btCollisionObject* obj = collisionObjects[i];
@@ -187,19 +164,35 @@ void PhysicsSystem::checkGhostBodyCollisions() {
 			if (gb_it != mGhostBodyMap.end()) {
 				ghostBodyComponent = gb_it->second;
 			}
-
-			if (ghostBody->getNumOverlappingObjects() > 0) {
-				// collision active
-				mActiveGhostObjects.push_back(ghostBody);
-				mGhostCollisions.push_back(ghostBody->getOverlappingPairs());
-				if (ghostBodyComponent.valid()) {
+			if (ghostBodyComponent.valid()) {
+				if (ghostBody->getNumOverlappingObjects() > 0) {
+					// collision active
+					mActiveGhostObjects.push_back(ghostBody);
+					btCollisionObjectArray collisionRigidBodies = ghostBody->getOverlappingPairs();
 					ghostBodyComponent->setCollisionState(true);
+					ghostBodyComponent->resetCollisionBodies();
+					for (int j = 0; j < collisionRigidBodies.size(); j++) {
+						btCollisionObject* collisionObject = collisionRigidBodies[j];
+						btRigidBody* collisionBody = btRigidBody::upcast(collisionObject);
+						if (collisionBody) {
+							entityx::ComponentHandle<RigidBody> rigidBodyComponent;
+							auto rb_it = mRigidBodyMap.find(collisionBody);
+
+							if (rb_it != mRigidBodyMap.end()) {
+								rigidBodyComponent = rb_it->second;
+								if (rigidBodyComponent.valid()) {
+									ghostBodyComponent->addCollisionBodies(rigidBodyComponent);
+								}
+							}
+						}
+					}
 				}
-			}
-			else {
-				// no collision
-				if (ghostBodyComponent.valid()) {
-					ghostBodyComponent->setCollisionState(false);
+				else {
+					// no collision
+					if (ghostBodyComponent.valid()) {
+						ghostBodyComponent->setCollisionState(false);
+						ghostBodyComponent->resetCollisionBodies();
+					}
 				}
 			}
 		}

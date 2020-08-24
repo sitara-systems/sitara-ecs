@@ -66,41 +66,51 @@ namespace sitara {
 				mCollisionState = collision;				
 			}
 
-			void addOnEnterGhostCollisionFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
-				mOnEnterGhostCollisionFns.push_back(callback);
+			void addOnEnterEachCollisionFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
+				mOnEnterEachCollisionFns.push_back(callback);
 			}
 
-			void addDuringGhostCollisionFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
-				mDuringGhostCollisionFns.push_back(callback);
+			void addDuringEachCollisionFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
+				mDuringEachCollisionFns.push_back(callback);
 			}
 
-			/*
-			void addOnEndGhostCollisionFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
-				mOnEndGhostCollisionFns.push_back(callback);
+			void addOnEndEachCollisionFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
+				mOnEndEachCollisionFns.push_back(callback);
 			}
-			*/
 
-			void applyCollisionFunctions(entityx::ComponentHandle<sitara::ecs::RigidBody> rigidBody) {
-				if (mCollisionState && !mLastCollisionState) {
-					// entering collision
-					for (auto& callback : mOnEnterGhostCollisionFns) {
-						callback(rigidBody);
+			void applyCollisionFunctions() {
+				for (auto& collision : mRigidBodyCollisions) {
+					if (std::find(mLastCollisionFrameObjects.begin(), mLastCollisionFrameObjects.end(), collision) != mLastCollisionFrameObjects.end()) {
+						// in current collisions + previous collisions, still colliding
+						for (auto& callback : mOnEnterEachCollisionFns) {
+							callback(collision);
+						}
+					}
+					else {
+						// in current collision but NOT previous collision, starting collision
+						for (auto& callback : mDuringEachCollisionFns) {
+							callback(collision);
+						}
 					}
 				}
-				else if (mCollisionState && mLastCollisionState) {
-					// during collision
-					for (auto& callback : mDuringGhostCollisionFns) {
-						callback(rigidBody);
+				for (auto& collision : mLastCollisionFrameObjects) {
+					if (std::find(mRigidBodyCollisions.begin(), mRigidBodyCollisions.end(), collision) == mRigidBodyCollisions.end()) {
+						// in previous collisions + NOT in current collisions, ending collision
+						for (auto& callback : mOnEndEachCollisionFns) {
+							callback(collision);
+						}
 					}
 				}
-				/*
-				if (!mCollisionState && mLastCollisionState) {
-					// exiting collision
-					for (auto& callback : mOnEndGhostCollisionFns) {
-						callback(rigidBody);
-					}
-				}
-				*/
+			}
+
+			void resetCollisionBodies() {
+				mLastCollisionFrameObjects.clear();
+				std::copy(mRigidBodyCollisions.begin(), mRigidBodyCollisions.end(), std::back_inserter(mLastCollisionFrameObjects));
+				mRigidBodyCollisions.clear();
+			}
+
+			void addCollisionBodies(entityx::ComponentHandle<sitara::ecs::RigidBody> body) {
+				mRigidBodyCollisions.push_back(body);
 			}
 
 		protected:
@@ -121,9 +131,11 @@ namespace sitara {
 			bool mLastCollisionState;
 			btCollisionShape* mCollisionShape;
 			btGhostObject* mGhostObject;
-			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mOnEnterGhostCollisionFns;
-			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mDuringGhostCollisionFns;
-			//std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mOnEndGhostCollisionFns;
+			std::vector<entityx::ComponentHandle<sitara::ecs::RigidBody>> mRigidBodyCollisions;
+			std::vector<entityx::ComponentHandle<sitara::ecs::RigidBody>> mLastCollisionFrameObjects;
+			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mOnEnterEachCollisionFns;
+			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mDuringEachCollisionFns;
+			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mOnEndEachCollisionFns;
 		};
 	}
 }

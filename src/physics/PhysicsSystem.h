@@ -36,7 +36,6 @@ namespace sitara {
 			double mElapsedSimulationTime;
 			bool mEnableGhostCollisions;
 			std::vector<btGhostObject*> mActiveGhostObjects;
-			std::vector<btCollisionObjectArray> mGhostCollisions;
 			std::map<btRigidBody*, entityx::ComponentHandle<sitara::ecs::RigidBody>, std::less<btRigidBody*>> mRigidBodyMap;
 			std::map<btGhostObject*, entityx::ComponentHandle<sitara::ecs::GhostBody>, std::less<void>> mGhostBodyMap;
 			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mRigidBodyUpdateFns;
