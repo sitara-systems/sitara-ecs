@@ -9,7 +9,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SITARA_ECS_ROOT)\src;$(SITARA_ECS_ROOT)$(ENTITYX_ROOT);$(SITARA_ECS_ROOT)$(BULLET3_ROOT)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SITARA_ECS_ROOT)\src;$(SITARA_ECS_ROOT)$(ENTITYX_ROOT);$(SITARA_ECS_ROOT)$(BULLET3_ROOT)\include;$(SITARA_ECS_ROOT)$(BULLET3_ROOT)\include\bullet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DISABLE_EXTENDED_ALIGNED_STORAGE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>

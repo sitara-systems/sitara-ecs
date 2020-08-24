@@ -10,6 +10,7 @@ PhysicsSystem::PhysicsSystem() {
 	mBulletSolver = nullptr;
 	mDynamicsWorld = nullptr;
 	mElapsedSimulationTime = 0.0;
+	mEnableGhostCollisions = false;
 }
 
 
@@ -63,7 +64,7 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 			callback(body);
 		}
 
-		// update transform component with new world transform
+		// update transform component with new world transform from bullet
 		btTransform trans;
 		if (body->getMotionState()) {
 			body->getMotionState()->getWorldTransform(trans);
@@ -80,11 +81,10 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 		entityx::ComponentHandle<sitara::ecs::GhostBody> ghost;
 		for (auto entity : entities.entities_with_components(ghost, transform)) {
 			ghost->applyCollisionFunctions();
-			// update transform component with new world transform
-			btTransform trans = ghost->getGhostBody()->getWorldTransform();
+			// opposite of rigid body -- ghost body takes it transform FROM the transform component
+			btTransform btTrans = physics::toBtTransform(transform->getWorldTransform());
 
-			transform->mPosition = physics::fromBtVector3(trans.getOrigin());
-			transform->mOrientation = physics::fromBtQuaternion(trans.getRotation());
+			ghost->getGhostBody()->setWorldTransform(btTrans);
 		}
 
 	}

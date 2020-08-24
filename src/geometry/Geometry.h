@@ -67,7 +67,7 @@ namespace sitara {
 			*/
 
 			void draw() {
-				ci::gl::color(mColor);
+				ci::gl::ScopedColor scopedColor(mColor);
 				mGeometryBatch->draw();
 			}
 
