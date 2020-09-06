@@ -66,38 +66,42 @@ namespace sitara {
 				mCollisionState = collision;				
 			}
 
-			void addOnEnterEachCollisionFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
+			/*
+			Event Callbacks -- each takes two arguments; the GhostBody Component Handle referring to this object, and the RigidBody Component Handle referring to the other object
+			that collided with our GhostBody.
+			*/
+			void addOnEnterEachCollisionFn(std::function<void(entityx::ComponentHandle<sitara::ecs::GhostBody>, entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
 				mOnEnterEachCollisionFns.push_back(callback);
 			}
 
-			void addDuringEachCollisionFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
+			void addDuringEachCollisionFn(std::function<void(entityx::ComponentHandle<sitara::ecs::GhostBody>, entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
 				mDuringEachCollisionFns.push_back(callback);
 			}
 
-			void addOnEndEachCollisionFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
+			void addOnEndEachCollisionFn(std::function<void(entityx::ComponentHandle<sitara::ecs::GhostBody>, entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
 				mOnEndEachCollisionFns.push_back(callback);
 			}
 
-			void applyCollisionFunctions() {
-				for (auto& collision : mRigidBodyCollisions) {
-					if (std::find(mLastCollisionFrameObjects.begin(), mLastCollisionFrameObjects.end(), collision) != mLastCollisionFrameObjects.end()) {
+			void applyCollisionFunctions(entityx::ComponentHandle<sitara::ecs::GhostBody> thisGhostComponent) {
+				for (auto& otherRigidBodyComponent : mRigidBodyCollisions) {
+					if (std::find(mLastCollisionFrameObjects.begin(), mLastCollisionFrameObjects.end(), otherRigidBodyComponent) != mLastCollisionFrameObjects.end()) {
 						// in current collisions + previous collisions, still colliding
 						for (auto& callback : mOnEnterEachCollisionFns) {
-							callback(collision);
+							callback(thisGhostComponent, otherRigidBodyComponent);
 						}
 					}
 					else {
 						// in current collision but NOT previous collision, starting collision
 						for (auto& callback : mDuringEachCollisionFns) {
-							callback(collision);
+							callback(thisGhostComponent, otherRigidBodyComponent);
 						}
 					}
 				}
-				for (auto& collision : mLastCollisionFrameObjects) {
-					if (std::find(mRigidBodyCollisions.begin(), mRigidBodyCollisions.end(), collision) == mRigidBodyCollisions.end()) {
+				for (auto& otherRigidBodyComponent : mLastCollisionFrameObjects) {
+					if (std::find(mRigidBodyCollisions.begin(), mRigidBodyCollisions.end(), otherRigidBodyComponent) == mRigidBodyCollisions.end()) {
 						// in previous collisions + NOT in current collisions, ending collision
 						for (auto& callback : mOnEndEachCollisionFns) {
-							callback(collision);
+							callback(thisGhostComponent, otherRigidBodyComponent);
 						}
 					}
 				}
@@ -120,6 +124,7 @@ namespace sitara {
 				btTransform worldTransform(btRotation, btPosition);
 
 				btGhostObject* body = new btGhostObject();
+				
 				body->setWorldTransform(worldTransform);
 				body->setCollisionShape(shape);
 				body->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
@@ -133,9 +138,9 @@ namespace sitara {
 			btGhostObject* mGhostObject;
 			std::vector<entityx::ComponentHandle<sitara::ecs::RigidBody>> mRigidBodyCollisions;
 			std::vector<entityx::ComponentHandle<sitara::ecs::RigidBody>> mLastCollisionFrameObjects;
-			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mOnEnterEachCollisionFns;
-			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mDuringEachCollisionFns;
-			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mOnEndEachCollisionFns;
+			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::GhostBody>, entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mOnEnterEachCollisionFns;
+			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::GhostBody>, entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mDuringEachCollisionFns;
+			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::GhostBody>, entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mOnEndEachCollisionFns;
 		};
 	}
 }

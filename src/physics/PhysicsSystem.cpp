@@ -80,8 +80,8 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 
 		entityx::ComponentHandle<sitara::ecs::GhostBody> ghost;
 		for (auto entity : entities.entities_with_components(ghost, transform)) {
-			ghost->applyCollisionFunctions();
-			// opposite of rigid body -- ghost body takes it transform FROM the transform component
+			ghost->applyCollisionFunctions(ghost);
+			// opposite of rigid body -- ghost body takes its transform FROM the transform component
 			btTransform btTrans = physics::toBtTransform(transform->getWorldTransform());
 
 			ghost->getGhostBody()->setWorldTransform(btTrans);

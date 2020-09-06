@@ -220,20 +220,22 @@ void FlockingBehaviorExampleApp::createWorld() {
 	// create proximity detector
 	auto proximity = mEntities.create();
 	float edge = sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(22);
-	ci::vec3 proxPosition = 0.5f * worldSize * ci::vec3(0.0, -0.5, 0.0);
+	ci::vec3 proxPosition = 0.25f * worldSize * ci::vec3(0.0, -1.0f, 0.0);
 	auto ghostBody = proximity.assign<sitara::ecs::GhostBody>(sitara::ecs::GhostBody::createBox(ci::vec3(edge), proxPosition));
-	ghostBody->addOnEnterEachCollisionFn([&](entityx::ComponentHandle<sitara::ecs::RigidBody> body) {
-		auto e = body.entity();
+	ghostBody->addOnEnterEachCollisionFn([&](entityx::ComponentHandle<sitara::ecs::GhostBody> thisBody, entityx::ComponentHandle<sitara::ecs::RigidBody> otherBody) {
+		auto e = otherBody.entity();
 		auto geometry = e.component<sitara::ecs::Geometry>();
 		geometry->setColor(ci::Color(1, 1, 1));
 	});
-	ghostBody->addOnEndEachCollisionFn([&](entityx::ComponentHandle<sitara::ecs::RigidBody> body) {
-		auto e = body.entity();
+	ghostBody->addOnEndEachCollisionFn([&](entityx::ComponentHandle<sitara::ecs::GhostBody> thisBody, entityx::ComponentHandle<sitara::ecs::RigidBody> otherBody) {
+		auto e = otherBody.entity();
 		auto geometry = e.component<sitara::ecs::Geometry>();
 		geometry->setColor(ci::Color(0.8, 0.0, 1));
 	});
 	proximity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createWireCube(ci::vec3(edge)), Color(1, 1, 1));
 	proximity.assign<sitara::ecs::LogicalLayer>(LayerNames::OBSTACLES);
+	auto transform = proximity.component<sitara::ecs::Transform>();
+	transform->mPosition = proxPosition;
 
 	// create boids
 	for (int i = 0; i < 12; i++) {
