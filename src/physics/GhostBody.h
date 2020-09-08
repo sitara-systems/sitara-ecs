@@ -83,21 +83,40 @@ namespace sitara {
 			}
 
 			void applyCollisionFunctions(entityx::ComponentHandle<sitara::ecs::GhostBody> thisGhostComponent) {
+				entityx::Entity thisEntity = thisGhostComponent.entity();
+
 				for (auto& otherRigidBodyComponent : mRigidBodyCollisions) {
+					entityx::Entity otherEntity = otherRigidBodyComponent.entity();
+					//check we're not colliding with ourselves....
+					if (thisEntity.valid() && otherEntity.valid()) {
+						if (thisEntity == otherEntity) {
+							continue;
+						}
+					}
+
 					if (std::find(mLastCollisionFrameObjects.begin(), mLastCollisionFrameObjects.end(), otherRigidBodyComponent) != mLastCollisionFrameObjects.end()) {
 						// in current collisions + previous collisions, still colliding
-						for (auto& callback : mOnEnterEachCollisionFns) {
+						for (auto& callback : mDuringEachCollisionFns) {
 							callback(thisGhostComponent, otherRigidBodyComponent);
 						}
 					}
 					else {
 						// in current collision but NOT previous collision, starting collision
-						for (auto& callback : mDuringEachCollisionFns) {
+						for (auto& callback : mOnEnterEachCollisionFns) {
 							callback(thisGhostComponent, otherRigidBodyComponent);
 						}
 					}
 				}
 				for (auto& otherRigidBodyComponent : mLastCollisionFrameObjects) {
+
+					entityx::Entity otherEntity = otherRigidBodyComponent.entity();
+					//check we're not colliding with ourselves....
+					if (thisEntity.valid() && otherEntity.valid()) {
+						if (thisEntity == otherEntity) {
+							continue;
+						}
+					}
+
 					if (std::find(mRigidBodyCollisions.begin(), mRigidBodyCollisions.end(), otherRigidBodyComponent) == mRigidBodyCollisions.end()) {
 						// in previous collisions + NOT in current collisions, ending collision
 						for (auto& callback : mOnEndEachCollisionFns) {
@@ -108,8 +127,8 @@ namespace sitara {
 			}
 
 			void resetCollisionBodies() {
-				mLastCollisionFrameObjects.clear();
-				std::copy(mRigidBodyCollisions.begin(), mRigidBodyCollisions.end(), std::back_inserter(mLastCollisionFrameObjects));
+				mLastCollisionFrameObjects.resize(mRigidBodyCollisions.size());
+				mLastCollisionFrameObjects.assign(mRigidBodyCollisions.begin(), mRigidBodyCollisions.end());
 				mRigidBodyCollisions.clear();
 			}
 

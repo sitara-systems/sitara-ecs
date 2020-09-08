@@ -223,11 +223,13 @@ void FlockingBehaviorExampleApp::createWorld() {
 	ci::vec3 proxPosition = 0.25f * worldSize * ci::vec3(0.0, -1.0f, 0.0);
 	auto ghostBody = proximity.assign<sitara::ecs::GhostBody>(sitara::ecs::GhostBody::createBox(ci::vec3(edge), proxPosition));
 	ghostBody->addOnEnterEachCollisionFn([&](entityx::ComponentHandle<sitara::ecs::GhostBody> thisBody, entityx::ComponentHandle<sitara::ecs::RigidBody> otherBody) {
+		std::cout << "Proximity Detection Event BEGIN" << std::endl;
 		auto e = otherBody.entity();
 		auto geometry = e.component<sitara::ecs::Geometry>();
 		geometry->setColor(ci::Color(1, 1, 1));
 	});
 	ghostBody->addOnEndEachCollisionFn([&](entityx::ComponentHandle<sitara::ecs::GhostBody> thisBody, entityx::ComponentHandle<sitara::ecs::RigidBody> otherBody) {
+		std::cout << "Proximity Detection Event END" << std::endl;
 		auto e = otherBody.entity();
 		auto geometry = e.component<sitara::ecs::Geometry>();
 		geometry->setColor(ci::Color(0.8, 0.0, 1));
@@ -238,7 +240,7 @@ void FlockingBehaviorExampleApp::createWorld() {
 	transform->mPosition = proxPosition;
 
 	// create boids
-	for (int i = 0; i < 12; i++) {
+	for (int i = 0; i < 1; i++) {
 		auto boid = mEntities.create();
 		float radius = sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(1);
 		boid.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createSphere(radius, 1.0, 0.4f * worldSize * ci::randVec3()));

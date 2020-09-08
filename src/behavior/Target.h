@@ -41,6 +41,10 @@ namespace sitara {
 				mTargetTransform = entityx::ComponentHandle<sitara::ecs::Transform>();
 			}
 
+			entityx::ComponentHandle<sitara::ecs::Transform> getTargetHandle() {
+				return mTargetTransform;
+			}
+
 			ci::vec3 getTargetPosition() {
 				return mTargetPosition;
 			}
