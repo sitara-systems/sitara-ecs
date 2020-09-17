@@ -56,7 +56,23 @@ namespace sitara {
 				return checkLengthUnits(centimeters / 100.0f) * mPixelsPerMeter;
 			}
 
+			ci::vec2 getPixelsFromCentimeters(ci::vec2 centimeters) {
+				return centimeters / 100.0f * mPixelsPerMeter;
+			}
+
+			ci::vec3 getPixelsFromCentimeters(ci::vec3 centimeters) {
+				return centimeters / 100.0f * mPixelsPerMeter;
+			}
+
 			float getCentimeters(float pixels) {
+				return pixels / (mPixelsPerMeter / 100.0f);
+			}
+
+			ci::vec2 getCentimeters(ci::vec2 pixels) {
+				return pixels / (mPixelsPerMeter / 100.0f);
+			}
+
+			ci::vec3 getCentimeters(ci::vec3 pixels) {
 				return pixels / (mPixelsPerMeter / 100.0f);
 			}
 

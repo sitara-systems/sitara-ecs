@@ -24,7 +24,8 @@ namespace sitara {
 			void setGravity(ci::vec3 gravity);
 			void clearForces(entityx::EntityManager& entities);
 			void resetBody(entityx::ComponentHandle<sitara::ecs::RigidBody> body, ci::vec3 position);
-			void addRigidBodyUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback);
+			void addRigidBodyPreUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback);
+			void addRigidBodyPostUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback);
 			btDiscreteDynamicsWorld* getWorld();
 		private:
 			void checkGhostBodyCollisions();
@@ -38,7 +39,8 @@ namespace sitara {
 			std::vector<btGhostObject*> mActiveGhostObjects;
 			std::map<btRigidBody*, entityx::ComponentHandle<sitara::ecs::RigidBody>, std::less<btRigidBody*>> mRigidBodyMap;
 			std::map<btGhostObject*, entityx::ComponentHandle<sitara::ecs::GhostBody>, std::less<void>> mGhostBodyMap;
-			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mRigidBodyUpdateFns;
+			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mRigidBodyPreUpdateFns;
+			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mRigidBodyPostUpdateFns;
 		};
 	}
 }

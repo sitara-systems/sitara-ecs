@@ -60,7 +60,7 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 	entityx::ComponentHandle<sitara::ecs::Transform> transform;
 
 	for (auto entity : entities.entities_with_components(body, transform)) {
-		for (auto callback : mRigidBodyUpdateFns) {
+		for (auto callback : mRigidBodyPreUpdateFns) {
 			callback(body);
 		}
 
@@ -92,6 +92,12 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 	float timeStep = static_cast<float>(dt);
 	mDynamicsWorld->stepSimulation(timeStep, 10);
 	mElapsedSimulationTime += timeStep;
+
+	for (auto entity : entities.entities_with_components(body, transform)) {
+		for (auto callback : mRigidBodyPostUpdateFns) {
+			callback(body);
+		}
+	}
 }
 
 void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::RigidBody>& event) {
@@ -216,6 +222,10 @@ void PhysicsSystem::resetBody(entityx::ComponentHandle<sitara::ecs::RigidBody> b
 	}
 }
 
-void PhysicsSystem::addRigidBodyUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
-	mRigidBodyUpdateFns.push_back(callback);
+void PhysicsSystem::addRigidBodyPreUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
+	mRigidBodyPreUpdateFns.push_back(callback);
+}
+
+void PhysicsSystem::addRigidBodyPostUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback) {
+	mRigidBodyPostUpdateFns.push_back(callback);
 }
