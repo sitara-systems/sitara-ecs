@@ -59,21 +59,19 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
 	entityx::ComponentHandle<sitara::ecs::Transform> transform;
 
+	// preprocessing callbacks
 	for (auto entity : entities.entities_with_components(body, transform)) {
 		for (auto callback : mRigidBodyPreUpdateFns) {
 			callback(body);
 		}
-
-		// update transform component with new world transform from bullet
-		btTransform trans;
-		if (body->getMotionState()) {
-			body->getMotionState()->getWorldTransform(trans);
-		}
-
-		transform->mPosition = physics::fromBtVector3(trans.getOrigin());
-		transform->mOrientation = physics::fromBtQuaternion(trans.getRotation());
 	}
 
+	// run simulation
+	float timeStep = static_cast<float>(dt);
+	mDynamicsWorld->stepSimulation(timeStep, 10);
+	mElapsedSimulationTime += timeStep;
+
+	// update transforms
 	if (mEnableGhostCollisions) {
 		// update Ghost Object transforms into ecs world
 		checkGhostBodyCollisions();
@@ -86,13 +84,20 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 
 			ghost->getGhostBody()->setWorldTransform(btTrans);
 		}
-
 	}
 
-	float timeStep = static_cast<float>(dt);
-	mDynamicsWorld->stepSimulation(timeStep, 10);
-	mElapsedSimulationTime += timeStep;
+	// update transform component with new world transform from bullet
+	for (auto entity : entities.entities_with_components(body, transform)) {
+		btTransform trans;
+		if (body->getRigidBody()) {
+			trans = body->getRigidBody()->getWorldTransform();
+		}
 
+		transform->mPosition = physics::fromBtVector3(trans.getOrigin());
+		transform->mOrientation = physics::fromBtQuaternion(trans.getRotation());
+	}
+
+	// post processing
 	for (auto entity : entities.entities_with_components(body, transform)) {
 		for (auto callback : mRigidBodyPostUpdateFns) {
 			callback(body);
