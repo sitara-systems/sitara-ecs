@@ -20,7 +20,7 @@ namespace sitara {
 				mColor = color;
 				ci::gl::GlslProgRef shader;
 
-				if (mPrimitiveType < geometry::Primitive::PLANE) {
+				if (mPrimitiveType <= geometry::Primitive::PLANE) {
 					// if not a wireframe
 					shader = ci::gl::getStockShader(ci::gl::ShaderDef().lambert().color());
 				}
