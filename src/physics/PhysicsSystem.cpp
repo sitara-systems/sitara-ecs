@@ -82,6 +82,13 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 			// opposite of rigid body -- ghost body takes its transform FROM the transform component
 			btTransform btTrans = physics::toBtTransform(transform->getWorldTransform());
 
+			// flip rotations -- bullet and cinder use different angles
+			float yaw, pitch, roll;
+			btTrans.getRotation().getEulerZYX(yaw, pitch, roll);
+			btQuaternion quat;
+			quat.setEulerZYX(roll, pitch, yaw);
+			btTrans.setRotation(quat);
+
 			ghost->getGhostBody()->setWorldTransform(btTrans);
 		}
 	}
@@ -95,6 +102,11 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 
 		transform->mPosition = physics::fromBtVector3(trans.getOrigin());
 		transform->mOrientation = physics::fromBtQuaternion(trans.getRotation());
+
+		// flip rotations -- bullet and cinder use different angles
+		float yaw = transform->mOrientation.z;
+		transform->mOrientation.z = transform->mOrientation.x;
+		transform->mOrientation.x = yaw;
 	}
 
 	// post processing
