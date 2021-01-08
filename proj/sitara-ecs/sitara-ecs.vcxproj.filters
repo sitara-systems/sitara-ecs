@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\sitara-ecs">
+      <UniqueIdentifier>{d0003cc9-bb73-4bc6-afba-0df724cab3d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sitara-ecs\utilities">
+      <UniqueIdentifier>{a33c5181-d757-477a-84e7-9d2e83ebc29b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sitara-ecs\physics">
+      <UniqueIdentifier>{254fc0c1-65ea-4bb9-8fbe-3085ef840d6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sitara-ecs\transform">
+      <UniqueIdentifier>{743cb830-ef37-4a19-a7d0-dbd31443873d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sitara-ecs\logic">
+      <UniqueIdentifier>{14d8f3b4-6d12-45c5-bc5d-74c6f8275562}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sitara-ecs\behavior">
+      <UniqueIdentifier>{78b7df81-c2fb-445b-8d0e-ad368587490c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sitara-ecs\geometry">
+      <UniqueIdentifier>{775b85f5-c167-43f1-9b0f-9cf614241028}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\entityx">
+      <UniqueIdentifier>{676bcb17-2da2-4322-8c31-78a1a3f16067}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sitara-ecs">
+      <UniqueIdentifier>{25a6f409-1bf4-46b8-b613-c72a3e73787b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sitara-ecs\logic">
+      <UniqueIdentifier>{ab1b290d-9782-4f5e-b171-637849f5e62d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sitara-ecs\behavior">
+      <UniqueIdentifier>{00d92a8e-60ef-4d3c-8626-683a7b789b52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sitara-ecs\physics">
+      <UniqueIdentifier>{5a781fac-979f-46bd-ab12-22381c838bf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sitara-ecs\transform">
+      <UniqueIdentifier>{24618d8e-90d0-467a-ac0d-e64633c8e042}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\entityx">
+      <UniqueIdentifier>{07c41685-1279-4ad7-80e8-bfb95ae2c986}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\entityx\3rdparty">
+      <UniqueIdentifier>{c0da81a1-cd7d-42c1-ac1f-8c7de374c5c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\entityx\deps">
+      <UniqueIdentifier>{8f1316cd-f562-4cc1-a39e-1a65adf4a17b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\entityx\help">
+      <UniqueIdentifier>{d6b6804b-92dd-493a-9816-4e27da3f0ba9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\entityx\help">
+      <UniqueIdentifier>{9c1e4929-9ee6-4bf1-855f-fc2fc58d311c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\entityx\tags">
+      <UniqueIdentifier>{aaa1c04e-5974-40c3-8275-fdaa6cc36a47}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Ecs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\utilities\Simplex.h">
+      <Filter>Header Files\sitara-ecs\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\utilities\Units.h">
+      <Filter>Header Files\sitara-ecs\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\transform\Transform.h">
+      <Filter>Header Files\sitara-ecs\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\transform\TransformSystem.h">
+      <Filter>Header Files\sitara-ecs\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\physics\GhostBody.h">
+      <Filter>Header Files\sitara-ecs\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\physics\PhysicsSystem.h">
+      <Filter>Header Files\sitara-ecs\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\physics\PhysicsUtils.h">
+      <Filter>Header Files\sitara-ecs\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\physics\RigidBody.h">
+      <Filter>Header Files\sitara-ecs\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\logic\LogicalLayer.h">
+      <Filter>Header Files\sitara-ecs\logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\logic\LogicState.h">
+      <Filter>Header Files\sitara-ecs\logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\logic\StateSystem.h">
+      <Filter>Header Files\sitara-ecs\logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\geometry\Geometry.h">
+      <Filter>Header Files\sitara-ecs\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\geometry\GeometryUtils.h">
+      <Filter>Header Files\sitara-ecs\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\behavior\Alignment.h">
+      <Filter>Header Files\sitara-ecs\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\behavior\BehaviorSystem.h">
+      <Filter>Header Files\sitara-ecs\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\behavior\Cohesion.h">
+      <Filter>Header Files\sitara-ecs\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\behavior\NoiseField.h">
+      <Filter>Header Files\sitara-ecs\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\behavior\Separation.h">
+      <Filter>Header Files\sitara-ecs\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\behavior\Target.h">
+      <Filter>Header Files\sitara-ecs\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\entityx\entityx\config.h">
+      <Filter>Header Files\entityx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\entityx\entityx\Entity.h">
+      <Filter>Header Files\entityx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\entityx\entityx\entityx.h">
+      <Filter>Header Files\entityx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\entityx\entityx\Event.h">
+      <Filter>Header Files\entityx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\entityx\entityx\quick.h">
+      <Filter>Header Files\entityx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\entityx\entityx\System.h">
+      <Filter>Header Files\entityx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\entityx\entityx\3rdparty\catch.hpp">
+      <Filter>Header Files\entityx\3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\entityx\entityx\3rdparty\simplesignal.h">
+      <Filter>Header Files\entityx\3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\entityx\entityx\deps\Dependencies.h">
+      <Filter>Header Files\entityx\deps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\entityx\entityx\help\NonCopyable.h">
+      <Filter>Header Files\entityx\help</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\entityx\entityx\help\Pool.h">
+      <Filter>Header Files\entityx\help</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\entityx\entityx\help\Timer.h">
+      <Filter>Header Files\entityx\help</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\entityx\entityx\tags\TagsComponent.h">
+      <Filter>Header Files\entityx\tags</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="sitara-ecs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\behavior\BehaviorSystem.cpp">
+      <Filter>Source Files\sitara-ecs\behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\logic\StateSystem.cpp">
+      <Filter>Source Files\sitara-ecs\logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\physics\PhysicsSystem.cpp">
+      <Filter>Source Files\sitara-ecs\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\transform\TransformSystem.cpp">
+      <Filter>Source Files\sitara-ecs\transform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\entityx\entityx\System.cc">
+      <Filter>Source Files\entityx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\entityx\entityx\Entity.cc">
+      <Filter>Source Files\entityx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\entityx\entityx\Event.cc">
+      <Filter>Source Files\entityx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\entityx\entityx\help\Pool.cc">
+      <Filter>Source Files\entityx\help</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\entityx\entityx\help\Timer.cc">
+      <Filter>Source Files\entityx\help</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
