@@ -75,103 +75,103 @@
     <ClInclude Include="framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Ecs.h">
+    <ClInclude Include="..\include\Ecs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\utilities\Simplex.h">
+    <ClInclude Include="..\include\utilities\Simplex.h">
       <Filter>Header Files\sitara-ecs\utilities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\utilities\Units.h">
+    <ClInclude Include="..\include\utilities\Units.h">
       <Filter>Header Files\sitara-ecs\utilities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\transform\Transform.h">
+    <ClInclude Include="..\include\transform\Transform.h">
       <Filter>Header Files\sitara-ecs\transform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\transform\TransformSystem.h">
+    <ClInclude Include="..\include\transform\TransformSystem.h">
       <Filter>Header Files\sitara-ecs\transform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\physics\GhostBody.h">
+    <ClInclude Include="..\include\physics\GhostBody.h">
       <Filter>Header Files\sitara-ecs\physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\physics\PhysicsSystem.h">
+    <ClInclude Include="..\include\physics\PhysicsSystem.h">
       <Filter>Header Files\sitara-ecs\physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\physics\PhysicsUtils.h">
+    <ClInclude Include="..\include\physics\PhysicsUtils.h">
       <Filter>Header Files\sitara-ecs\physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\physics\RigidBody.h">
+    <ClInclude Include="..\include\physics\RigidBody.h">
       <Filter>Header Files\sitara-ecs\physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\logic\LogicalLayer.h">
+    <ClInclude Include="..\include\logic\LogicalLayer.h">
       <Filter>Header Files\sitara-ecs\logic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\logic\LogicState.h">
+    <ClInclude Include="..\include\logic\LogicState.h">
       <Filter>Header Files\sitara-ecs\logic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\logic\StateSystem.h">
+    <ClInclude Include="..\include\logic\StateSystem.h">
       <Filter>Header Files\sitara-ecs\logic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\geometry\Geometry.h">
+    <ClInclude Include="..\include\geometry\Geometry.h">
       <Filter>Header Files\sitara-ecs\geometry</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\geometry\GeometryUtils.h">
+    <ClInclude Include="..\include\geometry\GeometryUtils.h">
       <Filter>Header Files\sitara-ecs\geometry</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\behavior\Alignment.h">
+    <ClInclude Include="..\include\behavior\Alignment.h">
       <Filter>Header Files\sitara-ecs\behavior</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\behavior\BehaviorSystem.h">
+    <ClInclude Include="..\include\behavior\BehaviorSystem.h">
       <Filter>Header Files\sitara-ecs\behavior</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\behavior\Cohesion.h">
+    <ClInclude Include="..\include\behavior\Cohesion.h">
       <Filter>Header Files\sitara-ecs\behavior</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\behavior\NoiseField.h">
+    <ClInclude Include="..\include\behavior\NoiseField.h">
       <Filter>Header Files\sitara-ecs\behavior</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\behavior\Separation.h">
+    <ClInclude Include="..\include\behavior\Separation.h">
       <Filter>Header Files\sitara-ecs\behavior</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\behavior\Target.h">
+    <ClInclude Include="..\include\behavior\Target.h">
       <Filter>Header Files\sitara-ecs\behavior</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libs\entityx\entityx\config.h">
+    <ClInclude Include="..\libs\entityx\entityx\config.h">
       <Filter>Header Files\entityx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libs\entityx\entityx\Entity.h">
+    <ClInclude Include="..\libs\entityx\entityx\Entity.h">
       <Filter>Header Files\entityx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libs\entityx\entityx\entityx.h">
+    <ClInclude Include="..\libs\entityx\entityx\entityx.h">
       <Filter>Header Files\entityx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libs\entityx\entityx\Event.h">
+    <ClInclude Include="..\libs\entityx\entityx\Event.h">
       <Filter>Header Files\entityx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libs\entityx\entityx\quick.h">
+    <ClInclude Include="..\libs\entityx\entityx\quick.h">
       <Filter>Header Files\entityx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libs\entityx\entityx\System.h">
+    <ClInclude Include="..\libs\entityx\entityx\System.h">
       <Filter>Header Files\entityx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libs\entityx\entityx\3rdparty\catch.hpp">
+    <ClInclude Include="..\libs\entityx\entityx\3rdparty\catch.hpp">
       <Filter>Header Files\entityx\3rdparty</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libs\entityx\entityx\3rdparty\simplesignal.h">
+    <ClInclude Include="..\libs\entityx\entityx\3rdparty\simplesignal.h">
       <Filter>Header Files\entityx\3rdparty</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libs\entityx\entityx\deps\Dependencies.h">
+    <ClInclude Include="..\libs\entityx\entityx\deps\Dependencies.h">
       <Filter>Header Files\entityx\deps</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libs\entityx\entityx\help\NonCopyable.h">
+    <ClInclude Include="..\libs\entityx\entityx\help\NonCopyable.h">
       <Filter>Header Files\entityx\help</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libs\entityx\entityx\help\Pool.h">
+    <ClInclude Include="..\libs\entityx\entityx\help\Pool.h">
       <Filter>Header Files\entityx\help</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libs\entityx\entityx\help\Timer.h">
+    <ClInclude Include="..\libs\entityx\entityx\help\Timer.h">
       <Filter>Header Files\entityx\help</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libs\entityx\entityx\tags\TagsComponent.h">
+    <ClInclude Include="..\libs\entityx\entityx\tags\TagsComponent.h">
       <Filter>Header Files\entityx\tags</Filter>
     </ClInclude>
   </ItemGroup>
@@ -179,31 +179,31 @@
     <ClCompile Include="sitara-ecs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\behavior\BehaviorSystem.cpp">
+    <ClCompile Include="..\src\behavior\BehaviorSystem.cpp">
       <Filter>Source Files\sitara-ecs\behavior</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\logic\StateSystem.cpp">
+    <ClCompile Include="..\src\logic\StateSystem.cpp">
       <Filter>Source Files\sitara-ecs\logic</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\physics\PhysicsSystem.cpp">
+    <ClCompile Include="..\src\physics\PhysicsSystem.cpp">
       <Filter>Source Files\sitara-ecs\physics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\transform\TransformSystem.cpp">
+    <ClCompile Include="..\src\transform\TransformSystem.cpp">
       <Filter>Source Files\sitara-ecs\transform</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\libs\entityx\entityx\System.cc">
+    <ClCompile Include="..\libs\entityx\entityx\System.cc">
       <Filter>Source Files\entityx</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\libs\entityx\entityx\Entity.cc">
+    <ClCompile Include="..\libs\entityx\entityx\Entity.cc">
       <Filter>Source Files\entityx</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\libs\entityx\entityx\Event.cc">
+    <ClCompile Include="..\libs\entityx\entityx\Event.cc">
       <Filter>Source Files\entityx</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\libs\entityx\entityx\help\Pool.cc">
+    <ClCompile Include="..\libs\entityx\entityx\help\Pool.cc">
       <Filter>Source Files\entityx\help</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\libs\entityx\entityx\help\Timer.cc">
+    <ClCompile Include="..\libs\entityx\entityx\help\Timer.cc">
       <Filter>Source Files\entityx\help</Filter>
     </ClCompile>
   </ItemGroup>
