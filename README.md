@@ -11,7 +11,11 @@ Tested with v0.9.2
 EntityX is included as a submodule.  You'll need to run CMake and configure the CMake files to copy files into the appropriate directories.  You do *not* need to build the project.
 
 ### Bullet3
-Install Bullet3 using `vcpkg` using the instructions at [https://github.com/bulletphysics/bullet3](https://github.com/bulletphysics/bullet3)
+Install Bullet3 using `vcpkg` using:
+
+```
+vcpkg.exe install bullet3:x64-windows-static
+```
 
 ## Usage
 
