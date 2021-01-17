@@ -2,29 +2,21 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <ENTITYX_ROOT>\libs\entityx</ENTITYX_ROOT>
-    <BULLET3_ROOT>\libs\bullet3</BULLET3_ROOT>
     <SITARA_ECS_ROOT>..\..\..\..\dependencies\sitara-ecs</SITARA_ECS_ROOT>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SITARA_ECS_ROOT)\src;$(SITARA_ECS_ROOT)$(ENTITYX_ROOT);$(SITARA_ECS_ROOT)$(BULLET3_ROOT)\include;$(SITARA_ECS_ROOT)$(BULLET3_ROOT)\include\bullet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SITARA_ECS_ROOT)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DISABLE_EXTENDED_ALIGNED_STORAGE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Bullet3Common.lib;BulletCollision.lib;BulletDynamics.lib;BulletInverseDynamics.lib;BulletSoftBody.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SITARA_ECS_ROOT)$(BULLET3_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sitara-ecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <BuildMacro Include="ENTITYX_ROOT">
-      <Value>$(ENTITYX_ROOT)</Value>
-    </BuildMacro>
-    <BuildMacro Include="BULLET3_ROOT">
-      <Value>$(BULLET3_ROOT)</Value>
-    </BuildMacro>
     <BuildMacro Include="SITARA_ECS_ROOT">
       <Value>$(SITARA_ECS_ROOT)</Value>
     </BuildMacro>
