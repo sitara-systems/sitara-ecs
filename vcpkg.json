@@ -4,8 +4,7 @@
 	"port-version": 0,
 	"description": [
 		"Block for building entity-component-system architectures using EntityX and Bullet Physics.",
-        "Copy the dependencies below to your manifest file.",
-        "Install using the command: .\vcpkg.exe install --x-manifest-root .. --triplet x64-windows-static"
+        "Copy the dependencies below to your manifest file."
 	],
 	"homepage": "https://github.com/sitara-systems/sitara-ecs",
 	"documentation": "",
