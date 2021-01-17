@@ -1,4 +1,0 @@
-[submodule "libs/entityx"]
-	path = libs/entityx
-	url = https://github.com/alecthomas/entityx
-	branch = master

@@ -1,13 +1,16 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.902
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhysicsSystemExample", "PhysicsSystemExample.vcxproj", "{3EC7DBBE-4EC9-4ADD-9EAB-89F1B7BEE63B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE} = {92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}
+		{81AA37E2-5D86-4D49-9331-B3946E421027} = {81AA37E2-5D86-4D49-9331-B3946E421027}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cinder", "..\..\..\..\cinder\proj\vc2013\cinder.vcxproj", "{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cinder", "..\..\..\..\cinder\proj\vc2019\cinder.vcxproj", "{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sitara-ecs", "..\..\..\proj\sitara-ecs.vcxproj", "{81AA37E2-5D86-4D49-9331-B3946E421027}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +54,22 @@ Global
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Release|x64.Build.0 = Release|x64
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Release|x86.ActiveCfg = Release|Win32
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Release|x86.Build.0 = Release|Win32
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Debug_ANGLE|x64.ActiveCfg = Debug|x64
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Debug_ANGLE|x64.Build.0 = Debug|x64
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Debug_ANGLE|x86.ActiveCfg = Debug|Win32
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Debug_ANGLE|x86.Build.0 = Debug|Win32
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Debug|x64.ActiveCfg = Debug|x64
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Debug|x64.Build.0 = Debug|x64
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Debug|x86.ActiveCfg = Debug|Win32
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Debug|x86.Build.0 = Debug|Win32
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Release_ANGLE|x64.ActiveCfg = Release|x64
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Release_ANGLE|x64.Build.0 = Release|x64
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Release_ANGLE|x86.ActiveCfg = Release|Win32
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Release_ANGLE|x86.Build.0 = Release|Win32
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Release|x64.ActiveCfg = Release|x64
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Release|x64.Build.0 = Release|x64
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Release|x86.ActiveCfg = Release|Win32
+		{81AA37E2-5D86-4D49-9331-B3946E421027}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

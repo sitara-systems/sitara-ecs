@@ -36,8 +36,6 @@ class FlockingBehaviorExampleApp : public App {
 	std::vector<std::string> mBehaviorList = { "Seek", "Flee", "Arrive", "Wander", "Flock"};
 	int mBehaviorSelect = 0;
 
-	sitara::ecs::Units mUnits;
-
 	enum LayerNames {
 		WALLS,
 		OBSTACLES,
@@ -57,17 +55,17 @@ FlockingBehaviorExampleApp::FlockingBehaviorExampleApp() :
 }
 
 void FlockingBehaviorExampleApp::setup() {
+	ci::Rand::randomize();
 	ci::app::setFrameRate(60);
 
 	sitara::ecs::configureSystems(mSystems);
 	mSystems.add<sitara::ecs::BehaviorSystem>();
 	auto physics = mSystems.add<sitara::ecs::PhysicsSystem>();
+	physics->setGhostCollisions(true);
 	mSystems.add<sitara::ecs::TransformSystem>();
 	mSystems.configure();
 
-	mUnits = sitara::ecs::Units(10.0);
-
-	mCameraDistance = mUnits.getPixelsFromMeters(75.0f);
+	mCameraDistance = sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(75.0f);
 	mEye = mCameraDistance * glm::normalize(vec3(1, 0.25, 1));
 	mCenter = vec3(0.0f, 0.0f, 0.0f);
 	mUp = vec3(0.0f, 1.0f, 0.0f);
@@ -85,39 +83,39 @@ void FlockingBehaviorExampleApp::mouseDown( MouseEvent event ) {
 }
 
 void FlockingBehaviorExampleApp::update() {
-	if (mBehaviorSelect == 0) {
-		mSystems.system<sitara::ecs::BehaviorSystem>()->seek(mEntities);
-	}
-	else if (mBehaviorSelect == 1) {
-		mSystems.system<sitara::ecs::BehaviorSystem>()->flee(mEntities);
-	}
-	else if (mBehaviorSelect == 2) {
-		mSystems.system<sitara::ecs::BehaviorSystem>()->arrive(mEntities);
-	}
-	else if (mBehaviorSelect == 3) {
-		mSystems.system<sitara::ecs::BehaviorSystem>()->wander(mEntities);
-	}
-	else if (mBehaviorSelect == 4) {
-		mSystems.system<sitara::ecs::BehaviorSystem>()->separate(mEntities);
-		mSystems.system<sitara::ecs::BehaviorSystem>()->cohere(mEntities);
-		mSystems.system<sitara::ecs::BehaviorSystem>()->align(mEntities);
-	}
-
-	entityx::ComponentHandle<sitara::ecs::StaticTarget> target;
+	entityx::ComponentHandle<sitara::ecs::Target> target;
 	entityx::ComponentHandle<sitara::ecs::Transform> transform;
 	entityx::ComponentHandle<sitara::ecs::LogicalLayer> layer;
 
 	for (auto entity : mEntities.entities_with_components(target, layer, transform)) {
 		if (layer->mLayerId == LayerNames::TARGET) {
-			target->mTargetPosition = ci::vec3(mUnits.getPixelsFromMeters(20.0) * std::cos(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
-												mUnits.getPixelsFromMeters(20.0) * std::sin(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
-												0.0);
-			transform->mPosition = target->mTargetPosition;
+			target->setTargetPosition(ci::vec3(sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(20.0) * std::cos(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
+				sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(20.0) * std::sin(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
+												0.0));
+			transform->mPosition = target->getTargetPosition();
 		}
 		else if (layer->mLayerId == LayerNames::BOIDS) {
-			target->mTargetPosition = ci::vec3(mUnits.getPixelsFromMeters(20.0) * std::cos(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
-				mUnits.getPixelsFromMeters(20.0) * std::sin(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
-				0.0);
+			if (mBehaviorSelect == 0) {
+				mSystems.system<sitara::ecs::BehaviorSystem>()->seek(entity);
+			}
+			else if (mBehaviorSelect == 1) {
+				mSystems.system<sitara::ecs::BehaviorSystem>()->flee(entity);
+			}
+			else if (mBehaviorSelect == 2) {
+				mSystems.system<sitara::ecs::BehaviorSystem>()->arrive(entity);
+			}
+			else if (mBehaviorSelect == 3) {
+				mSystems.system<sitara::ecs::BehaviorSystem>()->wander(entity);
+			}
+			else if (mBehaviorSelect == 4) {
+				mSystems.system<sitara::ecs::BehaviorSystem>()->separate(entity, mEntities);
+				mSystems.system<sitara::ecs::BehaviorSystem>()->cohere(entity, mEntities);
+				mSystems.system<sitara::ecs::BehaviorSystem>()->align(entity, mEntities);
+			}
+
+			target->setTargetPosition(ci::vec3(sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(20.0) * std::cos(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
+				sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(20.0) * std::sin(2.0 * M_PI * ci::app::getElapsedSeconds() / 8.0f),
+				0.0));
 		}
 	}
 
@@ -199,7 +197,7 @@ void FlockingBehaviorExampleApp::createUserInterface() {
 }
 
 void FlockingBehaviorExampleApp::createWorld() {
-	float worldSize = mUnits.getPixelsFromMeters(50);
+	float worldSize = sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(50);
 
 	// create walls
 	auto floor = createWall(worldSize, vec3(1, 1, 0), vec3(1, 0, 0), vec3(0, 1, 0));
@@ -212,36 +210,59 @@ void FlockingBehaviorExampleApp::createWorld() {
 	// create obstacles
 	for (int i = 0; i < 10; i++) {
 		auto obstacle = mEntities.create();
-		float radius = ci::randFloat(mUnits.getPixelsFromMeters(5));
+		float radius = ci::randFloat(sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(5));
 		obstacle.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createSphere(radius, 0.0,
-																						0.25f * worldSize * ci::randVec3()));
+																						0.5f * worldSize * ci::vec3(ci::randFloat(-1, 1), ci::randFloat(0.25, 0.75), ci::randFloat(-1, 1))));
 		obstacle.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(radius), Color(0.0f, ci::randFloat(), ci::randFloat()));
 		obstacle.assign<sitara::ecs::LogicalLayer>(LayerNames::OBSTACLES);
 	}
 
-	for (int i = 0; i < 15; i++) {
+	// create proximity detector
+	auto proximity = mEntities.create();
+	float edge = sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(22);
+	ci::vec3 proxPosition = 0.25f * worldSize * ci::vec3(0.0, -1.0f, 0.0);
+	auto ghostBody = proximity.assign<sitara::ecs::GhostBody>(sitara::ecs::GhostBody::createBox(ci::vec3(edge), proxPosition));
+	ghostBody->addOnEnterEachCollisionFn([&](entityx::ComponentHandle<sitara::ecs::GhostBody> thisBody, entityx::ComponentHandle<sitara::ecs::RigidBody> otherBody) {
+		std::cout << "Proximity Detection Event BEGIN" << std::endl;
+		auto e = otherBody.entity();
+		auto geometry = e.component<sitara::ecs::Geometry>();
+		geometry->setColor(ci::Color(1, 1, 1));
+	});
+	ghostBody->addOnEndEachCollisionFn([&](entityx::ComponentHandle<sitara::ecs::GhostBody> thisBody, entityx::ComponentHandle<sitara::ecs::RigidBody> otherBody) {
+		std::cout << "Proximity Detection Event END" << std::endl;
+		auto e = otherBody.entity();
+		auto geometry = e.component<sitara::ecs::Geometry>();
+		geometry->setColor(ci::Color(0.8, 0.0, 1));
+	});
+	proximity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createWireCube(ci::vec3(edge)), Color(1, 1, 1));
+	proximity.assign<sitara::ecs::LogicalLayer>(LayerNames::OBSTACLES);
+	auto transform = proximity.component<sitara::ecs::Transform>();
+	transform->mPosition = proxPosition;
+
+	// create boids
+	for (int i = 0; i < 1; i++) {
 		auto boid = mEntities.create();
-		float radius = mUnits.getPixelsFromMeters(1);
+		float radius = sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(1);
 		boid.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createSphere(radius, 1.0, 0.4f * worldSize * ci::randVec3()));
 		boid.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(radius), Color(0.8, 0, 1));
 		boid.assign<sitara::ecs::LogicalLayer>(LayerNames::BOIDS);
-		boid.assign<sitara::ecs::StaticTarget>(ci::vec3(0), 250.0f, mUnits.getPixelsFromMeters(50));
+		boid.assign<sitara::ecs::Target>(ci::vec3(0), 250.0f, sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(3));
 		boid.assign<sitara::ecs::NoiseField>(ci::vec4(ci::randVec3(), ci::randFloat()));
-		boid.assign<sitara::ecs::Separation>(mUnits.getPixelsFromMeters(15), mSeparationStrength);
-		boid.assign<sitara::ecs::Cohesion>(mUnits.getPixelsFromMeters(15), mCohesionStrength);
-		boid.assign<sitara::ecs::Alignment>(mUnits.getPixelsFromMeters(15), mAlignmentStrength);
+		boid.assign<sitara::ecs::Separation>(sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(15), mSeparationStrength);
+		boid.assign<sitara::ecs::Cohesion>(sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(15), mCohesionStrength);
+		boid.assign<sitara::ecs::Alignment>(sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(15), mAlignmentStrength);
 	}
 
 	auto target = mEntities.create();
-	float targetSize = mUnits.getPixelsFromMeters(1);
-	target.assign<sitara::ecs::StaticTarget>(ci::vec3(0), 250.0f, mUnits.getPixelsFromMeters(50));
+	float targetSize = sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(1);
+	target.assign<sitara::ecs::Target>(ci::vec3(0), 250.0f, sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(50));
 	target.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(targetSize), Color(1, 1, 0));
 	target.assign<sitara::ecs::LogicalLayer>(LayerNames::TARGET);
 	target.assign<sitara::ecs::Transform>();
 }
 
 void FlockingBehaviorExampleApp::resetWorld() {
-	float worldSize = mUnits.getPixelsFromMeters(50);
+	float worldSize = sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(50);
 
 	entityx::ComponentHandle<sitara::ecs::LogicalLayer> layer;
 	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
@@ -253,12 +274,13 @@ void FlockingBehaviorExampleApp::resetWorld() {
 		}
 		*/
 		if (layer->mLayerId == LayerNames::BOIDS) {
+			entity.component<sitara::ecs::Geometry>()->setColor(Color(0.8, 0, 1));
 			mSystems.system<sitara::ecs::PhysicsSystem>()->resetBody(body, 0.4f * worldSize * ci::randVec3());
 		}
 	}
 }
 
-entityx::Entity FlockingBehaviorExampleApp::createWall(float size, vec3 dimensions, vec3 u, vec3 v) {
+entityx::Entity FlockingBehaviorExampleApp::createWall(float size, ci::vec3 dimensions, ci::vec3 u, ci::vec3 v) {
 	auto wall = mEntities.create();
 	vec3 wSize = size * dimensions;
 	vec3 position = 0.5f * size * glm::cross(u, v);

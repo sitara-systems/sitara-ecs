@@ -1,0 +1,22 @@
+{
+	"name": "sitara-ecs",
+	"version-string": "v0.1",
+	"port-version": 0,
+	"description": [
+		"Block for building entity-component-system architectures using EntityX and Bullet Physics.",
+        "Copy the dependencies below to your manifest file."
+	],
+	"homepage": "https://github.com/sitara-systems/sitara-ecs",
+	"documentation": "",
+	"maintainers": [
+		"Nathan Lachenmyer <nathan@sitara.systems>"
+	],
+	"dependencies": [
+		{
+			"name": "bullet3"
+		},
+		{
+			"name": "entityx"
+		}
+	]
+}

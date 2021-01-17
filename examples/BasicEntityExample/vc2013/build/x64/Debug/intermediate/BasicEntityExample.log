@@ -1,16 +1,7 @@
-﻿  BasicEntityExampleApp.cpp
-c:\users\nathan\documents\anicka-hymtf-tate\dependencies\cinder\include\cinder\filesystem.h(40): warning C4996: 'std::tr2': warning STL4018: The non-Standard std::tr2::sys namespace is deprecated and will be REMOVED. It is superseded by std::filesystem. You can define _SILENCE_TR2_SYS_NAMESPACE_DEPRECATION_WARNING to acknowledge that you have received this warning.
-  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\experimental\filesystem(3238): note: see declaration of 'std::tr2'
-  Unknown compiler version - please run the configure tests and report the results
-c:\users\nathan\documents\anicka-hymtf-tate\dependencies\sitara-ecs\examples\basicentityexample\src\basicentityexampleapp.cpp(42): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\nathan\documents\anicka-hymtf-tate\dependencies\sitara-ecs\examples\basicentityexample\src\basicentityexampleapp.cpp(90): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-c:\users\nathan\documents\anicka-hymtf-tate\dependencies\sitara-ecs\examples\basicentityexample\src\basicentityexampleapp.cpp(91): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-  BasicEntityExample.vcxproj -> C:\Users\Nathan\Documents\anicka-hymtf-tate\dependencies\sitara-ecs\examples\BasicEntityExample\vc2013\build\x64\Debug\BasicEntityExample.exe
+﻿  Installing vcpkg dependencies
+  Detecting compiler hash for triplet x64-windows-static...
+  All requested packages are currently installed.
+  
+  Total elapsed time: 700 ns
+  
+  BasicEntityExample.vcxproj -> D:\Projects\tate-hymtf-2020\dependencies\sitara-ecs\examples\BasicEntityExample\vc2013\build\x64\Debug\BasicEntityExample.exe
