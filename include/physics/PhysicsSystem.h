@@ -3,44 +3,42 @@
 #include <map>
 #include "entityx/System.h"
 #include "cinder/Vector.h"
+#include "PxPhysicsAPI.h"
 #include "bullet/btBulletDynamicsCommon.h"
-#include "physics/RigidBody.h"
-#include "physics/GhostBody.h"
+#include "physics/DynamicBody.h"
+#include "physics/StaticBody.h"
 
 namespace sitara {
 	namespace ecs {
+
 		class PhysicsSystem : public entityx::System<PhysicsSystem>, public entityx::Receiver<PhysicsSystem> {
 		public:
 			PhysicsSystem();
 			~PhysicsSystem();
 			void configure(entityx::EntityManager& entities, entityx::EventManager& events) override;
 			void update(entityx::EntityManager& entities, entityx::EventManager& events, entityx::TimeDelta dt) override;
-			void receive(const entityx::ComponentAddedEvent<RigidBody>& event);
-			void receive(const entityx::ComponentRemovedEvent<RigidBody>& event);
-			void receive(const entityx::ComponentAddedEvent<GhostBody>& event);
-			void receive(const entityx::ComponentRemovedEvent<GhostBody>& event);
+			void receive(const entityx::ComponentAddedEvent<DynamicBody>& event);
+			void receive(const entityx::ComponentRemovedEvent<DynamicBody>& event);
+			void receive(const entityx::ComponentAddedEvent<StaticBody>& event);
+			void receive(const entityx::ComponentRemovedEvent<StaticBody>& event);
 			double getElapsedSimulationTime();
-			bool setGhostCollisions(bool enable);
-			void setGravity(ci::vec3 gravity);
-			void clearForces(entityx::EntityManager& entities);
-			void resetBody(entityx::ComponentHandle<sitara::ecs::RigidBody> body, ci::vec3 position);
-			void addRigidBodyPreUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback);
-			void addRigidBodyPostUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> callback);
-			btDiscreteDynamicsWorld* getWorld();
+			void setGravity(ci::vec3& gravity);
+			void setNumberOfThread(uint32_t numThreads);
+			physx::PxRigidStatic* createStaticBody(ci::vec3& position, ci::quat& rotation);
+			physx::PxRigidDynamic* createDynamicBody(ci::vec3& position, ci::quat& rotation);
+			int registerMaterial(float staticFriction, float dynamicFriction, float restitution);
+			physx::PxMaterial* getMaterial(int materialId);
 		private:
-			void checkGhostBodyCollisions();
-			btDefaultCollisionConfiguration* mCollisionConfiguration;
-			btCollisionDispatcher* mDispatcher;
-			btBroadphaseInterface* mOverlappingPairCache;
-			btSequentialImpulseConstraintSolver* mBulletSolver;
-			btDiscreteDynamicsWorld* mDynamicsWorld;
-			double mElapsedSimulationTime;
-			bool mEnableGhostCollisions;
-			std::vector<btGhostObject*> mActiveGhostObjects;
-			std::map<btRigidBody*, entityx::ComponentHandle<sitara::ecs::RigidBody>, std::less<btRigidBody*>> mRigidBodyMap;
-			std::map<btGhostObject*, entityx::ComponentHandle<sitara::ecs::GhostBody>, std::less<void>> mGhostBodyMap;
-			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mRigidBodyPreUpdateFns;
-			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::RigidBody>)> > mRigidBodyPostUpdateFns;
+			physx::PxDefaultAllocator mAllocator;
+			physx::PxDefaultErrorCallback mErrorCallback;
+			physx::PxFoundation* mFoundation;
+			physx::PxPhysics* mPhysics;
+			physx::PxDefaultCpuDispatcher* mDispatcher;
+			physx::PxScene* mScene;
+			physx::PxPvd* mPvd;
+			uint32_t mNumberOfThreads;
+			std::map<int, physx::PxMaterial*> mMaterialRegistry;
+			uint32_t mMaterialCount;
 		};
 	}
 }

@@ -4,7 +4,7 @@
 #include "behavior/Separation.h"
 #include "behavior/Cohesion.h"
 #include "behavior/Alignment.h"
-#include "physics/RigidBody.h"
+#include "physics/DynamicBody.h"
 #include "cinder/app/App.h"
 #include "cinder/Rand.h"
 
@@ -19,11 +19,11 @@ void BehaviorSystem::update(entityx::EntityManager &entities, entityx::EventMana
 }
 
 void BehaviorSystem::seek(entityx::Entity& entity) {
-	entityx::ComponentHandle<sitara::ecs::RigidBody> body = entity.component<sitara::ecs::RigidBody>();
+	entityx::ComponentHandle<sitara::ecs::DynamicBody> body = entity.component<sitara::ecs::DynamicBody>();
 	entityx::ComponentHandle<sitara::ecs::Target> target = entity.component<sitara::ecs::Target>();
 
 	if (body.valid() && target.valid()) {
-		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
+		ci::vec3 position = body->getPosition();
 		ci::vec3 targetOffset = target->getTargetPosition() - position;
 		ci::vec3 norm;
 		if (glm::length(targetOffset) == 0) {
@@ -33,18 +33,18 @@ void BehaviorSystem::seek(entityx::Entity& entity) {
 			norm = glm::normalize(targetOffset);
 		}
 		ci::vec3 desiredVelocity = target->mWeight * norm;
-		ci::vec3 currentVelocity = physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
+		ci::vec3 currentVelocity = body->getVelocity();
 		ci::vec3 desiredAcceleration = desiredVelocity - currentVelocity;
-		body->getRigidBody()->applyCentralForce(physics::toBtVector3(desiredAcceleration));
+		body->applyForce(desiredAcceleration);
 	}
 }
 
 void BehaviorSystem::flee(entityx::Entity& entity, ci::vec3 nullDirection) {
-	entityx::ComponentHandle<sitara::ecs::RigidBody> body = entity.component<sitara::ecs::RigidBody>();
+	entityx::ComponentHandle<sitara::ecs::DynamicBody> body = entity.component<sitara::ecs::DynamicBody>();
 	entityx::ComponentHandle<sitara::ecs::Target> target = entity.component<sitara::ecs::Target>();
 
 	if (body.valid() && target.valid()) {
-		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
+		ci::vec3 position = body->getPosition();
 		ci::vec3 targetOffset = position - target->getTargetPosition();
 		ci::vec3 norm;
 		if (glm::length(targetOffset) < 10) {
@@ -54,26 +54,18 @@ void BehaviorSystem::flee(entityx::Entity& entity, ci::vec3 nullDirection) {
 			norm = glm::normalize(targetOffset);
 		}
 		ci::vec3 desiredVelocity = target->mWeight * norm;
-		ci::vec3 currentVelocity = physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
+		ci::vec3 currentVelocity = body->getVelocity();
 		ci::vec3 desiredAcceleration = desiredVelocity - currentVelocity;
-		body->getRigidBody()->applyCentralForce(physics::toBtVector3(desiredAcceleration));
+		body->applyForce(desiredAcceleration);
 	}
 }
 
 void BehaviorSystem::arrive(entityx::Entity& entity) {
-	entityx::ComponentHandle<sitara::ecs::RigidBody> body = entity.component<sitara::ecs::RigidBody>();
+	entityx::ComponentHandle<sitara::ecs::DynamicBody> body = entity.component<sitara::ecs::DynamicBody>();
 	entityx::ComponentHandle<sitara::ecs::Target> target = entity.component<sitara::ecs::Target>();
 
 	if (body.valid() && target.valid()) {
-		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
-
-		btTransform trans;
-		if (body->getMotionState()) {
-			body->getMotionState()->getWorldTransform(trans);
-		}
-
-		ci::vec3 origin = physics::fromBtVector3(trans.getOrigin());
-			
+		ci::vec3 position = body->getPosition();			
 		ci::vec3 t_p = target->getTargetPosition();
 		ci::vec3 targetOffset = t_p - position;
 		float distance = glm::length(targetOffset);
@@ -94,18 +86,18 @@ void BehaviorSystem::arrive(entityx::Entity& entity) {
 			// regular seek behavior
 			desiredVelocity = target->mWeight * norm;
 		}
-		ci::vec3 currentVelocity = physics::fromBtVector3(body->getRigidBody()->getLinearVelocity());
+		ci::vec3 currentVelocity = body->getVelocity();
 		ci::vec3 desiredAcceleration = desiredVelocity - currentVelocity;
-		body->getRigidBody()->applyCentralForce(physics::toBtVector3(desiredAcceleration));
+		body->applyForce(desiredAcceleration);
 	}
 }
 
 void BehaviorSystem::wander(entityx::Entity& entity) {
-	entityx::ComponentHandle<sitara::ecs::RigidBody> body = entity.component<sitara::ecs::RigidBody>();
+	entityx::ComponentHandle<sitara::ecs::DynamicBody> body = entity.component<sitara::ecs::DynamicBody>();
 	entityx::ComponentHandle<sitara::ecs::NoiseField> noise = entity.component<sitara::ecs::NoiseField>();
 
 	if (body.valid() && noise.valid()) {
-		ci::vec3 position = physics::fromBtVector3(body->getRigidBody()->getCenterOfMassPosition());
+		ci::vec3 position = body->getPosition();
 		ci::vec3 direction = ci::vec3(
 			Simplex::noise(ci::vec2(position.x + noise->mOffsets.x, ci::app::getElapsedSeconds() + noise->mOffsets.w)),
 			Simplex::noise(ci::vec2(position.y + noise->mOffsets.y, ci::app::getElapsedSeconds() + noise->mOffsets.w)),
@@ -120,27 +112,27 @@ void BehaviorSystem::wander(entityx::Entity& entity) {
 		}
 
 		ci::vec3 desiredAcceleration = noise->mWeight * norm;
-		body->getRigidBody()->applyCentralForce(physics::toBtVector3(desiredAcceleration));
+		body->applyForce(desiredAcceleration);
 	}
 
 }
 
 void BehaviorSystem::separate(entityx::Entity& entity, entityx::EntityManager& entities) {
-	entityx::ComponentHandle<sitara::ecs::RigidBody> b1 = entity.component<sitara::ecs::RigidBody>();
+	entityx::ComponentHandle<sitara::ecs::DynamicBody> b1 = entity.component<sitara::ecs::DynamicBody>();
 	entityx::ComponentHandle<sitara::ecs::Separation> separation = entity.component<sitara::ecs::Separation>();
 
 	// this is implemented in an inefficient way; I should come back and find an elegant resolution with iterators
 	if(b1.valid() && separation.valid()) {
-		entityx::ComponentHandle<sitara::ecs::RigidBody> b2;
+		entityx::ComponentHandle<sitara::ecs::DynamicBody> b2;
 		for (auto e2 : entities.entities_with_components(b2)) {
 			if (entity != e2) {
-				ci::vec3 p1 = physics::fromBtVector3(b1->getRigidBody()->getCenterOfMassPosition());
-				ci::vec3 p2 = physics::fromBtVector3(b2->getRigidBody()->getCenterOfMassPosition());
+				ci::vec3 p1 = b1->getPosition();
+				ci::vec3 p2 = b2->getPosition();
 				ci::vec3 offset = p1 - p2;
 				float distance = glm::length(offset);
 				if (distance < separation->mZoneRadius) {
 					ci::vec3 desiredAcceleration = separation->mWeight * (10.0f / (distance)) * glm::normalize(offset); 
-					b1->getRigidBody()->applyCentralForce(physics::toBtVector3(desiredAcceleration));
+					b1->applyForce(desiredAcceleration);
 				}
 			}
 		}
@@ -148,35 +140,35 @@ void BehaviorSystem::separate(entityx::Entity& entity, entityx::EntityManager& e
 }
 
 void BehaviorSystem::cohere(entityx::Entity& entity, entityx::EntityManager& entities) {
-	entityx::ComponentHandle<sitara::ecs::RigidBody> b1 = entity.component<sitara::ecs::RigidBody>();
+	entityx::ComponentHandle<sitara::ecs::DynamicBody> b1 = entity.component<sitara::ecs::DynamicBody>();
 	entityx::ComponentHandle<sitara::ecs::Cohesion> cohesion = entity.component<sitara::ecs::Cohesion>();
 	// this is implemented in an inefficient way; I should come back and find an elegant resolution with iterators
 	if (b1.valid() && cohesion.valid()) {
-		entityx::ComponentHandle<sitara::ecs::RigidBody> b2;
+		entityx::ComponentHandle<sitara::ecs::DynamicBody> b2;
 		entityx::ComponentHandle<sitara::ecs::Cohesion> c2;
-		btVector3 target(0,0,0);
+		ci::vec3 target(0,0,0);
 		int entityCount = 0;
 		for (auto e2 : entities.entities_with_components(b2, c2)) {
 			if (entity != e2) {
-				ci::vec3 p1 = physics::fromBtVector3(b1->getRigidBody()->getCenterOfMassPosition());
-				ci::vec3 p2 = physics::fromBtVector3(b2->getRigidBody()->getCenterOfMassPosition());
+				ci::vec3 p1 = b1->getPosition();
+				ci::vec3 p2 = b2->getPosition();
 				ci::vec3 offset = p1 - p2;
 				float distance = glm::length(offset);
 				if (distance < cohesion->mZoneRadius) {
-					target += b2->getRigidBody()->getCenterOfMassPosition();
+					target += b2->getPosition();
 					entityCount++;
 				}
 			}
 		}
 		if (entityCount == 0) {
-			target = btVector3(0, 0, 0);
+			target = ci::vec3(0, 0, 0);
 		}
 		else {
 			target /= float(entityCount);
 		}
-		ci::vec3 position = physics::fromBtVector3(b1->getRigidBody()->getCenterOfMassPosition());
+		ci::vec3 position = b1->getPosition();
 		ci::vec3 normalizedVelocity = ci::vec3(0);
-		ci::vec3 targetOffset = physics::fromBtVector3(target) - position;
+		ci::vec3 targetOffset = target - position;
 		if (glm::length(targetOffset) < 10) {
 			normalizedVelocity = ci::vec3(0);
 		}
@@ -184,39 +176,39 @@ void BehaviorSystem::cohere(entityx::Entity& entity, entityx::EntityManager& ent
 			normalizedVelocity = glm::normalize(targetOffset);
 		}
 		ci::vec3 desiredVelocity = cohesion->mWeight * normalizedVelocity;
-		ci::vec3 desiredAcceleration = desiredVelocity - physics::fromBtVector3(b1->getRigidBody()->getLinearVelocity());
-		b1->getRigidBody()->applyCentralForce(physics::toBtVector3(desiredAcceleration));
+		ci::vec3 desiredAcceleration = desiredVelocity - b1->getVelocity();
+		b1->applyForce(desiredAcceleration);
 	}
 }
 
 void BehaviorSystem::align(entityx::Entity& entity, entityx::EntityManager& entities) {
-	entityx::ComponentHandle<sitara::ecs::RigidBody> b1 = entity.component<sitara::ecs::RigidBody>();
+	entityx::ComponentHandle<sitara::ecs::DynamicBody> b1 = entity.component<sitara::ecs::DynamicBody>();
 	entityx::ComponentHandle<sitara::ecs::Alignment> alignment = entity.component<sitara::ecs::Alignment>();
 
 	// this is implemented in an inefficient way; I should come back and find an elegant resolution with iterators
 	if (b1.valid() && alignment.valid()) {
-		entityx::ComponentHandle<sitara::ecs::RigidBody> b2;
-		btVector3 groupVelocity(0,0,0);
+		entityx::ComponentHandle<sitara::ecs::DynamicBody> b2;
+		ci::vec3 groupVelocity(0,0,0);
 		for (auto e2 : entities.entities_with_components(b2)) {
 			if (entity != e2) {
-				ci::vec3 p1 = physics::fromBtVector3(b1->getRigidBody()->getCenterOfMassPosition());
-				ci::vec3 p2 = physics::fromBtVector3(b2->getRigidBody()->getCenterOfMassPosition());
+				ci::vec3 p1 = b1->getPosition();
+				ci::vec3 p2 = b2->getPosition();
 				ci::vec3 offset = p1 - p2;
 				float distance = glm::length(offset);
 				if (distance < alignment->mZoneRadius) {
-					groupVelocity += b2->getRigidBody()->getLinearVelocity();
+					groupVelocity += b2->getVelocity();
 				}
 			}
 		}
 		ci::vec3 normalizedVelocity = ci::vec3(0);
-		if (glm::length(physics::fromBtVector3(groupVelocity)) == 0) {
+		if (glm::length(groupVelocity) == 0) {
 			normalizedVelocity = ci::vec3(0);
 		}
 		else {
-			normalizedVelocity = glm::normalize(physics::fromBtVector3(groupVelocity));
+			normalizedVelocity = glm::normalize(groupVelocity);
 		}
 		ci::vec3 desiredVelocity = alignment->mWeight * normalizedVelocity;
-		ci::vec3 desiredAcceleration = desiredVelocity - physics::fromBtVector3(b1->getRigidBody()->getLinearVelocity());
-		b1->getRigidBody()->applyCentralForce(physics::toBtVector3(desiredAcceleration));
+		ci::vec3 desiredAcceleration = desiredVelocity - b1->getVelocity();
+		b1->applyForce(desiredAcceleration);
 	}
 }

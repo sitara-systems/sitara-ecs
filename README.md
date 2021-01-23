@@ -49,3 +49,12 @@ Use the included `vcpkg.json` as a jumping off point for adding this block into 
 
 -   Unit Systems to help keep pixel-to-unit conversions consistent
 -   Simplex Noise
+
+## To Do
+
+-   Physics
+    -   Cooking
+    -   Multithreading and thread locking
+    -   GPU
+    -   Shared Shapes (alternative to Exclusive Shapes)
+    -   Material Registry (PhysicsSystem)

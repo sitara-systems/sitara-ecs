@@ -150,60 +150,51 @@ void PhysicsSystemExampleApp::createUserInterface() {
 		resetWorld();
 	});
 	mParams->addParam("Set Elasticity", mElasticEnums, &mElasticSelect).updateFn([=]() {
-		entityx::ComponentHandle<sitara::ecs::RigidBody> body;
+		entityx::ComponentHandle<sitara::ecs::DynamicBody> body;
 		if (mElasticSelect == 0) {
-			for (auto entity : mEntities.entities_with_components(body)) {
-				body->setElasticity(1.0);
-			}
 		}
 		else if (mElasticSelect == 1) {
-			for (auto entity : mEntities.entities_with_components(body)) {
-				body->setElasticity(0.0);
-			}
 		}
 	});
 	mParams->addParam("Set Friction", mFrictionEnums, &mFrictionSelect).updateFn([=]() {
-		entityx::ComponentHandle<sitara::ecs::RigidBody> body;
+		entityx::ComponentHandle<sitara::ecs::DynamicBody> body;
 		if (mFrictionSelect == 0) {
-			for (auto entity : mEntities.entities_with_components(body)) {
-				body->setFriction(1.0);
-			}
 		}
 		else if (mFrictionSelect == 1) {
-			for (auto entity : mEntities.entities_with_components(body)) {
-				body->setFriction(0.0);
-			}
 		}
 	});
 }
 
 void PhysicsSystemExampleApp::createWorld() {
-	auto ground = mEntities.create();
-	vec3 size = vec3(500, 1, 500);
-	vec3 position = vec3(0, 0, 0);
-	ground.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createBox(size, 0.0, position));
-	ground.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createCube(size), Color(1.0, 1.0, 1.0));
-	ground.assign<sitara::ecs::LogicalLayer>(LayerNames::GROUND);
+
+	{
+		int groundMaterialId = mSystems.system<sitara::ecs::PhysicsSystem>()->registerMaterial(0, 0, 0);
+
+		auto ground = mEntities.create();
+		vec3 size = vec3(500, 1, 500);
+		vec3 position = vec3(0, 0, 0);
+		auto body = ground.assign<sitara::ecs::StaticBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createStaticBody(position, ci::quat()));
+		body->attachBox(0.5f*size, mSystems.system<sitara::ecs::PhysicsSystem>()->getMaterial(groundMaterialId));
+		ground.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createCube(size), Color(1.0, 1.0, 1.0));
+		ground.assign<sitara::ecs::LogicalLayer>(LayerNames::GROUND);
+	}
+
+	int ballMaterialId = mSystems.system<sitara::ecs::PhysicsSystem>()->registerMaterial(0, 0, 0);
+	physx::PxMaterial* ballMaterial = mSystems.system<sitara::ecs::PhysicsSystem>()->getMaterial(ballMaterialId);
 
 	for (int i = 0; i < 50; i++) {
 		auto pos = vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150));
 		auto ball = mEntities.create();
 		float radius = 5.0;
-		ball.assign<sitara::ecs::RigidBody>(sitara::ecs::RigidBody::createSphere(radius, 50.0, pos));
+		auto body = ball.assign<sitara::ecs::DynamicBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createDynamicBody(pos, ci::quat()));
+		body->attachSphere(radius, ballMaterial);
 		ball.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(radius), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
 		ball.assign<sitara::ecs::LogicalLayer>(LayerNames::BALL);
 	}
 }
 
 void PhysicsSystemExampleApp::resetWorld() {
-	entityx::ComponentHandle<sitara::ecs::LogicalLayer> layer;
-	entityx::ComponentHandle<sitara::ecs::RigidBody> body;
 
-	for (auto entity : mEntities.entities_with_components(body, layer)) {
-		if (layer->mLayerId == LayerNames::BALL) {
-			mSystems.system<sitara::ecs::PhysicsSystem>()->resetBody(body, ci::vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150)));
-		}
-	}
 }
 
 CINDER_APP( PhysicsSystemExampleApp, RendererGl, [=](cinder::app::App::Settings* settings) { settings->setConsoleWindowEnabled(); settings->setWindowSize(1280, 720); })
