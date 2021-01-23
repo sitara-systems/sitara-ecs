@@ -14,6 +14,14 @@ namespace sitara {
 			}
 
 			~StaticBody() {
+				if (mBody) {
+					mBody->release();
+				}
+			}
+
+			void attachShape(physx::PxShape* shape) {
+				mBody->attachShape(*shape);
+				mShape = shape;
 			}
 
 			void attachSphere(float radius, physx::PxMaterial* material) {
@@ -22,19 +30,16 @@ namespace sitara {
 
 			void attachCapsule(float radius, float halfHeight, physx::PxMaterial* material) {
 				mShape = physx::PxRigidActorExt::createExclusiveShape(*mBody, physx::PxCapsuleGeometry(radius, halfHeight), *material);
+				physx::PxTransform relativePose(physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0, 0, 1)));
+				mShape->setLocalPose(relativePose);
 			}
 
 			void attachBox(float halfEdge, physx::PxMaterial* material) {
 				mShape = physx::PxRigidActorExt::createExclusiveShape(*mBody, physx::PxBoxGeometry(halfEdge, halfEdge, halfEdge), *material);
 			}
 
-			void attachBox(ci::vec3 halfEdges, physx::PxMaterial* material) {
+			void attachBox(const ci::vec3& halfEdges, physx::PxMaterial* material) {
 				mShape = physx::PxRigidActorExt::createExclusiveShape(*mBody, physx::PxBoxGeometry(halfEdges.x, halfEdges.y, halfEdges.z), *material);
-			}
-
-			void attachPlane(ci::vec3 normal, float distance, physx::PxMaterial* material) {
-				// needs tweaking here
-				mShape = physx::PxRigidActorExt::createExclusiveShape(*mBody, physx::PxPlaneGeometry(), *material);
 			}
 
 			const ci::vec3 getPosition() {

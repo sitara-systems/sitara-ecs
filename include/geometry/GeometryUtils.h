@@ -10,8 +10,9 @@
 namespace sitara {
 	namespace ecs {
 		namespace geometry {
-			enum Primitive { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, TORUSKNOT, PLANE,
-				WIRE_CAPSULE, WIRE_CONE, WIRE_CUBE, WIRE_CYLINDER, WIRE_ICOSAHEDRON, WIRE_SPHERE, WIRE_TORUS, WIRE_PLANE,
+			enum Primitive {
+				BOX, CAPSULE, CONE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, TORUSKNOT, PLANE,
+				WIRE_BOX, WIRE_CAPSULE, WIRE_CONE, WIRE_CYLINDER, WIRE_ICOSAHEDRON, WIRE_SPHERE, WIRE_TORUS, WIRE_PLANE,
 				UNKNOWN, PRIMITIVE_COUNT };
 
 			enum Quality { LOW, DEFAULT, HIGH };
@@ -25,7 +26,7 @@ namespace sitara {
 					return Primitive::CONE;
 				}
 				else if (typeid(ci::geom::Cube) == typeid(source)) {
-					return Primitive::CUBE;
+					return Primitive::BOX;
 				}
 				else if (typeid(ci::geom::Cylinder) == typeid(source)) {
 					return Primitive::CYLINDER;
@@ -61,7 +62,7 @@ namespace sitara {
 					return Primitive::WIRE_CONE;
 				}
 				else if (typeid(ci::geom::WireCube) == typeid(source)) {
-					return Primitive::WIRE_CUBE;
+					return Primitive::WIRE_BOX;
 				}
 				else if (typeid(ci::geom::WireCylinder) == typeid(source)) {
 					return Primitive::WIRE_CYLINDER;
@@ -139,30 +140,30 @@ namespace sitara {
 				}
 			}
 
-			static ci::geom::Cube createCube(ci::vec3 size, geometry::Quality quality = geometry::Quality::DEFAULT) {
+			static ci::geom::Cube createBox(ci::vec3 halfSize, geometry::Quality quality = geometry::Quality::DEFAULT) {
 				switch (quality) {
 				case geometry::Quality::DEFAULT:
-					return ci::geom::Cube().size(size);
+					return ci::geom::Cube().size(2.0f * halfSize);
 					break;
 				case geometry::Quality::LOW:
-					return ci::geom::Cube().size(size).subdivisions(1);
+					return ci::geom::Cube().size(2.0f * halfSize).subdivisions(1);
 					break;
 				case geometry::Quality::HIGH:
-					return ci::geom::Cube().size(size).subdivisions(10);
+					return ci::geom::Cube().size(2.0f * halfSize).subdivisions(10);
 					break;
 				}
 			}
 
-			static ci::geom::WireCube createWireCube(ci::vec3 size, geometry::Quality quality = geometry::Quality::DEFAULT) {
+			static ci::geom::WireCube createWireBox(ci::vec3 halfSize, geometry::Quality quality = geometry::Quality::DEFAULT) {
 				switch (quality) {
 				case geometry::Quality::DEFAULT:
-					return ci::geom::WireCube().size(size);
+					return ci::geom::WireCube().size(2.0f * halfSize);
 					break;
 				case geometry::Quality::LOW:
-					return ci::geom::WireCube().size(size).subdivisions(1);
+					return ci::geom::WireCube().size(2.0f * halfSize).subdivisions(1);
 					break;
 				case geometry::Quality::HIGH:
-					return ci::geom::WireCube().size(size).subdivisions(10);
+					return ci::geom::WireCube().size(2.0f * halfSize).subdivisions(10);
 					break;
 				}
 			}

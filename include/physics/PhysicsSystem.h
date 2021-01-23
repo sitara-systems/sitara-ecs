@@ -24,6 +24,7 @@ namespace sitara {
 			double getElapsedSimulationTime();
 			void setGravity(ci::vec3& gravity);
 			void setNumberOfThread(uint32_t numThreads);
+			void enableGpu(bool enable);
 			physx::PxRigidStatic* createStaticBody(ci::vec3& position, ci::quat& rotation);
 			physx::PxRigidDynamic* createDynamicBody(ci::vec3& position, ci::quat& rotation);
 			int registerMaterial(float staticFriction, float dynamicFriction, float restitution);
@@ -34,8 +35,10 @@ namespace sitara {
 			physx::PxFoundation* mFoundation;
 			physx::PxPhysics* mPhysics;
 			physx::PxDefaultCpuDispatcher* mDispatcher;
+			physx::PxCudaContextManager* mCudaContext;
 			physx::PxScene* mScene;
 			physx::PxPvd* mPvd;
+			bool mGpuEnabled;
 			uint32_t mNumberOfThreads;
 			std::map<int, physx::PxMaterial*> mMaterialRegistry;
 			uint32_t mMaterialCount;

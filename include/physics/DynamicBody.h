@@ -15,10 +15,14 @@ namespace sitara {
 			}
 
 			~DynamicBody() {
+				if (mBody) {
+					mBody->release();
+				}
 			}
 
-			physx::PxRigidDynamic* getBody() {
-				return mBody;
+			void attachShape(physx::PxShape* shape) {
+				mBody->attachShape(*shape);
+				mShape = shape;
 			}
 
 			void attachSphere(float radius, physx::PxMaterial* material) {
@@ -27,13 +31,15 @@ namespace sitara {
 
 			void attachCapsule(float radius, float halfHeight, physx::PxMaterial* material) {
 				mShape = physx::PxRigidActorExt::createExclusiveShape(*mBody, physx::PxCapsuleGeometry(radius, halfHeight), *material);
+				physx::PxTransform relativePose(physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0, 0, 1)));
+				mShape->setLocalPose(relativePose);
 			}
 
 			void attachBox(float halfEdge, physx::PxMaterial* material) {
 				mShape = physx::PxRigidActorExt::createExclusiveShape(*mBody, physx::PxBoxGeometry(halfEdge, halfEdge, halfEdge), *material);
 			}
 
-			void attachBox(ci::vec3 halfEdges, physx::PxMaterial* material) {
+			void attachBox(const ci::vec3& halfEdges, physx::PxMaterial* material) {
 				mShape = physx::PxRigidActorExt::createExclusiveShape(*mBody, physx::PxBoxGeometry(halfEdges.x, halfEdges.y, halfEdges.z), *material);
 			}
 
@@ -57,8 +63,19 @@ namespace sitara {
 				mShape->setLocalPose(sitara::ecs::physics::to(quat, axis));
 			}
 
-			void applyForce(ci::vec3 acceleration) {
+			void applyForce(const ci::vec3& acceleration) {
 				mBody->addForce(sitara::ecs::physics::to(acceleration));
+			}
+
+			void resetBody(const ci::vec3& position, const ci::quat& rotation = ci::quat()) {
+				physx::PxVec3 nullVelocity = physx::PxVec3(0);
+				physx::PxTransform nullTransform = sitara::ecs::physics::to(rotation, position);
+
+				mBody->setLinearVelocity(nullVelocity);
+				mBody->setAngularVelocity(nullVelocity);
+				mBody->setGlobalPose(nullTransform, true);
+				mBody->clearForce();
+				mBody->clearTorque();
 			}
 
 		protected:

@@ -58,3 +58,4 @@ Use the included `vcpkg.json` as a jumping off point for adding this block into 
     -   GPU
     -   Shared Shapes (alternative to Exclusive Shapes)
     -   Material Registry (PhysicsSystem)
+    -   Switch messages to Cinder Logging

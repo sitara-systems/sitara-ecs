@@ -26,7 +26,7 @@ class PhysicsSystemExampleApp : public App {
 
 	ci::params::InterfaceGlRef mParams;
 	std::vector<std::string> mElasticEnums = { "On", "Off" };
-	int mElasticSelect = 1;
+	int mElasticSelect = 0;
 	std::vector<std::string> mFrictionEnums = { "On", "Off" };
 	int mFrictionSelect = 0;
 	ci::CameraPersp mCamera;
@@ -39,6 +39,8 @@ class PhysicsSystemExampleApp : public App {
 		GROUND,
 		BALL
 	};
+
+	int mBallMaterialId;
 };
 
 PhysicsSystemExampleApp::PhysicsSystemExampleApp() :
@@ -132,15 +134,34 @@ void PhysicsSystemExampleApp::createUserInterface() {
 		mCamera.lookAt(mEye, mCenter, mUp);
 	});
 	mParams->addButton("Toggle Wireframes", [=]() {
+		entityx::ComponentHandle<sitara::ecs::LogicalLayer> layer;
 		entityx::ComponentHandle<sitara::ecs::Geometry> geom;
-		for (auto entity : mEntities.entities_with_components(geom)) {
-			if (geom->getPrimitive() == sitara::ecs::geometry::Primitive::SPHERE) {
-				entity.remove<sitara::ecs::Geometry>();
-				entity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createWireSphere(5.0), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
-			}
-			else if (geom->getPrimitive() == sitara::ecs::geometry::Primitive::WIRE_SPHERE) {
-				entity.remove<sitara::ecs::Geometry>();
-				entity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(5.0), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
+		for (auto entity : mEntities.entities_with_components(geom, layer)) {
+			if (layer->mLayerId == LayerNames::BALL) {
+				if (geom->getPrimitive() == sitara::ecs::geometry::Primitive::SPHERE) {
+					entity.remove<sitara::ecs::Geometry>();
+					entity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createWireSphere(5.0), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
+				}
+				else if (geom->getPrimitive() == sitara::ecs::geometry::Primitive::WIRE_SPHERE) {
+					entity.remove<sitara::ecs::Geometry>();
+					entity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(5.0), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
+				}
+				if (geom->getPrimitive() == sitara::ecs::geometry::Primitive::BOX) {
+					entity.remove<sitara::ecs::Geometry>();
+					entity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createWireBox(ci::vec3(5.0)), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
+				}
+				else if (geom->getPrimitive() == sitara::ecs::geometry::Primitive::WIRE_BOX) {
+					entity.remove<sitara::ecs::Geometry>();
+					entity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createBox(ci::vec3(5.0)), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
+				}
+				if (geom->getPrimitive() == sitara::ecs::geometry::Primitive::CAPSULE) {
+					entity.remove<sitara::ecs::Geometry>();
+					entity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createWireCapsule(5.0, 10), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
+				}
+				else if (geom->getPrimitive() == sitara::ecs::geometry::Primitive::WIRE_CAPSULE) {
+					entity.remove<sitara::ecs::Geometry>();
+					entity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createCapsule(5.0, 10), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
+				}
 			}
 		}
 	});
@@ -150,17 +171,25 @@ void PhysicsSystemExampleApp::createUserInterface() {
 		resetWorld();
 	});
 	mParams->addParam("Set Elasticity", mElasticEnums, &mElasticSelect).updateFn([=]() {
-		entityx::ComponentHandle<sitara::ecs::DynamicBody> body;
+		physx::PxMaterial* ballMaterial = mSystems.system<sitara::ecs::PhysicsSystem>()->getMaterial(mBallMaterialId);
+
 		if (mElasticSelect == 0) {
+			ballMaterial->setRestitution(1.0f);
 		}
 		else if (mElasticSelect == 1) {
+			ballMaterial->setRestitution(0.0f);
 		}
 	});
 	mParams->addParam("Set Friction", mFrictionEnums, &mFrictionSelect).updateFn([=]() {
-		entityx::ComponentHandle<sitara::ecs::DynamicBody> body;
+		physx::PxMaterial* ballMaterial = mSystems.system<sitara::ecs::PhysicsSystem>()->getMaterial(mBallMaterialId);
+
 		if (mFrictionSelect == 0) {
+			ballMaterial->setStaticFriction(1.0f);
+			ballMaterial->setDynamicFriction(1.0f);
 		}
 		else if (mFrictionSelect == 1) {
+			ballMaterial->setStaticFriction(0.0f);
+			ballMaterial->setDynamicFriction(0.0f);
 		}
 	});
 }
@@ -169,18 +198,20 @@ void PhysicsSystemExampleApp::createWorld() {
 
 	{
 		int groundMaterialId = mSystems.system<sitara::ecs::PhysicsSystem>()->registerMaterial(0, 0, 0);
+		physx::PxMaterial* groundMaterial = mSystems.system<sitara::ecs::PhysicsSystem>()->getMaterial(groundMaterialId);
 
 		auto ground = mEntities.create();
-		vec3 size = vec3(500, 1, 500);
+		vec3 halfSize = vec3(250, 1, 250);
 		vec3 position = vec3(0, 0, 0);
+
 		auto body = ground.assign<sitara::ecs::StaticBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createStaticBody(position, ci::quat()));
-		body->attachBox(0.5f*size, mSystems.system<sitara::ecs::PhysicsSystem>()->getMaterial(groundMaterialId));
-		ground.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createCube(size), Color(1.0, 1.0, 1.0));
+		body->attachBox(halfSize, groundMaterial);
+		ground.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createBox(halfSize), Color(1.0, 1.0, 1.0));
 		ground.assign<sitara::ecs::LogicalLayer>(LayerNames::GROUND);
 	}
 
-	int ballMaterialId = mSystems.system<sitara::ecs::PhysicsSystem>()->registerMaterial(0, 0, 0);
-	physx::PxMaterial* ballMaterial = mSystems.system<sitara::ecs::PhysicsSystem>()->getMaterial(ballMaterialId);
+	mBallMaterialId = mSystems.system<sitara::ecs::PhysicsSystem>()->registerMaterial(1.0f, 1.0f, 1.0f);
+	physx::PxMaterial* ballMaterial = mSystems.system<sitara::ecs::PhysicsSystem>()->getMaterial(mBallMaterialId);
 
 	for (int i = 0; i < 50; i++) {
 		auto pos = vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150));
@@ -191,10 +222,39 @@ void PhysicsSystemExampleApp::createWorld() {
 		ball.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(radius), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
 		ball.assign<sitara::ecs::LogicalLayer>(LayerNames::BALL);
 	}
+
+	for (int i = 0; i < 50; i++) {
+		auto pos = vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150));
+		auto ball = mEntities.create();
+		float halfEdge = 5.0;
+		auto body = ball.assign<sitara::ecs::DynamicBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createDynamicBody(pos, ci::quat()));
+		body->attachBox(ci::vec3(halfEdge), ballMaterial);
+		ball.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createBox(ci::vec3(halfEdge)), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
+		ball.assign<sitara::ecs::LogicalLayer>(LayerNames::BALL);
+	}
+
+	for (int i = 0; i < 50; i++) {
+		auto pos = vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150));
+		auto ball = mEntities.create();
+		float radius = 5.0;
+		float height = 10.0;
+		auto body = ball.assign<sitara::ecs::DynamicBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createDynamicBody(pos, ci::quat()));
+		body->attachCapsule(radius, height, ballMaterial);
+		ball.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createCapsule(radius, height), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
+		ball.assign<sitara::ecs::LogicalLayer>(LayerNames::BALL);
+	}
+
 }
 
 void PhysicsSystemExampleApp::resetWorld() {
+	entityx::ComponentHandle<sitara::ecs::LogicalLayer> layer;
+	entityx::ComponentHandle<sitara::ecs::DynamicBody> body;
 
+	for (auto entity : mEntities.entities_with_components(body, layer)) {
+		if (layer->mLayerId == LayerNames::BALL) {
+			body->resetBody(ci::vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150)));
+		}
+	}
 }
 
 CINDER_APP( PhysicsSystemExampleApp, RendererGl, [=](cinder::app::App::Settings* settings) { settings->setConsoleWindowEnabled(); settings->setWindowSize(1280, 720); })

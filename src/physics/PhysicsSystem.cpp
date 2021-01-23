@@ -4,41 +4,47 @@
 using namespace sitara::ecs;
 
 PhysicsSystem::PhysicsSystem() {
-	mFoundation = NULL;
-	mPhysics = NULL;
-	mDispatcher = NULL;
-	mScene = NULL;
-	mPvd = NULL;
+	mFoundation = nullptr;
+	mPhysics = nullptr;
+	mDispatcher = nullptr;
+	mCudaContext = nullptr;
+	mScene = nullptr;
+	mPvd = nullptr;
 	mNumberOfThreads = 8;
 	mMaterialCount = 0;
+	mGpuEnabled = false;
 }
 
 
 PhysicsSystem::~PhysicsSystem() {
 	if (mScene) {
 		mScene->release();
-		mScene = NULL;
+		mScene = nullptr;
 	}
 	if (mDispatcher) {
 		mDispatcher->release();
-		mDispatcher = NULL;
+		mDispatcher = nullptr;
+	}
+	if (mCudaContext) {
+		mCudaContext->release();
+		mCudaContext = nullptr;
 	}
 	if (mPhysics) {
 		mPhysics->release();
-		mPhysics = NULL;
+		mPhysics = nullptr;
 	}
 	if (mPvd) {
 		physx::PxPvdTransport* transport = mPvd->getTransport();
 		mPvd->release();
-		mPvd = NULL;
+		mPvd = nullptr;
 		if (transport) {
 			transport->release();
-			transport = NULL;
+			transport = nullptr;
 		}
 	}
 	if (mFoundation) {
 		mFoundation->release();
-		mFoundation = NULL;
+		mFoundation = nullptr;
 	}
 }
 
@@ -52,10 +58,22 @@ void PhysicsSystem::configure(entityx::EntityManager& entities, entityx::EventMa
 
 	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, physx::PxTolerancesScale(), true, mPvd);
 
+	if (mGpuEnabled) {
+		physx::PxCudaContextManagerDesc cudaDesc;
+		mCudaContext = PxCreateCudaContextManager(*mFoundation, cudaDesc);
+	}
+
 	physx::PxSceneDesc sceneDesc(mPhysics->getTolerancesScale());
 	sceneDesc.cpuDispatcher = mDispatcher;
 	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 	//sceneDesc.flags = physx::PxSceneFlag::eREQUIRE_RW_LOCK;
+
+	if (mGpuEnabled) {
+		sceneDesc.cudaContextManager = mCudaContext;
+		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
+		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
+	}
+
 	mScene = mPhysics->createScene(sceneDesc);
 
 	physx::PxPvdSceneClient* pvdClient = mScene->getScenePvdClient();
@@ -144,6 +162,16 @@ void PhysicsSystem::setNumberOfThread(uint32_t numThreads) {
 	}
 }
 
+void PhysicsSystem::enableGpu(bool enable) {
+	if (!mScene) {
+		std::cout << "GPU features are currently only available for static builds; until a future time these features are disabled." << std::endl;
+		mGpuEnabled = false;
+	}
+	else {
+		std::cout << "GPU must be enabled before running PhysicsSystem::configure(); using CPU dispatcher instead." << std::endl;
+	}
+}
+
 physx::PxRigidStatic* PhysicsSystem::createStaticBody(ci::vec3& position, ci::quat& rotation) {
 	physx::PxTransform transform = sitara::ecs::physics::to(rotation, position);
 	physx::PxRigidStatic* body = mPhysics->createRigidStatic(transform);
@@ -158,7 +186,7 @@ physx::PxRigidDynamic* PhysicsSystem::createDynamicBody(ci::vec3& position, ci::
 	return body;
 }
 
-int PhysicsSystem::registerMaterial(float staticFriction, float dynamicFriction, float restitution) {
+int PhysicsSystem::registerMaterial(float staticFriction = 0.5f, float dynamicFriction = 0.5f, float restitution = 0.0f) {
 	mMaterialCount++;
 	physx::PxMaterial* material = mPhysics->createMaterial(staticFriction, dynamicFriction, restitution);
 	mMaterialRegistry.insert(std::pair<int, physx::PxMaterial*>(mMaterialCount, material));
