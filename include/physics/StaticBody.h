@@ -11,6 +11,7 @@ namespace sitara {
 		public:
 			StaticBody(physx::PxRigidStatic* staticBody) {
 				mBody = staticBody;
+				mIsDirty = true;
 			}
 
 			~StaticBody() {
@@ -39,7 +40,7 @@ namespace sitara {
 			}
 
 			void attachBox(const ci::vec3& halfEdges, physx::PxMaterial* material) {
-				mShape = physx::PxRigidActorExt::createExclusiveShape(*mBody, physx::PxBoxGeometry(halfEdges.x, halfEdges.y, halfEdges.z), *material);
+				mShape = physx::PxRigidActorExt::createExclusiveShape(*mBody, physx::PxBoxGeometry(sitara::ecs::physics::to(halfEdges)), *material);
 			}
 
 			const ci::vec3 getPosition() {
@@ -52,11 +53,31 @@ namespace sitara {
 
 			void setLocalPose(const ci::quat& quat, const ci::vec3& axis) {
 				mShape->setLocalPose(sitara::ecs::physics::to(quat, axis));
+				mIsDirty = true;
+			}
+
+			void setName(const std::string& name) {
+				mBody->setName(name.c_str());
+			}
+
+			std::string getName() {
+				return mBody->getName();
 			}
 
 		protected:
+			bool isDirty() {
+				return mIsDirty;
+			}
+
+			void setDirty(bool dirty) {
+				mIsDirty = dirty;
+			}
+
 			physx::PxRigidStatic* mBody;
 			physx::PxShape* mShape;
+			bool mIsDirty;
+
+			friend class PhysicsSystem;
 		};
 	}
 }

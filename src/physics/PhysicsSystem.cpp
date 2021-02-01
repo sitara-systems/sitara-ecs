@@ -90,7 +90,9 @@ void PhysicsSystem::configure(entityx::EntityManager& entities, entityx::EventMa
 }
 
 void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManager& events, entityx::TimeDelta dt) {
+	entityx::ComponentHandle<sitara::ecs::StaticBody> sBody;
 	entityx::ComponentHandle<sitara::ecs::DynamicBody> body;
+	entityx::ComponentHandle<sitara::ecs::OverlapDetector> proximity;
 	entityx::ComponentHandle<sitara::ecs::Transform> transform;
 
 	/*
@@ -108,12 +110,36 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 	mScene->fetchResults(true);
 
 	// update transform component with new world transform from physx
-	// only need to update dynamic bodies -- static bodies don't move!
 	for (auto entity : entities.entities_with_components(body, transform)) {
-		physx::PxTransform trans;
+		if (!body->isSleeping()) {
+			transform->mPosition = body->getPosition();
+			transform->mOrientation = body->getRotation();
+		}
+	}
 
-		transform->mPosition = body->getPosition();
-		transform->mOrientation = body->getRotation();
+	for (auto entity : entities.entities_with_components(sBody, transform)) {
+		if (sBody->isDirty()) {
+			transform->mPosition = sBody->getPosition();
+			transform->mOrientation = sBody->getRotation();
+			sBody->setDirty(false);
+		}
+	}
+
+	/*
+	* Iterate over proximity detector components and detect proximities
+	*/
+	for (auto entity : entities.entities_with_components(proximity, transform)) {
+		proximity->swapBuffers();
+
+		size_t num = physx::PxSceneQueryExt::overlapMultiple(*mScene, 
+			proximity->getGeometry(),
+			proximity->getTransform(),
+			proximity->getResultsBuffer(),
+			proximity->getResultsBufferSize(),
+			proximity->getFilter());
+		proximity->resizeBuffer(num);
+
+		proximity->applyCollisionLogic();
 	}
 
 	/*
@@ -127,14 +153,26 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 }
 
 void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::DynamicBody>& event) {
-	// set user data
+	/*
+	Link the user application entityx::Entity::Id to the NVIDIA PhysX object using the userData pointer.
+	Note that this is NOT a pointer to the entity; it's the entity's literal id number.
+	You'll want to cast this back to a uint64_t to use it.
+	*/
+	entityx::ComponentHandle<sitara::ecs::DynamicBody> body = event.component;
+	body->mBody->userData = (void*)(event.entity.id().id());
 }
 
 void PhysicsSystem::receive(const entityx::ComponentRemovedEvent<sitara::ecs::DynamicBody>& event) {
 }
 
 void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::StaticBody>& event) {
-	// set user data
+	/*
+	Link the user application entityx::Entity::Id to the NVIDIA PhysX object using the userData pointer.
+	Note that this is NOT a pointer to the entity; it's the entity's literal id number.
+	You'll want to cast this back to a uint64_t to use it.
+	*/
+	entityx::ComponentHandle<sitara::ecs::StaticBody> body = event.component;
+	body->mBody->userData = (void*)(event.entity.id().id());
 }
 
 void PhysicsSystem::receive(const entityx::ComponentRemovedEvent<sitara::ecs::StaticBody>& event) {
@@ -144,7 +182,7 @@ double PhysicsSystem::getElapsedSimulationTime() {
 	return mScene->getTimestamp();
 }
 
-void PhysicsSystem::setGravity(ci::vec3& gravity) {
+void PhysicsSystem::setGravity(const ci::vec3& gravity) {
 	if (mScene) {
 		mScene->setGravity(physx::PxVec3(gravity.x, gravity.y, gravity.z));
 	}
@@ -153,7 +191,7 @@ void PhysicsSystem::setGravity(ci::vec3& gravity) {
 	}
 }
 
-void PhysicsSystem::setNumberOfThread(uint32_t numThreads) {
+void PhysicsSystem::setNumberOfThread(const uint32_t numThreads) {
 	if (!mScene) {
 		mNumberOfThreads = numThreads;
 	}
@@ -162,7 +200,7 @@ void PhysicsSystem::setNumberOfThread(uint32_t numThreads) {
 	}
 }
 
-void PhysicsSystem::enableGpu(bool enable) {
+void PhysicsSystem::enableGpu(const bool enable) {
 	if (!mScene) {
 		std::cout << "GPU features are currently only available for static builds; until a future time these features are disabled." << std::endl;
 		mGpuEnabled = false;
@@ -172,27 +210,27 @@ void PhysicsSystem::enableGpu(bool enable) {
 	}
 }
 
-physx::PxRigidStatic* PhysicsSystem::createStaticBody(ci::vec3& position, ci::quat& rotation) {
+physx::PxRigidStatic* PhysicsSystem::createStaticBody(const ci::vec3& position, const ci::quat& rotation) {
 	physx::PxTransform transform = sitara::ecs::physics::to(rotation, position);
 	physx::PxRigidStatic* body = mPhysics->createRigidStatic(transform);
 	mScene->addActor(*body);
 	return body;
 }
 
-physx::PxRigidDynamic* PhysicsSystem::createDynamicBody(ci::vec3& position, ci::quat& rotation) {
+physx::PxRigidDynamic* PhysicsSystem::createDynamicBody(const ci::vec3& position, const ci::quat& rotation) {
 	physx::PxTransform transform = sitara::ecs::physics::to(rotation, position);
 	physx::PxRigidDynamic* body = mPhysics->createRigidDynamic(transform);
 	mScene->addActor(*body);
 	return body;
 }
 
-int PhysicsSystem::registerMaterial(float staticFriction = 0.5f, float dynamicFriction = 0.5f, float restitution = 0.0f) {
+int PhysicsSystem::registerMaterial(const float staticFriction = 0.5f, const float dynamicFriction = 0.5f, const float restitution = 0.0f) {
 	mMaterialCount++;
 	physx::PxMaterial* material = mPhysics->createMaterial(staticFriction, dynamicFriction, restitution);
 	mMaterialRegistry.insert(std::pair<int, physx::PxMaterial*>(mMaterialCount, material));
 	return mMaterialCount;
 }
 
-physx::PxMaterial* PhysicsSystem::getMaterial(int id) {
+physx::PxMaterial* PhysicsSystem::getMaterial(const int id) {
 	return mMaterialRegistry[id];
 }

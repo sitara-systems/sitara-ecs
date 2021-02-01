@@ -8,7 +8,7 @@ Heavily influenced by (and some code outright borrowed from!) Sosolimited's [Ent
 
 This library uses:
 
--   bullet3
+-   NVIDIA PhysX
 -   entityx
 
 The included `vcpkg.json` should automatically download and build the dependencies for all examples in here.  This block also requires cinder to be in an adjacent folder for the cinder dependencies to be found automatically:
@@ -19,7 +19,7 @@ The included `vcpkg.json` should automatically download and build the dependenci
 
 Use the included `vcpkg.json` as a jumping off point for adding this block into other projects!
 
-## Usage
+## Current Features
 
 ### Behavior System
 
@@ -37,8 +37,8 @@ Use the included `vcpkg.json` as a jumping off point for adding this block into 
 
 ### Physics System
 
--   Bullet Physics for rigid body collisions
--   Automatically adds Transforms to read position and orientation data from
+-   NVIDIA PhysX for rigid body collisions
+-   Automatically adds Transforms to store position and orientation data
 -   Coming Soon : Soft Body Physics
 
 ### Transform System
@@ -57,5 +57,4 @@ Use the included `vcpkg.json` as a jumping off point for adding this block into 
     -   Multithreading and thread locking
     -   GPU
     -   Shared Shapes (alternative to Exclusive Shapes)
-    -   Material Registry (PhysicsSystem)
     -   Switch messages to Cinder Logging

@@ -204,7 +204,7 @@ void PhysicsSystemExampleApp::createWorld() {
 		vec3 halfSize = vec3(250, 1, 250);
 		vec3 position = vec3(0, 0, 0);
 
-		auto body = ground.assign<sitara::ecs::StaticBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createStaticBody(position, ci::quat()));
+		auto body = ground.assign<sitara::ecs::StaticBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createStaticBody(position));
 		body->attachBox(halfSize, groundMaterial);
 		ground.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createBox(halfSize), Color(1.0, 1.0, 1.0));
 		ground.assign<sitara::ecs::LogicalLayer>(LayerNames::GROUND);
@@ -217,7 +217,7 @@ void PhysicsSystemExampleApp::createWorld() {
 		auto pos = vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150));
 		auto ball = mEntities.create();
 		float radius = 5.0;
-		auto body = ball.assign<sitara::ecs::DynamicBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createDynamicBody(pos, ci::quat()));
+		auto body = ball.assign<sitara::ecs::DynamicBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createDynamicBody(pos));
 		body->attachSphere(radius, ballMaterial);
 		ball.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(radius), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
 		ball.assign<sitara::ecs::LogicalLayer>(LayerNames::BALL);
@@ -227,7 +227,7 @@ void PhysicsSystemExampleApp::createWorld() {
 		auto pos = vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150));
 		auto ball = mEntities.create();
 		float halfEdge = 5.0;
-		auto body = ball.assign<sitara::ecs::DynamicBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createDynamicBody(pos, ci::quat()));
+		auto body = ball.assign<sitara::ecs::DynamicBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createDynamicBody(pos));
 		body->attachBox(ci::vec3(halfEdge), ballMaterial);
 		ball.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createBox(ci::vec3(halfEdge)), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
 		ball.assign<sitara::ecs::LogicalLayer>(LayerNames::BALL);
@@ -238,7 +238,7 @@ void PhysicsSystemExampleApp::createWorld() {
 		auto ball = mEntities.create();
 		float radius = 5.0;
 		float height = 10.0;
-		auto body = ball.assign<sitara::ecs::DynamicBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createDynamicBody(pos, ci::quat()));
+		auto body = ball.assign<sitara::ecs::DynamicBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createDynamicBody(pos));
 		body->attachCapsule(radius, height, ballMaterial);
 		ball.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createCapsule(radius, height), Color(ci::Rand::randFloat(), ci::Rand::randFloat(), ci::Rand::randFloat()));
 		ball.assign<sitara::ecs::LogicalLayer>(LayerNames::BALL);

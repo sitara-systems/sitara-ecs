@@ -12,6 +12,7 @@
 
 #include "physics/DynamicBody.h"
 #include "physics/StaticBody.h"
+#include "physics/OverlapDetector.h"
 #include "physics/PhysicsSystem.h"
 #include "physics/PhysicsUtils.h"
 
@@ -35,8 +36,9 @@ namespace sitara {
 	namespace ecs {
 		inline void configureSystems(entityx::SystemManager& systems) {
 			//systems.add<entityx::deps::Dependency<Target, Transform>>();
-			systems.add<entityx::deps::Dependency<DynamicBody, Transform>>();
 			systems.add<entityx::deps::Dependency<StaticBody, Transform>>();
+			systems.add<entityx::deps::Dependency<DynamicBody, Transform>>();
+			systems.add<entityx::deps::Dependency<OverlapDetector, Transform>>();
 		}
 	}
 }

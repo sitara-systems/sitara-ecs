@@ -13,9 +13,6 @@
 	],
 	"dependencies": [
 		{
-			"name": "bullet3"
-		},
-		{
 			"name": "entityx"
 		},
 		{

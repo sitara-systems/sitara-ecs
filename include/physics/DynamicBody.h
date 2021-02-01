@@ -7,7 +7,6 @@
 
 namespace sitara {
 	namespace ecs {
-
 		class DynamicBody {
 		public:
 			DynamicBody(physx::PxRigidDynamic* DynamicBody) {
@@ -78,9 +77,23 @@ namespace sitara {
 				mBody->clearTorque();
 			}
 
+			bool isSleeping() {
+				return mBody->isSleeping();
+			}
+			
+			void setName(const std::string& name) {
+				mBody->setName(name.c_str());
+			}
+
+			std::string getName() {
+				return mBody->getName();
+			}
+
 		protected:
 			physx::PxRigidDynamic* mBody;
 			physx::PxShape* mShape;
+
+			friend class PhysicsSystem;
 		};
 	}
 }

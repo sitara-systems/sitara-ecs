@@ -108,6 +108,9 @@
     <ClInclude Include="..\include\physics\DynamicBody.h">
       <Filter>Header Files\physics</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\physics\OverlapDetector.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\behavior\BehaviorSystem.cpp">

@@ -184,6 +184,7 @@
     <ClInclude Include="..\include\logic\LogicState.h" />
     <ClInclude Include="..\include\logic\StateSystem.h" />
     <ClInclude Include="..\include\physics\DynamicBody.h" />
+    <ClInclude Include="..\include\physics\OverlapDetector.h" />
     <ClInclude Include="..\include\physics\PhysicsSystem.h" />
     <ClInclude Include="..\include\physics\PhysicsUtils.h" />
     <ClInclude Include="..\include\physics\StaticBody.h" />
