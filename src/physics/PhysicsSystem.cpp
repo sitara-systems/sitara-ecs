@@ -92,7 +92,7 @@ void PhysicsSystem::configure(entityx::EntityManager& entities, entityx::EventMa
 void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManager& events, entityx::TimeDelta dt) {
 	entityx::ComponentHandle<sitara::ecs::StaticBody> sBody;
 	entityx::ComponentHandle<sitara::ecs::DynamicBody> body;
-	entityx::ComponentHandle<sitara::ecs::OverlapDetector> proximity;
+	entityx::ComponentHandle<sitara::ecs::OverlapDetector> proximityDetector;
 	entityx::ComponentHandle<sitara::ecs::Transform> transform;
 
 	/*
@@ -128,18 +128,42 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 	/*
 	* Iterate over proximity detector components and detect proximities
 	*/
-	for (auto entity : entities.entities_with_components(proximity, transform)) {
-		proximity->swapBuffers();
+	for (auto entity : entities.entities_with_components(proximityDetector, transform)) {
+		proximityDetector->swapBuffers();
 
-		size_t num = physx::PxSceneQueryExt::overlapMultiple(*mScene, 
-			proximity->getGeometry(),
-			proximity->getTransform(),
-			proximity->getResultsBuffer(),
-			proximity->getResultsBufferSize(),
-			proximity->getFilter());
-		proximity->resizeBuffer(num);
+		size_t num = physx::PxSceneQueryExt::overlapMultiple(*mScene,
+			proximityDetector->getGeometry(),
+			proximityDetector->getTransform(),
+			proximityDetector->getWriteBuffer(),
+			proximityDetector->getBufferSize(),
+			proximityDetector->getFilter());
+		proximityDetector->resizeBuffer(num);
 
-		proximity->applyCollisionLogic();
+		std::cout << "Detected " << num << " overlaps." << std::endl;
+
+		for (auto& hit : proximityDetector->getResults()) {
+			std::cout << "Starting collision detection" << std::endl;
+			if (hit.actor != nullptr) {
+				std::cout << "Test " << std::endl;
+				auto prev = proximityDetector->getPreviousResults();
+				auto it = std::find_if(prev.begin(), prev.end(), [&](const physx::PxOverlapHit& h) {return h.actor->userData == hit.actor->userData; });
+				if (it != prev.end()) {
+					// in current collision + previous collision, still colliding
+					std::cout << "Still Colliding..." << std::endl;
+				}
+			}
+		}
+
+		for (auto& hit : proximityDetector->getPreviousResults()) {
+			if (hit.actor != nullptr) {
+				auto res = proximityDetector->getResults();
+				auto it = std::find_if(res.begin(), res.end(), [&](const physx::PxOverlapHit& h) {return h.actor->userData == hit.actor->userData; });
+				if (it != res.end()) {
+					// in previous collision but NOT in current collision, ending collision
+					std::cout << "Ending Collision." << std::endl;
+				}
+			}
+		}
 	}
 
 	/*

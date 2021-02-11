@@ -11,10 +11,9 @@ namespace sitara {
 		public:
 			OverlapDetector(const ci::vec3& center, float OverlapDistance) : mCurrentResults(),
 				mPreviousResults(),
-				mQueryFilter() {
+				mQueryFilter(),
+				mTransform(sitara::ecs::physics::to(ci::quat(), center)) {
 				mOverlapShape = new physx::PxSphereGeometry(OverlapDistance);
-				mTransform = sitara::ecs::physics::to(ci::quat(), center);
-				mIsOverlapping = false;
 				mCurrentResults.reserve(4096);
 				mPreviousResults.reserve(4096);
 			}
@@ -23,9 +22,6 @@ namespace sitara {
 				delete mOverlapShape;
 			}
 
-			bool isOverlapping() {
-				return mIsOverlapping;
-			}
 			void queryAll() {
 				mQueryFilter.flags = physx::PxQueryFlag::eSTATIC;
 				mQueryFilter.flags |= physx::PxQueryFlag::eDYNAMIC;
@@ -60,20 +56,16 @@ namespace sitara {
 				return mTransform;
 			}
 
-			physx::PxOverlapHit* getResultsBuffer() {
+			physx::PxOverlapHit* getWriteBuffer() {
 				return mCurrentResults.data();
 			}
 
-			int getResultsBufferSize() {
-				return mResultsBufferSize;
+			int getBufferSize() {
+				return mBufferSize;
 			}
 
 			void resizeBuffer(size_t size) {
 				mCurrentResults.resize(size);
-			}
-
-			physx::PxQueryFilterData& getFilter() {
-				return mQueryFilter;
 			}
 
 			void swapBuffers() {
@@ -81,31 +73,19 @@ namespace sitara {
 				mCurrentResults.clear();
 			}
 
-			void applyCollisionLogic() {
-				// define how to compare PxOverlapHit objects
-				/*
-				for (auto& hit : mCurrentResults) {
-					if (std::find(mPreviousResults.begin(), mPreviousResults.end(), hit) != mPreviousResults.end()) {
-						// in current collision + previous collision, still colliding
-						std::cout << "Still Colliding..." << std::endl;
-					}
-					else {
-						// in current collision but NOT previous collision, just started
-						std::cout << "Begin Collision!" << std::endl;
-					}
-				}
-
-				for (auto& hit : mPreviousResults) {
-					if (std::find(mCurrentResults.begin(), mCurrentResults.end(), hit) != mCurrentResults.end()) {
-						// in previous collision but NOT in current collision, ending collision
-						std::cout << "Ending Collision." << std::endl;
-					}
-				}
-				*/
+			std::vector<physx::PxOverlapHit>& getResults() {
+				return mCurrentResults;
 			}
 
-			static const int mResultsBufferSize = 4096;
-			bool mIsOverlapping;
+			std::vector<physx::PxOverlapHit>& getPreviousResults() {
+				return mPreviousResults;
+			}
+
+			physx::PxQueryFilterData& getFilter() {
+				return mQueryFilter;
+			}
+
+			static const int mBufferSize = 4096;
 			physx::PxGeometry* mOverlapShape;
 			physx::PxTransform mTransform;
 			physx::PxQueryFilterData mQueryFilter;
