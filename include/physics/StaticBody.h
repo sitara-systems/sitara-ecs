@@ -11,6 +11,7 @@ namespace sitara {
 		public:
 			StaticBody(physx::PxRigidStatic* staticBody) {
 				mBody = staticBody;
+				mShape = nullptr;
 				mIsDirty = true;
 			}
 
@@ -23,6 +24,22 @@ namespace sitara {
 			void attachShape(physx::PxShape* shape) {
 				mBody->attachShape(*shape);
 				mShape = shape;
+			}
+
+			void detachShape() {
+				if (mShape) {
+					mBody->detachShape(*mShape);
+					mShape = nullptr;
+				}
+			}
+
+			physx::PxGeometryType::Enum getGeometryType() {
+				if (mShape) {
+					return mShape->getGeometryType();
+				}
+				else {
+					return physx::PxGeometryType::Enum::eINVALID;
+				}
 			}
 
 			void attachSphere(float radius, physx::PxMaterial* material) {

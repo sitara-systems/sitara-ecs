@@ -11,6 +11,7 @@ namespace sitara {
 		public:
 			DynamicBody(physx::PxRigidDynamic* DynamicBody) {
 				mBody = DynamicBody;
+				mShape = nullptr;
 			}
 
 			~DynamicBody() {
@@ -22,6 +23,22 @@ namespace sitara {
 			void attachShape(physx::PxShape* shape) {
 				mBody->attachShape(*shape);
 				mShape = shape;
+			}
+
+			void detachShape() {
+				if (mShape) {
+					mBody->detachShape(*mShape);
+					mShape = nullptr;
+				}
+			}
+
+			physx::PxGeometryType::Enum getGeometryType() {
+				if (mShape) {
+					return mShape->getGeometryType();
+				}
+				else {
+					return physx::PxGeometryType::Enum::eINVALID;
+				}
 			}
 
 			void attachSphere(float radius, physx::PxMaterial* material) {

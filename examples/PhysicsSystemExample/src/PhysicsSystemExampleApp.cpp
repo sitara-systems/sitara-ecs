@@ -250,8 +250,27 @@ void PhysicsSystemExampleApp::resetWorld() {
 	entityx::ComponentHandle<sitara::ecs::LogicalLayer> layer;
 	entityx::ComponentHandle<sitara::ecs::DynamicBody> body;
 
+	mBallMaterialId = mSystems.system<sitara::ecs::PhysicsSystem>()->registerMaterial(1.0f, 1.0f, 1.0f);
+	physx::PxMaterial* ballMaterial = mSystems.system<sitara::ecs::PhysicsSystem>()->getMaterial(mBallMaterialId);
+	float radius = 5.0;
+	float height = 10.0;
+
 	for (auto entity : mEntities.entities_with_components(body, layer)) {
 		if (layer->mLayerId == LayerNames::BALL) {
+			physx::PxGeometryType::Enum type = body->getGeometryType();
+			body->detachShape();
+
+			switch (type) {
+				case physx::PxGeometryType::eSPHERE:
+					body->attachSphere(radius, ballMaterial);
+					break;
+				case physx::PxGeometryType::eCAPSULE:
+					body->attachCapsule(radius, height, ballMaterial);
+					break;
+				case physx::PxGeometryType::eBOX:
+					body->attachBox(ci::vec3(radius), ballMaterial);
+					break;
+			}
 			body->resetBody(ci::vec3(ci::Rand::randFloat(-150, 150), ci::Rand::randFloat(50, 150), ci::Rand::randFloat(-150, 150)));
 		}
 	}
