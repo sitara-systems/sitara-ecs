@@ -9,8 +9,8 @@ namespace sitara {
 	namespace ecs {
 		class OverlapDetector {
 		public:
-			OverlapDetector(const ci::vec3& center, float OverlapDistance) : mCurrentResults(),
-				mPreviousResults(),
+			OverlapDetector(const ci::vec3& center, float OverlapDistance) : mCurrentResults(NULL),
+				mPreviousResults(NULL),
 				mQueryFilter(),
 				mTransform(sitara::ecs::physics::to(ci::quat(), center)) {
 				mOverlapShape = new physx::PxSphereGeometry(OverlapDistance);
@@ -35,16 +35,16 @@ namespace sitara {
 				mQueryFilter.flags = physx::PxQueryFlag::eDYNAMIC;
 			}
 
-			void addOnEnterEachCollisionFn(std::function<void(entityx::Entity e1, entityx::Entity e2)> callback) {
-				mOnEnterEachCollisionFns.push_back(callback);
+			void addOnEnterEachOverlapFn(std::function<void(entityx::Entity thisEntity, entityx::Entity overlappingEntity)> callback) {
+				mOnEnterEachOverlapFns.push_back(callback);
 			}
 
-			void addDuringEachCollisionFn(std::function<void(entityx::Entity e1, entityx::Entity e2)> callback) {
-				mDuringEachCollisionFns.push_back(callback);
+			void addDuringEachOverlapFn(std::function<void(entityx::Entity thisEntity, entityx::Entity overlappingEntity)> callback) {
+				mDuringEachOverlapFns.push_back(callback);
 			}
 
-			void addOnEndEachCollisionFn(std::function<void(entityx::Entity e1, entityx::Entity e2)> callback) {
-				mOnEndEachCollisionFns.push_back(callback);
+			void addOnEndEachOverlapFn(std::function<void(entityx::Entity thisEntity, entityx::Entity overlappingEntity)> callback) {
+				mOnEndEachOverlapFns.push_back(callback);
 			}
 
 		protected:
@@ -68,9 +68,8 @@ namespace sitara {
 				mCurrentResults.resize(size);
 			}
 
-			void swapBuffers() {
-				mCurrentResults.swap(mPreviousResults);
-				mCurrentResults.clear();
+			void saveResults() {
+				mPreviousResults = mCurrentResults;
 			}
 
 			std::vector<physx::PxOverlapHit>& getResults() {
@@ -93,9 +92,9 @@ namespace sitara {
 			std::vector<physx::PxOverlapHit> mCurrentResults;
 			std::vector<physx::PxOverlapHit> mPreviousResults;
 
-			std::vector<std::function<void(entityx::Entity e1, entityx::Entity e2)> > mOnEnterEachCollisionFns;
-			std::vector<std::function<void(entityx::Entity e1, entityx::Entity e2)> > mDuringEachCollisionFns;
-			std::vector<std::function<void(entityx::Entity e1, entityx::Entity e2)> > mOnEndEachCollisionFns;
+			std::vector<std::function<void(entityx::Entity thisEntity, entityx::Entity overlappingEntity)> > mOnEnterEachOverlapFns;
+			std::vector<std::function<void(entityx::Entity thisEntity, entityx::Entity overlappingEntity)> > mDuringEachOverlapFns;
+			std::vector<std::function<void(entityx::Entity thisEntity, entityx::Entity overlappingEntity)> > mOnEndEachOverlapFns;
 
 			friend class PhysicsSystem;
 		};

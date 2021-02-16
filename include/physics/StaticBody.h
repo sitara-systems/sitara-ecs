@@ -73,14 +73,6 @@ namespace sitara {
 				mIsDirty = true;
 			}
 
-			void setName(const std::string& name) {
-				mBody->setName(name.c_str());
-			}
-
-			std::string getName() {
-				return mBody->getName();
-			}
-
 		protected:
 			bool isDirty() {
 				return mIsDirty;

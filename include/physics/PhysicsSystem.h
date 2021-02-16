@@ -28,7 +28,10 @@ namespace sitara {
 			physx::PxRigidDynamic* createDynamicBody(const ci::vec3& position, const ci::quat& rotation = ci::quat());
 			int registerMaterial(const float staticFriction, const float dynamicFriction, const float restitution);
 			physx::PxMaterial* getMaterial(const int materialId);
+			//int registerShape(const float staticFriction, const float dynamicFriction, const float restitution);
+			//physx::PxShape* getShape(const int shapeId);
 		private:
+			entityx::EntityManager* mEntities;
 			physx::PxDefaultAllocator mAllocator;
 			physx::PxDefaultErrorCallback mErrorCallback;
 			physx::PxFoundation* mFoundation;

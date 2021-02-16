@@ -49,6 +49,8 @@ PhysicsSystem::~PhysicsSystem() {
 }
 
 void PhysicsSystem::configure(entityx::EntityManager& entities, entityx::EventManager& events) {
+	mEntities = &entities;
+
 	mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, mAllocator, mErrorCallback);
 	mDispatcher = physx::PxDefaultCpuDispatcherCreate(mNumberOfThreads);
 
@@ -92,7 +94,7 @@ void PhysicsSystem::configure(entityx::EntityManager& entities, entityx::EventMa
 void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManager& events, entityx::TimeDelta dt) {
 	entityx::ComponentHandle<sitara::ecs::StaticBody> sBody;
 	entityx::ComponentHandle<sitara::ecs::DynamicBody> body;
-	entityx::ComponentHandle<sitara::ecs::OverlapDetector> proximityDetector;
+	entityx::ComponentHandle<sitara::ecs::OverlapDetector> overlapDetector;
 	entityx::ComponentHandle<sitara::ecs::Transform> transform;
 
 	/*
@@ -127,43 +129,56 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 
 	/*
 	* Iterate over proximity detector components and detect proximities
+	* Any PhysX Scene Queries should go here
 	*/
-	for (auto entity : entities.entities_with_components(proximityDetector, transform)) {
-		proximityDetector->swapBuffers();
-
+	for (auto entity : entities.entities_with_components(overlapDetector, transform)) {
 		size_t num = physx::PxSceneQueryExt::overlapMultiple(*mScene,
-			proximityDetector->getGeometry(),
-			proximityDetector->getTransform(),
-			proximityDetector->getWriteBuffer(),
-			proximityDetector->getBufferSize(),
-			proximityDetector->getFilter());
-		proximityDetector->resizeBuffer(num);
+			overlapDetector->getGeometry(),
+			overlapDetector->getTransform(),
+			overlapDetector->getWriteBuffer(),
+			overlapDetector->getBufferSize(),
+			overlapDetector->getFilter());
+		overlapDetector->resizeBuffer(num);
 
-		std::cout << "Detected " << num << " overlaps." << std::endl;
-
-		for (auto& hit : proximityDetector->getResults()) {
-			std::cout << "Starting collision detection" << std::endl;
+		for (auto& hit : overlapDetector->getResults()) {
 			if (hit.actor != nullptr) {
-				std::cout << "Test " << std::endl;
-				auto prev = proximityDetector->getPreviousResults();
-				auto it = std::find_if(prev.begin(), prev.end(), [&](const physx::PxOverlapHit& h) {return h.actor->userData == hit.actor->userData; });
-				if (it != prev.end()) {
+				auto previous = overlapDetector->getPreviousResults();
+				auto it = std::find_if(previous.begin(), previous.end(), [&](const physx::PxOverlapHit& h) { return hit.actor == h.actor; });
+				if (it != previous.end()) {
 					// in current collision + previous collision, still colliding
-					std::cout << "Still Colliding..." << std::endl;
+					entityx::Entity e = mEntities->get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
+					entityx::Entity overlappingEntity = mEntities->get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
+					for (auto& fn : overlapDetector->mDuringEachOverlapFns) {
+						fn(e, overlappingEntity);
+					}
+				}
+				else {
+					// in current collision but not previous collision, started colliding
+					entityx::Entity e = mEntities->get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
+					entityx::Entity overlappingEntity = mEntities->get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
+					for (auto& fn : overlapDetector->mOnEnterEachOverlapFns) {
+						fn(e, overlappingEntity);
+					}
 				}
 			}
 		}
 
-		for (auto& hit : proximityDetector->getPreviousResults()) {
+		for (auto& hit : overlapDetector->getPreviousResults()) {
 			if (hit.actor != nullptr) {
-				auto res = proximityDetector->getResults();
-				auto it = std::find_if(res.begin(), res.end(), [&](const physx::PxOverlapHit& h) {return h.actor->userData == hit.actor->userData; });
-				if (it != res.end()) {
+				auto results = overlapDetector->getResults();
+				auto it = std::find_if(results.begin(), results.end(), [&](const physx::PxOverlapHit& h) { return hit.actor == h.actor; });
+				if (it == results.end()) {
 					// in previous collision but NOT in current collision, ending collision
-					std::cout << "Ending Collision." << std::endl;
+					entityx::Entity e = mEntities->get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
+					entityx::Entity overlappingEntity = mEntities->get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
+					for (auto& fn : overlapDetector->mOnEndEachOverlapFns) {
+						fn(e, overlappingEntity);
+					}
 				}
 			}
 		}
+
+		overlapDetector->saveResults();
 	}
 
 	/*

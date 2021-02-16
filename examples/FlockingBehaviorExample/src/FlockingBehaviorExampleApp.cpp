@@ -210,7 +210,7 @@ void FlockingBehaviorExampleApp::createWorld() {
 	auto right = createWall(worldSize, vec3(1, 0.01, 1), vec3(-1, 0, 0), vec3(0, 0, 1));
 
 	// create obstacles
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 5; i++) {
 		auto obstacle = mEntities.create();
 		float radius = ci::randFloat(sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(5));
 		ci::vec3 position = 0.5f * worldSize * ci::vec3(ci::randFloat(-1, 1), ci::randFloat(0.25, 0.75), ci::randFloat(-1, 1));
@@ -226,21 +226,17 @@ void FlockingBehaviorExampleApp::createWorld() {
 	ci::vec3 proxPosition = 0.25f * worldSize * ci::vec3(0.0, -1.0f, 0.0);
 	auto detector = proximity.assign<sitara::ecs::OverlapDetector>(proxPosition, distance);
 	detector->queryDynamicOnly();
-	detector->queryAll();
-	/*
-	detector->addOnEnterEachOverlapFn([&](entityx::ComponentHandle<sitara::ecs::GhostBody> thisBody, entityx::ComponentHandle<sitara::ecs::DynamicBody> otherBody) {
-		std::cout << "Proximity Detection Event BEGIN" << std::endl;
-		auto e = otherBody.entity();
-		auto geometry = e.component<sitara::ecs::Geometry>();
+	detector->addOnEnterEachOverlapFn([&](entityx::Entity thisEntity, entityx::Entity overlappingEntity) {
+		std::cout << "Overlap Event BEGIN" << std::endl;
+		auto geometry = overlappingEntity.component<sitara::ecs::Geometry>();
 		geometry->setColor(ci::Color(1, 1, 1));
-	});
-	detector->addOnEndEachOverlapFn([&](entityx::ComponentHandle<sitara::ecs::GhostBody> thisBody, entityx::ComponentHandle<sitara::ecs::DynamicBody> otherBody) {
-		std::cout << "Proximity Detection Event END" << std::endl;
-		auto e = otherBody.entity();
-		auto geometry = e.component<sitara::ecs::Geometry>();
+		});
+	detector->addOnEndEachOverlapFn([&](entityx::Entity thisEntity, entityx::Entity overlappingEntity) {
+		std::cout << "Overlap Event END" << std::endl;
+		auto geometry = overlappingEntity.component<sitara::ecs::Geometry>();
 		geometry->setColor(ci::Color(0.8, 0.0, 1));
-	})
-	*/;
+		});
+
 	proximity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createWireSphere(distance), Color(1, 1, 1));
 	proximity.assign<sitara::ecs::LogicalLayer>(LayerNames::OBSTACLES);
 	auto transform = proximity.component<sitara::ecs::Transform>();
@@ -254,7 +250,6 @@ void FlockingBehaviorExampleApp::createWorld() {
 
 		auto body = boid.assign<sitara::ecs::DynamicBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createDynamicBody(position));
 		body->attachSphere(radius, material);
-		body->setName("Boid " + i);
 
 		boid.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(radius), Color(0.8, 0, 1));
 		boid.assign<sitara::ecs::LogicalLayer>(LayerNames::BOIDS);
