@@ -97,14 +97,12 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 	entityx::ComponentHandle<sitara::ecs::OverlapDetector> overlapDetector;
 	entityx::ComponentHandle<sitara::ecs::Transform> transform;
 
-	/*
 	// preprocessing callbacks
 	for (auto entity : entities.entities_with_components(body, transform)) {
-		for (auto callback : mDynamicBodyPreUpdateFns) {
+		for (auto callback : mPreUpdateFns) {
 			callback(body);
 		}
 	}
-	*/
 
 	// run simulation
 	float timeStep = static_cast<float>(dt);
@@ -181,14 +179,12 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 		overlapDetector->saveResults();
 	}
 
-	/*
 	// post processing
 	for (auto entity : entities.entities_with_components(body, transform)) {
-		for (auto callback : mDynamicBodyPostUpdateFns) {
+		for (auto callback : mPostUpdateFns) {
 			callback(body);
 		}
 	}
-	*/
 }
 
 void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::DynamicBody>& event) {
@@ -272,4 +268,12 @@ int PhysicsSystem::registerMaterial(const float staticFriction = 0.5f, const flo
 
 physx::PxMaterial* PhysicsSystem::getMaterial(const int id) {
 	return mMaterialRegistry[id];
+}
+
+void PhysicsSystem::addPreUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::DynamicBody>)> callback) {
+	mPreUpdateFns.push_back(callback);
+}
+
+void PhysicsSystem::addPostUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::DynamicBody>)> callback) {
+	mPostUpdateFns.push_back(callback);
 }

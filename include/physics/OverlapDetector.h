@@ -9,11 +9,11 @@ namespace sitara {
 	namespace ecs {
 		class OverlapDetector {
 		public:
-			OverlapDetector(const ci::vec3& center, float OverlapDistance) : mCurrentResults(NULL),
+			OverlapDetector(const ci::vec3& center, float overlapDistance) : mCurrentResults(NULL),
 				mPreviousResults(NULL),
 				mQueryFilter(),
 				mTransform(sitara::ecs::physics::to(ci::quat(), center)) {
-				mOverlapShape = new physx::PxSphereGeometry(OverlapDistance);
+				mOverlapShape = new physx::PxSphereGeometry(overlapDistance);
 				mCurrentResults.reserve(4096);
 				mPreviousResults.reserve(4096);
 			}

@@ -30,6 +30,8 @@ namespace sitara {
 			physx::PxMaterial* getMaterial(const int materialId);
 			//int registerShape(const float staticFriction, const float dynamicFriction, const float restitution);
 			//physx::PxShape* getShape(const int shapeId);
+			void addPreUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::DynamicBody>)> callback);
+			void addPostUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::DynamicBody>)> callback);
 		private:
 			entityx::EntityManager* mEntities;
 			physx::PxDefaultAllocator mAllocator;
@@ -44,6 +46,8 @@ namespace sitara {
 			uint32_t mNumberOfThreads;
 			std::map<int, physx::PxMaterial*> mMaterialRegistry;
 			uint32_t mMaterialCount;
+			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::DynamicBody>)> > mPreUpdateFns;
+			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::DynamicBody>)> > mPostUpdateFns;
 		};
 	}
 }

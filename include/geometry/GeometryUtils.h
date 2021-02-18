@@ -95,6 +95,8 @@ namespace sitara {
 				case geometry::Quality::HIGH:
 					return ci::geom::Capsule().radius(radius).length(length).subdivisionsAxis(60).subdivisionsHeight(20);
 					break;
+				default:
+					return ci::geom::Capsule().radius(radius).length(length);
 				}
 			}
 
@@ -109,6 +111,8 @@ namespace sitara {
 				case geometry::Quality::HIGH:
 					return ci::geom::WireCapsule().radius(radius).length(length).subdivisionsAxis(60).subdivisionsHeight(20);
 					break;
+				default:
+					return ci::geom::WireCapsule().radius(radius).length(length);
 				}
 			}
 
@@ -123,6 +127,8 @@ namespace sitara {
 				case geometry::Quality::HIGH:
 					return ci::geom::Cone().radius(radius).height(height).subdivisionsAxis(60).subdivisionsHeight(60);
 					break;
+				default:
+					return ci::geom::Cone().radius(radius).height(height);
 				}
 			}
 
@@ -137,6 +143,8 @@ namespace sitara {
 				case geometry::Quality::HIGH:
 					return ci::geom::WireCone().radius(radius).height(height).subdivisionsAxis(60).subdivisionsHeight(60);
 					break;
+				default:
+					return ci::geom::WireCone().radius(radius).height(height);
 				}
 			}
 
@@ -150,6 +158,9 @@ namespace sitara {
 					break;
 				case geometry::Quality::HIGH:
 					return ci::geom::Cube().size(2.0f * halfSize).subdivisions(10);
+					break;
+				default:
+					return ci::geom::Cube().size(2.0f * halfSize);
 					break;
 				}
 			}
@@ -165,6 +176,8 @@ namespace sitara {
 				case geometry::Quality::HIGH:
 					return ci::geom::WireCube().size(2.0f * halfSize).subdivisions(10);
 					break;
+				default:
+					return ci::geom::WireCube().size(2.0f * halfSize);
 				}
 			}
 
@@ -179,6 +192,8 @@ namespace sitara {
 				case geometry::Quality::HIGH:
 					return ci::geom::Cylinder().radius(radius).height(height).subdivisionsAxis(60).subdivisionsCap(10).subdivisionsHeight(20);
 					break;
+				default:
+					return ci::geom::Cylinder().radius(radius).height(height);
 				}
 			}
 
@@ -193,6 +208,8 @@ namespace sitara {
 				case geometry::Quality::HIGH:
 					return ci::geom::WireCylinder().radius(radius).height(height).subdivisionsAxis(60).subdivisionsHeight(20);
 					break;
+				default:
+					return ci::geom::WireCylinder().radius(radius).height(height);
 				}
 			}
 
@@ -245,6 +262,8 @@ namespace sitara {
 				case geometry::Quality::HIGH:
 					return ci::geom::Sphere().radius(radius).subdivisions(60);
 					break;
+				default:
+					return ci::geom::Sphere().radius(radius);
 				}
 			}
 
@@ -264,6 +283,8 @@ namespace sitara {
 					case HIGH:
 						return ci::geom::Teapot().subdivisions(12);
 						break;
+					default:
+						return ci::geom::Teapot();
 				}
 			}
 

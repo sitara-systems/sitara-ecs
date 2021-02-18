@@ -75,20 +75,24 @@ namespace sitara {
 				return sitara::ecs::physics::from(mBody->getAngularVelocity());
 			}
 
-			void setLocalPose(const ci::quat& quat, const ci::vec3& axis) {
-				mShape->setLocalPose(sitara::ecs::physics::to(quat, axis));
+			void setLocalPose(const ci::quat& quat) {
+				mShape->setLocalPose(physx::PxTransform(sitara::ecs::physics::to(quat)));
 			}
 
 			void applyForce(const ci::vec3& acceleration) {
 				mBody->addForce(sitara::ecs::physics::to(acceleration));
 			}
 
-			void resetBody(const ci::vec3& position, const ci::quat& rotation = ci::quat()) {
-				physx::PxVec3 nullVelocity = physx::PxVec3(0);
+			void clearForces() {
+				mBody->clearForce();
+				mBody->clearTorque();
+			}
+
+			void resetBody(const ci::vec3& position, const ci::vec3& velocity = ci::vec3(), const ci::quat& rotation = ci::quat(), const ci::vec3& angularVelocity = ci::vec3()) {
 				physx::PxTransform nullTransform = sitara::ecs::physics::to(rotation, position);
 
-				mBody->setLinearVelocity(nullVelocity);
-				mBody->setAngularVelocity(nullVelocity);
+				mBody->setLinearVelocity(sitara::ecs::physics::to(velocity));
+				mBody->setAngularVelocity(sitara::ecs::physics::to(angularVelocity));
 				mBody->setGlobalPose(nullTransform, true);
 				mBody->clearForce();
 				mBody->clearTorque();
