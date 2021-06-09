@@ -68,6 +68,12 @@ namespace sitara {
 				return sitara::ecs::physics::from(mBody->getGlobalPose().q);
 			}
 
+			void setPosition(const ci::vec3& pos) {
+				auto q = getRotation();
+				mBody->setGlobalPose(sitara::ecs::physics::to(q, pos));
+				mIsDirty = true;
+			}
+
 			void setLocalPose(const ci::quat& quat) {
 				mShape->setLocalPose(physx::PxTransform(sitara::ecs::physics::to(quat)));
 				mIsDirty = true;

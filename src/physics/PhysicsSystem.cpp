@@ -11,7 +11,7 @@ PhysicsSystem::PhysicsSystem() {
 	mScene = nullptr;
 	mPvd = nullptr;
 	mNumberOfThreads = 8;
-	mMaterialCount = 0;
+	mMaterialCount = -1;
 	mGpuEnabled = false;
 }
 
