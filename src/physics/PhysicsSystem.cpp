@@ -57,8 +57,9 @@ void PhysicsSystem::configure(entityx::EntityManager& entities, entityx::EventMa
 	mPvd = PxCreatePvd(*mFoundation);
 	physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
 	mPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
-
+	
 	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, physx::PxTolerancesScale(), true, mPvd);
+	PxInitExtensions(*mPhysics, mPvd);
 
 	if (mGpuEnabled) {
 		physx::PxCudaContextManagerDesc cudaDesc;
@@ -257,6 +258,21 @@ physx::PxRigidDynamic* PhysicsSystem::createDynamicBody(const ci::vec3& position
 	physx::PxRigidDynamic* body = mPhysics->createRigidDynamic(transform);
 	mScene->addActor(*body);
 	return body;
+}
+
+physx::PxDistanceJoint* PhysicsSystem::createSpring(entityx::ComponentHandle<sitara::ecs::DynamicBody> body, ci::vec3 anchorPoint, float stiffness, float dampingConstant) {
+	auto staticAnchor = createStaticBody(anchorPoint, ci::quat(0, ci::vec3(0, 0, 1)));
+
+	auto springJoint = physx::PxDistanceJointCreate(*mPhysics,
+		body->mBody,
+		physx::PxTransform(physx::PxIdentity),
+		staticAnchor,
+		physx::PxTransform(physx::PxIdentity)
+	);
+	springJoint->setStiffness(stiffness);
+	springJoint->setDamping(dampingConstant);
+	springJoint->setDistanceJointFlags(physx::PxDistanceJointFlag::eSPRING_ENABLED);
+	return springJoint;
 }
 
 int PhysicsSystem::registerMaterial(const float staticFriction = 0.5f, const float dynamicFriction = 0.5f, const float restitution = 0.0f) {

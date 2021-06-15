@@ -9,6 +9,11 @@ namespace sitara {
 	namespace ecs {
 		class DynamicBody {
 		public:
+			DynamicBody() {
+				mBody = nullptr;
+				mShape = nullptr;
+			}
+
 			DynamicBody(physx::PxRigidDynamic* DynamicBody) {
 				mBody = DynamicBody;
 				mShape = nullptr;
@@ -75,6 +80,10 @@ namespace sitara {
 				return sitara::ecs::physics::from(mBody->getAngularVelocity());
 			}
 
+			void setMass(float mass) {
+				mBody->setMass(mass);
+			}
+
 			void setLocalPose(const ci::quat& quat) {
 				mShape->setLocalPose(physx::PxTransform(sitara::ecs::physics::to(quat)));
 			}
@@ -101,7 +110,7 @@ namespace sitara {
 			bool isSleeping() {
 				return mBody->isSleeping();
 			}
-
+			
 		protected:
 			physx::PxRigidDynamic* mBody;
 			physx::PxShape* mShape;

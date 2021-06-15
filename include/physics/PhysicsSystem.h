@@ -4,9 +4,12 @@
 #include "entityx/System.h"
 #include "cinder/Vector.h"
 #include "PxPhysicsAPI.h"
+#include "extensions/PxExtensionsAPI.h"
 #include "physics/DynamicBody.h"
 #include "physics/StaticBody.h"
 #include "physics/OverlapDetector.h"
+
+PX_C_EXPORT bool PX_CALL_CONV PxInitExtensions(physx::PxPhysics& physics, physx::PxPvd* pvd);
 
 namespace sitara {
 	namespace ecs {
@@ -26,6 +29,7 @@ namespace sitara {
 			void enableGpu(const bool enable);
 			physx::PxRigidStatic* createStaticBody(const ci::vec3& position, const ci::quat& rotation = ci::quat());
 			physx::PxRigidDynamic* createDynamicBody(const ci::vec3& position, const ci::quat& rotation = ci::quat());
+			physx::PxDistanceJoint* createSpring(entityx::ComponentHandle<sitara::ecs::DynamicBody> body, ci::vec3 anchorPoint, float stiffness, float dampingConstant);
 			int registerMaterial(const float staticFriction, const float dynamicFriction, const float restitution);
 			physx::PxMaterial* getMaterial(const int materialId);
 			//int registerShape(const float staticFriction, const float dynamicFriction, const float restitution);
