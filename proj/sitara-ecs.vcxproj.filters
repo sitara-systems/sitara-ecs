@@ -43,6 +43,12 @@
     <Filter Include="Source Files\transform">
       <UniqueIdentifier>{24618d8e-90d0-467a-ac0d-e64633c8e042}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\text">
+      <UniqueIdentifier>{705566f2-fca6-46ad-a485-7b4d775c6eb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\text">
+      <UniqueIdentifier>{f0ede136-f101-4aaf-b4c6-9d094cf586ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\utilities\Simplex.h">
@@ -111,6 +117,27 @@
     <ClInclude Include="..\include\physics\OverlapDetector.h">
       <Filter>Header Files\physics</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\physics\ParticleSystem.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics\Particle.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics\Force.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics\Attractor.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics\Spring.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\text\Glyph.h">
+      <Filter>Header Files\text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\text\TextSystem.h">
+      <Filter>Header Files\text</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\behavior\BehaviorSystem.cpp">
@@ -127,6 +154,15 @@
     </ClCompile>
     <ClCompile Include="sitara-ecs.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\physics\Particle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\physics\ParticleSystem.cpp">
+      <Filter>Source Files\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\text\TextSystem.cpp">
+      <Filter>Source Files\text</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

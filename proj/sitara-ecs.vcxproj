@@ -65,9 +65,11 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\cinder-sdftext\config\cinder-sdftext-dependencies.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\cinder-sdftext\config\cinder-sdftext-dependencies.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -126,9 +128,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_DEBUG;_LIB;PX_PHYSX_STATIC_LIB;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_DEBUG;_LIB;PX_PHYSX_STATIC_LIB;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../include;../../cinder/include/;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../include;../../cinder/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -151,10 +153,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;PX_PHYSX_STATIC_LIB;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;PX_PHYSX_STATIC_LIB;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;NDEBUG;_LIB;%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../include;../../cinder/include/;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../include;../../cinder/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -183,11 +185,18 @@
     <ClInclude Include="..\include\logic\LogicalLayer.h" />
     <ClInclude Include="..\include\logic\LogicState.h" />
     <ClInclude Include="..\include\logic\StateSystem.h" />
+    <ClInclude Include="..\include\physics\Attractor.h" />
     <ClInclude Include="..\include\physics\DynamicBody.h" />
+    <ClInclude Include="..\include\physics\Force.h" />
     <ClInclude Include="..\include\physics\OverlapDetector.h" />
+    <ClInclude Include="..\include\physics\Particle.h" />
+    <ClInclude Include="..\include\physics\ParticleSystem.h" />
     <ClInclude Include="..\include\physics\PhysicsSystem.h" />
     <ClInclude Include="..\include\physics\PhysicsUtils.h" />
+    <ClInclude Include="..\include\physics\Spring.h" />
     <ClInclude Include="..\include\physics\StaticBody.h" />
+    <ClInclude Include="..\include\text\Glyph.h" />
+    <ClInclude Include="..\include\text\TextSystem.h" />
     <ClInclude Include="..\include\transform\Transform.h" />
     <ClInclude Include="..\include\transform\TransformSystem.h" />
     <ClInclude Include="..\include\utilities\Simplex.h" />
@@ -195,9 +204,12 @@
     <ClInclude Include="framework.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\include\physics\Particle.cpp" />
     <ClCompile Include="..\src\behavior\BehaviorSystem.cpp" />
     <ClCompile Include="..\src\logic\StateSystem.cpp" />
+    <ClCompile Include="..\src\physics\ParticleSystem.cpp" />
     <ClCompile Include="..\src\physics\PhysicsSystem.cpp" />
+    <ClCompile Include="..\src\text\TextSystem.cpp" />
     <ClCompile Include="..\src\transform\TransformSystem.cpp" />
     <ClCompile Include="sitara-ecs.cpp" />
   </ItemGroup>

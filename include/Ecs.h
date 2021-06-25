@@ -10,6 +10,9 @@
 #include "transform/Transform.h"
 #include "transform/TransformSystem.h"
 
+#include "physics/Particle.h"
+#include "physics/ParticleSystem.h"
+
 #include "physics/DynamicBody.h"
 #include "physics/StaticBody.h"
 #include "physics/OverlapDetector.h"
@@ -30,14 +33,23 @@
 #include "logic/LogicState.h"
 #include "logic/StateSystem.h"
 
+#ifdef USING_SDFTEXT
+#include "text/Glyph.h"
+#include "text/TextSystem.h"
+#else
+
+#endif
+
 #include "utilities/Units.h"
 
 namespace sitara {
 	namespace ecs {
 		inline void configureSystems(entityx::SystemManager& systems) {
 			//systems.add<entityx::deps::Dependency<Target, Transform>>();
-			systems.add<entityx::deps::Dependency<StaticBody, Transform>>();
+			systems.add<entityx::deps::Dependency<Particle, Transform>>();
+			systems.add<entityx::deps::Dependency<Attractor, Transform>>();
 			systems.add<entityx::deps::Dependency<DynamicBody, Transform>>();
+			systems.add<entityx::deps::Dependency<StaticBody, Transform>>();
 			systems.add<entityx::deps::Dependency<OverlapDetector, Transform>>();
 		}
 	}

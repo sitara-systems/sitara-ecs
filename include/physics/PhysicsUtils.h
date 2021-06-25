@@ -103,6 +103,15 @@ namespace sitara {
 			static physx::PxBounds3 to(const ci::AxisAlignedBox &b) {
 				return physx::PxBounds3(to(b.getMin()), to(b.getMax()));
 			}
+			
+			static float clampParticleForce(float magnitude, float maxMagnitude) {
+				if (magnitude > maxMagnitude) {
+					return maxMagnitude;
+				}
+				else {
+					return magnitude;
+				}
+			}
 		}
 	}
 }
