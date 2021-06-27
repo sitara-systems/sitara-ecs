@@ -57,7 +57,7 @@ namespace sitara {
 			}
 
 			void attachBox(float halfEdge, physx::PxMaterial* material) {
-				mShape = physx::PxRigidActorExt::createExclusiveShape(*mBody, physx::PxBoxGeometry(halfEdge, halfEdge, halfEdge), *material);
+				attachBox(ci::vec3(halfEdge), material);
 			}
 
 			void attachBox(const ci::vec3& halfEdges, physx::PxMaterial* material) {
