@@ -31,8 +31,21 @@ std::vector<std::pair<ci::gl::SdfText::Font::Glyph, ci::vec2>> TextSystem::getGl
 	return fontRenderer->getGlyphPlacements(str, options);
 }
 
+std::vector<std::pair<ci::gl::SdfText::Font::Glyph, ci::vec2>> TextSystem::getGlyphPlacementsWrapped(const std::string& fontName, const std::string& str, const ci::Rectf& fitRect, const ci::gl::SdfText::DrawOptions& options) {
+	ci::gl::SdfTextRef fontRenderer = mFontInstances[fontName];
+	ci::gl::SdfText::Font::GlyphMeasuresList measures = fontRenderer->getGlyphPlacementsWrapped(str, fitRect, options);
+	for (auto& glyph : measures) {
+		glyph.second += fitRect.getUpperLeft();
+	}
+	return measures;
+}
+
 void TextSystem::drawGlyphs(const std::string& fontName, std::vector<std::pair<ci::gl::SdfText::Font::Glyph, ci::vec2>> glyphPlacements, const ci::vec2& baseline, const ci::gl::SdfText::DrawOptions& options) {
 	ci::gl::SdfTextRef fontRenderer = mFontInstances[fontName];
+	if (!fontRenderer) {
+		std::cout << "Could not find font with name " << fontName << "; cannot draw Glyphs!" << std::endl;
+		return;
+	}
 	fontRenderer->drawGlyphs(glyphPlacements, baseline, options);
 }
 

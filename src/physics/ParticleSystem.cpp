@@ -63,7 +63,7 @@ void ParticleSystem::update(entityx::EntityManager& entities, entityx::EventMana
 	}
 
 	for (auto entity : entities.entities_with_components(particle, transform)) {
-			transform->mPosition = particle->getPosition();
+		transform->mPosition = particle->getPosition();
 	}
 
 	for (auto entity : entities.entities_with_components(attractor, transform)) {

@@ -34,7 +34,11 @@ namespace sitara {
 				return mDamping;
 			}
 
-			float setLength(float length) {
+			void setAnchorPosition(const ci::vec3& anchor) {
+				mAnchorPosition = anchor;
+			}
+
+			void setLength(float length) {
 				mRestLength = length;
 			}
 

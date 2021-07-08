@@ -51,6 +51,7 @@ namespace sitara {
 			systems.add<entityx::deps::Dependency<DynamicBody, Transform>>();
 			systems.add<entityx::deps::Dependency<StaticBody, Transform>>();
 			systems.add<entityx::deps::Dependency<OverlapDetector, Transform>>();
+			systems.add<entityx::deps::Dependency<Geometry, Transform>>();
 		}
 	}
 }

@@ -69,14 +69,15 @@ namespace sitara {
 				return mForces;
 			}
 
-		protected:
-			void reset() {
+			void reset(const ci::vec3& position = ci::vec3(0), const ci::vec3& velocity = ci::vec3(0)) {
 				mVelocity = ci::vec3(0);
 				mForces = ci::vec3(0);
 				mAge = -1;
 				mIsAlive = true;
 				mIsFree = true;
 			}
+
+		protected:
 
 			void setPosition(const ci::vec3& position) {
 				mPosition = position;

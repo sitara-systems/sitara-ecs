@@ -15,6 +15,11 @@ namespace sitara {
 			ci::gl::SdfText::Font::Glyph getGlyph() {
 				return mGlyph;
 			}
+			
+			ci::vec2 getReadableGlyphPosition() {
+				return mHomePosition;
+			}
+
 		protected:
 			ci::gl::SdfText::Font::Glyph mGlyph;
 			ci::vec2 mHomePosition;
