@@ -20,9 +20,8 @@ void TextSystem::update(entityx::EntityManager& entities, entityx::EventManager&
 }
 
 void TextSystem::registerFont(const std::string& name, const std::filesystem::path& path, float fontSize) {
-	std::string sdft_filename = path.stem().string();
-	sdft_filename += ".sdft";
-	auto fontInstance = ci::gl::SdfText::create(ci::app::getAssetPath("") / "sdft" / sdft_filename, ci::gl::SdfText::Font(path.string(), fontSize));
+	std::string cachedPath = text::getCachedFilePath(path);
+	auto fontInstance = ci::gl::SdfText::create(cachedPath, ci::gl::SdfText::Font(ci::app::loadAsset(path.string()), fontSize));
 	mFontInstances.insert(std::pair<std::string, ci::gl::SdfTextRef>(name, fontInstance));
 }
 

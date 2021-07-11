@@ -7,6 +7,15 @@
 
 namespace sitara {
     namespace ecs {
+        namespace text {
+            static std::string getCachedFilePath(const std::filesystem::path& filepath) {
+                std::string sdft_filename = filepath.stem().string();
+                sdft_filename += ".sdft";
+                std::string cachedPath = ci::app::getAssetPath("").string() + "/sdft/" + sdft_filename;
+                return cachedPath;
+            }
+        }
+
         class TextSystem : public entityx::System<TextSystem>, public entityx::Receiver<TextSystem> {
         public:
             TextSystem();
