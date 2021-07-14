@@ -10,7 +10,8 @@ namespace sitara {
 				mTargetPosition(position),
 				mWeight(weight),
 				mSlowingDistance(slowingDistance),
-				mPreviousPosition(ci::vec3(0, 0, 0)),
+				mPreviousPosition(ci::vec3(0)),
+				mReferencePosition(ci::vec3(0)),
 				mTargetTransform()
 			{
 			}
@@ -19,8 +20,9 @@ namespace sitara {
 				mTargetTransform(transform),
 				mWeight(weight),
 				mSlowingDistance(slowingDistance),
-				mTargetPosition(ci::vec3(0, 0, 0)),
-				mPreviousPosition(ci::vec3(0, 0, 0))
+				mTargetPosition(ci::vec3(0)),
+				mReferencePosition(ci::vec3(0)),
+				mPreviousPosition(ci::vec3(0))
 			{
 			}
 
@@ -49,12 +51,21 @@ namespace sitara {
 				return mTargetPosition;
 			}
 
+			void setReferencePosition(const ci::vec3& position) {
+				mReferencePosition = position;
+			}
+
+			ci::vec3 getReferencePosition() {
+				return mReferencePosition;
+			}
+
 			float mWeight;
 			float mSlowingDistance;
 		private:
 			entityx::ComponentHandle<sitara::ecs::Transform> mTargetTransform;
 			ci::vec3 mTargetPosition;
 			ci::vec3 mPreviousPosition;
+			ci::vec3 mReferencePosition;
 		};
 	}
 }

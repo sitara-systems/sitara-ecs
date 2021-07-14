@@ -12,6 +12,7 @@ PhysicsSystem::PhysicsSystem() {
 	mPvd = nullptr;
 	mNumberOfThreads = 8;
 	mMaterialCount = -1;
+	mSimulationTime = 0.0f;
 	mGpuEnabled = false;
 }
 
@@ -61,17 +62,14 @@ void PhysicsSystem::configure(entityx::EntityManager& entities, entityx::EventMa
 	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, physx::PxTolerancesScale(), true, mPvd);
 	PxInitExtensions(*mPhysics, mPvd);
 
-	if (mGpuEnabled) {
-		physx::PxCudaContextManagerDesc cudaDesc;
-		mCudaContext = PxCreateCudaContextManager(*mFoundation, cudaDesc);
-	}
-
 	physx::PxSceneDesc sceneDesc(mPhysics->getTolerancesScale());
 	sceneDesc.cpuDispatcher = mDispatcher;
 	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 	//sceneDesc.flags = physx::PxSceneFlag::eREQUIRE_RW_LOCK;
 
 	if (mGpuEnabled) {
+		physx::PxCudaContextManagerDesc cudaDesc;
+		mCudaContext = PxCreateCudaContextManager(*mFoundation, cudaDesc);
 		sceneDesc.cudaContextManager = mCudaContext;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
 		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
@@ -107,6 +105,7 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 
 	// run simulation
 	float timeStep = static_cast<float>(dt);
+	mSimulationTime += timeStep;
 	mScene->simulate(timeStep);
 	mScene->fetchResults(true);
 
@@ -215,7 +214,7 @@ void PhysicsSystem::receive(const entityx::ComponentRemovedEvent<sitara::ecs::St
 }
 
 double PhysicsSystem::getElapsedSimulationTime() {
-	return mScene->getTimestamp();
+	return mSimulationTime;
 }
 
 void PhysicsSystem::setGravity(const ci::vec3& gravity) {
@@ -227,7 +226,7 @@ void PhysicsSystem::setGravity(const ci::vec3& gravity) {
 	}
 }
 
-void PhysicsSystem::setNumberOfThread(const uint32_t numThreads) {
+void PhysicsSystem::setNumberOfThreads(const uint32_t numThreads) {
 	if (!mScene) {
 		mNumberOfThreads = numThreads;
 	}
@@ -238,8 +237,8 @@ void PhysicsSystem::setNumberOfThread(const uint32_t numThreads) {
 
 void PhysicsSystem::enableGpu(const bool enable) {
 	if (!mScene) {
-		std::cout << "GPU features are currently only available for static builds; until a future time these features are disabled." << std::endl;
-		mGpuEnabled = false;
+		std::cout << "GPU features are currently only available for dynamic builds; until a future time these features are disabled." << std::endl;
+		mGpuEnabled = true;
 	}
 	else {
 		std::cout << "GPU must be enabled before running PhysicsSystem::configure(); using CPU dispatcher instead." << std::endl;

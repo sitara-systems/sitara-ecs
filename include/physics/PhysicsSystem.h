@@ -25,7 +25,7 @@ namespace sitara {
 			void receive(const entityx::ComponentRemovedEvent<StaticBody>& event);
 			double getElapsedSimulationTime();
 			void setGravity(const ci::vec3& gravity);
-			void setNumberOfThread(const uint32_t numThreads);
+			void setNumberOfThreads(const uint32_t numThreads);
 			void enableGpu(const bool enable);
 			physx::PxRigidStatic* createStaticBody(const ci::vec3& position, const ci::quat& rotation = ci::quat());
 			physx::PxRigidDynamic* createDynamicBody(const ci::vec3& position, const ci::quat& rotation = ci::quat());
@@ -48,6 +48,7 @@ namespace sitara {
 			physx::PxPvd* mPvd;
 			bool mGpuEnabled;
 			uint32_t mNumberOfThreads;
+			float mSimulationTime;
 			std::map<int, physx::PxMaterial*> mMaterialRegistry;
 			uint32_t mMaterialCount;
 			std::vector<std::function<void(entityx::ComponentHandle<sitara::ecs::DynamicBody>)> > mPreUpdateFns;
