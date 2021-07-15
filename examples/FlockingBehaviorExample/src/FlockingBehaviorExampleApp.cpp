@@ -228,14 +228,26 @@ void FlockingBehaviorExampleApp::createWorld() {
 	detector->queryDynamicOnly();
 	detector->addOnEnterEachOverlapFn([&](entityx::Entity thisEntity, entityx::Entity overlappingEntity) {
 		std::cout << "Overlap Event BEGIN" << std::endl;
-		auto geometry = overlappingEntity.component<sitara::ecs::Geometry>();
-		geometry->setColor(ci::Color(1, 1, 1));
-		});
+		if (thisEntity.valid()) {
+			auto thisGeometry = thisEntity.component<sitara::ecs::Geometry>();
+			thisGeometry->setColor(ci::Color(1, 0, 0));
+		}
+		if (overlappingEntity.valid()) {
+			auto geometry = overlappingEntity.component<sitara::ecs::Geometry>();
+			geometry->setColor(ci::Color(1, 1, 1));
+		}
+	});
 	detector->addOnEndEachOverlapFn([&](entityx::Entity thisEntity, entityx::Entity overlappingEntity) {
-		std::cout << "Overlap Event END" << std::endl;
-		auto geometry = overlappingEntity.component<sitara::ecs::Geometry>();
-		geometry->setColor(ci::Color(0.8, 0.0, 1));
-		});
+		std::cout << "Overlap Event BEGIN" << std::endl;
+		if (thisEntity.valid()) {
+			auto thisGeometry = thisEntity.component<sitara::ecs::Geometry>();
+			thisGeometry->setColor(ci::Color(1, 1, 1));
+		}
+		if (overlappingEntity.valid()) {
+			auto geometry = overlappingEntity.component<sitara::ecs::Geometry>();
+			geometry->setColor(ci::Color(0.8, 0, 1));
+		}
+	});
 
 	proximity.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createWireSphere(distance), Color(1, 1, 1));
 	proximity.assign<sitara::ecs::LogicalLayer>(LayerNames::OBSTACLES);
@@ -250,6 +262,7 @@ void FlockingBehaviorExampleApp::createWorld() {
 
 		auto body = boid.assign<sitara::ecs::DynamicBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createDynamicBody(position));
 		body->attachSphere(radius, material);
+		body->setUserData(boid.id().id());
 
 		boid.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(radius), Color(0.8, 0, 1));
 		boid.assign<sitara::ecs::LogicalLayer>(LayerNames::BOIDS);
@@ -265,7 +278,7 @@ void FlockingBehaviorExampleApp::createWorld() {
 	target.assign<sitara::ecs::Target>(ci::vec3(0), 250.0f, sitara::ecs::Units::getInstance(10.0).getPixelsFromMeters(50));
 	target.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(targetSize), Color(1, 1, 0));
 	target.assign<sitara::ecs::LogicalLayer>(LayerNames::TARGET);
-	target.assign<sitara::ecs::Transform>();
+//	target.assign<sitara::ecs::Transform>();
 }
 
 void FlockingBehaviorExampleApp::resetWorld() {

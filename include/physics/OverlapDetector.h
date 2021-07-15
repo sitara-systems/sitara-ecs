@@ -52,6 +52,10 @@ namespace sitara {
 				return *mOverlapShape;
 			}
 
+			void setTransform(const physx::PxTransform& transform) {
+				mTransform = transform;
+			}
+
 			physx::PxTransform& getTransform() {
 				return mTransform;
 			}

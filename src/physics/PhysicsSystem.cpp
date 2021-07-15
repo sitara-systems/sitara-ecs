@@ -130,12 +130,15 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 	* Any PhysX Scene Queries should go here
 	*/
 	for (auto entity : entities.entities_with_components(overlapDetector, transform)) {
+		overlapDetector->setTransform(sitara::ecs::physics::to(transform->mOrientation, transform->mPosition));
+
 		size_t num = physx::PxSceneQueryExt::overlapMultiple(*mScene,
 			overlapDetector->getGeometry(),
 			overlapDetector->getTransform(),
 			overlapDetector->getWriteBuffer(),
 			overlapDetector->getBufferSize(),
 			overlapDetector->getFilter());
+
 		overlapDetector->resizeBuffer(num);
 
 		for (auto& hit : overlapDetector->getResults()) {
@@ -144,18 +147,22 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 				auto it = std::find_if(previous.begin(), previous.end(), [&](const physx::PxOverlapHit& h) { return hit.actor == h.actor; });
 				if (it != previous.end()) {
 					// in current collision + previous collision, still colliding
-					entityx::Entity e = mEntities->get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
+					entityx::Entity e = entity;
 					entityx::Entity overlappingEntity = mEntities->get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
-					for (auto& fn : overlapDetector->mDuringEachOverlapFns) {
-						fn(e, overlappingEntity);
+					if (e.id().id() != overlappingEntity.id().id()) {
+						for (auto& fn : overlapDetector->mDuringEachOverlapFns) {
+							fn(e, overlappingEntity);
+						}
 					}
 				}
 				else {
 					// in current collision but not previous collision, started colliding
-					entityx::Entity e = mEntities->get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
+					entityx::Entity e = entity;
 					entityx::Entity overlappingEntity = mEntities->get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
-					for (auto& fn : overlapDetector->mOnEnterEachOverlapFns) {
-						fn(e, overlappingEntity);
+					if (e.id().id() != overlappingEntity.id().id()) {
+						for (auto& fn : overlapDetector->mOnEnterEachOverlapFns) {
+							fn(e, overlappingEntity);
+						}
 					}
 				}
 			}
@@ -167,10 +174,12 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 				auto it = std::find_if(results.begin(), results.end(), [&](const physx::PxOverlapHit& h) { return hit.actor == h.actor; });
 				if (it == results.end()) {
 					// in previous collision but NOT in current collision, ending collision
-					entityx::Entity e = mEntities->get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
+					entityx::Entity e = entity;
 					entityx::Entity overlappingEntity = mEntities->get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
-					for (auto& fn : overlapDetector->mOnEndEachOverlapFns) {
-						fn(e, overlappingEntity);
+					if (e.id().id() != overlappingEntity.id().id()) {
+						for (auto& fn : overlapDetector->mOnEndEachOverlapFns) {
+							fn(e, overlappingEntity);
+						}
 					}
 				}
 			}

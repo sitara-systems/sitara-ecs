@@ -79,6 +79,13 @@ namespace sitara {
 				mIsDirty = true;
 			}
 
+			void setUserData(uint64_t userData) {
+				mBody->userData = (void*)userData;
+			}
+
+			uint64_t getUserData() {
+				return (uint64_t)mBody->userData;
+			}
 
 		protected:
 			bool isDirty() {
