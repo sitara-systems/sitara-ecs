@@ -200,7 +200,7 @@ void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::Dyna
 	/*
 	Link the user application entityx::Entity::Id to the NVIDIA PhysX object using the userData pointer.
 	Note that this is NOT a pointer to the entity; it's the entity's literal id number.
-	You'll want to cast this back to a uint64_t to use it.
+	use ->getUserData() to get the entity's ID and mEntities.get(id); to get the entity handle directly
 	*/
 	entityx::ComponentHandle<sitara::ecs::DynamicBody> body = event.component;
 	body->mBody->userData = (void*)(event.entity.id().id());
@@ -213,7 +213,7 @@ void PhysicsSystem::receive(const entityx::ComponentAddedEvent<sitara::ecs::Stat
 	/*
 	Link the user application entityx::Entity::Id to the NVIDIA PhysX object using the userData pointer.
 	Note that this is NOT a pointer to the entity; it's the entity's literal id number.
-	You'll want to cast this back to a uint64_t to use it.
+	use ->getUserData() to get the entity's ID and mEntities.get(id); to get the entity handle directly
 	*/
 	entityx::ComponentHandle<sitara::ecs::StaticBody> body = event.component;
 	body->mBody->userData = (void*)(event.entity.id().id());
