@@ -37,7 +37,6 @@ namespace sitara {
 			void addPreUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::DynamicBody>)> callback);
 			void addPostUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::DynamicBody>)> callback);
 		private:
-			entityx::EntityManager* mEntities;
 			physx::PxDefaultAllocator mAllocator;
 			physx::PxDefaultErrorCallback mErrorCallback;
 			physx::PxFoundation* mFoundation;

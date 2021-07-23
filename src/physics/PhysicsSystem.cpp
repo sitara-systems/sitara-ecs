@@ -50,8 +50,6 @@ PhysicsSystem::~PhysicsSystem() {
 }
 
 void PhysicsSystem::configure(entityx::EntityManager& entities, entityx::EventManager& events) {
-	mEntities = &entities;
-
 	mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, mAllocator, mErrorCallback);
 	mDispatcher = physx::PxDefaultCpuDispatcherCreate(mNumberOfThreads);
 
@@ -148,7 +146,7 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 				if (it != previous.end()) {
 					// in current collision + previous collision, still colliding
 					entityx::Entity e = entity;
-					entityx::Entity overlappingEntity = mEntities->get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
+					entityx::Entity overlappingEntity = entities.get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
 					if (e.id().id() != overlappingEntity.id().id()) {
 						for (auto& fn : overlapDetector->mDuringEachOverlapFns) {
 							fn(e, overlappingEntity);
@@ -158,7 +156,7 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 				else {
 					// in current collision but not previous collision, started colliding
 					entityx::Entity e = entity;
-					entityx::Entity overlappingEntity = mEntities->get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
+					entityx::Entity overlappingEntity = entities.get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
 					if (e.id().id() != overlappingEntity.id().id()) {
 						for (auto& fn : overlapDetector->mOnEnterEachOverlapFns) {
 							fn(e, overlappingEntity);
@@ -175,7 +173,7 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 				if (it == results.end()) {
 					// in previous collision but NOT in current collision, ending collision
 					entityx::Entity e = entity;
-					entityx::Entity overlappingEntity = mEntities->get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
+					entityx::Entity overlappingEntity = entities.get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
 					if (e.id().id() != overlappingEntity.id().id()) {
 						for (auto& fn : overlapDetector->mOnEndEachOverlapFns) {
 							fn(e, overlappingEntity);
