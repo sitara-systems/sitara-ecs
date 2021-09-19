@@ -75,7 +75,9 @@ namespace sitara {
 			}
 
 			void setLocalPose(const ci::quat& quat) {
-				mShape->setLocalPose(physx::PxTransform(sitara::ecs::physics::to(quat)));
+				//mShape->setLocalPose(physx::PxTransform(sitara::ecs::physics::to(quat)));
+				ci::vec3 position = sitara::ecs::physics::from(mBody->getGlobalPose().p);
+				mBody->setGlobalPose(sitara::ecs::physics::to(quat, position));
 				mIsDirty = true;
 			}
 
