@@ -7,6 +7,7 @@
 #include "physics/DynamicBody.h"
 #include "cinder/app/App.h"
 #include "cinder/Rand.h"
+#include "cinder/Log.h"
 
 using namespace sitara::ecs;
 
@@ -32,6 +33,7 @@ void BehaviorSystem::seek(entityx::Entity& entity) {
 		else {
 			norm = glm::normalize(targetOffset);
 		}
+
 		ci::vec3 desiredVelocity = target->mWeight * norm;
 		ci::vec3 currentVelocity = body->getVelocity();
 		ci::vec3 desiredAcceleration = desiredVelocity - currentVelocity;
@@ -99,9 +101,9 @@ void BehaviorSystem::wander(entityx::Entity& entity) {
 	if (body.valid() && noise.valid()) {
 		ci::vec3 position = body->getPosition();
 		ci::vec3 direction = ci::vec3(
-			Simplex::noise(ci::vec2(position.x + noise->mOffsets.x, ci::app::getElapsedSeconds() + noise->mOffsets.w)),
-			Simplex::noise(ci::vec2(position.y + noise->mOffsets.y, ci::app::getElapsedSeconds() + noise->mOffsets.w)),
-			Simplex::noise(ci::vec2(position.z + noise->mOffsets.z, ci::app::getElapsedSeconds() + noise->mOffsets.w))
+			Simplex::noise(ci::vec2(position.x*noise->mMultipliers.x + noise->mOffsets.x, noise->mMultipliers.w * ci::app::getElapsedSeconds() + noise->mOffsets.w)),
+			Simplex::noise(ci::vec2(position.y*noise->mMultipliers.y + noise->mOffsets.y, noise->mMultipliers.w * ci::app::getElapsedSeconds() + noise->mOffsets.w)),
+			Simplex::noise(ci::vec2(position.z*noise->mMultipliers.z + noise->mOffsets.z, noise->mMultipliers.w * ci::app::getElapsedSeconds() + noise->mOffsets.w))
 		);
 		ci::vec3 norm;
 		if (glm::length(direction) == 0) {

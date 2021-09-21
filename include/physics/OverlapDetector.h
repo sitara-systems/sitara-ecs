@@ -18,6 +18,24 @@ namespace sitara {
 				mPreviousResults.reserve(4096);
 			}
 
+			OverlapDetector(const ci::vec3& center, ci::vec2 overlapDimensions) : mCurrentResults(NULL),
+				mPreviousResults(NULL),
+				mQueryFilter(),
+				mTransform(sitara::ecs::physics::to(ci::quat(), center)) {
+				mOverlapShape = new physx::PxCapsuleGeometry(overlapDimensions.x, overlapDimensions.y);
+				mCurrentResults.reserve(4096);
+				mPreviousResults.reserve(4096);
+			}
+
+			OverlapDetector(const ci::vec3& center, ci::vec3 overlapDimensions) : mCurrentResults(NULL),
+				mPreviousResults(NULL),
+				mQueryFilter(),
+				mTransform(sitara::ecs::physics::to(ci::quat(), center)) {
+				mOverlapShape = new physx::PxBoxGeometry(sitara::ecs::physics::to(overlapDimensions));
+				mCurrentResults.reserve(4096);
+				mPreviousResults.reserve(4096);
+			}
+
 			~OverlapDetector() {
 				delete mOverlapShape;
 			}
