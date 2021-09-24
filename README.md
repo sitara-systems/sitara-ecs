@@ -19,6 +19,15 @@ The included `vcpkg.json` should automatically download and build the dependenci
 
 Use the included `vcpkg.json` as a jumping off point for adding this block into other projects!
 
+Some modules require other `sitara-` libraries.  These are activated by including a `#define` statement and having the required submodule included in the project.
+
+These optional features include:
+
+| Features         | Module     | Preprocessor Statement  | Required Submodule |
+| ---------------- | ---------- | ----------------------- | ------------------ |
+| Font Rendering   | TextSystem | `#define USING_SDFTEXT` | sitara-sdftext     |
+| 3d Model Support | Geometry   | `#define USING_ASSIMP`  | sitara-assimp      |
+
 ## Current Features
 
 ### Behavior System
@@ -29,6 +38,7 @@ Use the included `vcpkg.json` as a jumping off point for adding this block into 
 
 -   Drawing wireframe and solid shapes
 -   Coming Soon : Shader Support
+-   Coming Soon : ASSIMP Support for 3d objects (requires `sitara-assimp`)
 
 ### Logic System
 
