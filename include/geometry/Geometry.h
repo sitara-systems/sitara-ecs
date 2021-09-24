@@ -46,14 +46,14 @@ namespace sitara {
 				mPrimitiveType = geometry::Primitive::UNKNOWN;
 				std::filesystem::path modelPath = ci::app::getAssetPath(filename);
 				if (!modelPath.empty()) {
-					mModelLoader = mndl::assimp::AssimpLoader(modelPath);
+					mModelLoader = sitara::assimp::AssimpLoader(modelPath);
 				}
 				else {
 					CI_LOG_W("Could not find 3d model file " << modelPath << "; please check for this file.");
 				}
 			}
 
-			Geometry(const mndl::assimp::AssimpLoader& loader) : mUseAssimp(true) {
+			Geometry(const sitara::assimp::AssimpLoader& loader) : mUseAssimp(true) {
 				mPrimitiveType = geometry::Primitive::UNKNOWN;
 				mModelLoader = loader;
 			}
@@ -110,7 +110,7 @@ namespace sitara {
 			sitara::ecs::geometry::Primitive mPrimitiveType;
 			bool mUseAssimp;
 			#ifdef USING_ASSIMP
-			mndl::assimp::AssimpLoader mModelLoader;
+			sitara::assimp::AssimpLoader mModelLoader;
 			#endif
 		};
 	}
