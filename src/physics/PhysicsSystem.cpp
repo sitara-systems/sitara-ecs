@@ -301,11 +301,9 @@ void PhysicsSystem::setMaximumLinearVelocity(entityx::Entity& entity, float maxi
 	if (body.valid()) {
 		body->getBody()->setMaxLinearVelocity(maximumVelocity);
 	}
-	/*
 	else {
-		CI_LOG_D("Entity does not have a valid DynamicBody component, no action taken.");
+		std::cout << "Entity does not have a valid DynamicBody component, no action taken." << std::endl;
 	}
-	*/
 }
 
 void PhysicsSystem::addPreUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::DynamicBody>)> callback) {
