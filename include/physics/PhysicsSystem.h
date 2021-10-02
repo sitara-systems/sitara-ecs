@@ -34,6 +34,7 @@ namespace sitara {
 			physx::PxMaterial* getMaterial(const int materialId);
 			//int registerShape(const float staticFriction, const float dynamicFriction, const float restitution);
 			//physx::PxShape* getShape(const int shapeId);
+			void setMaximumLinearVelocity(entityx::Entity& entity, float maximumVelocity);
 			void addPreUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::DynamicBody>)> callback);
 			void addPostUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::DynamicBody>)> callback);
 		private:

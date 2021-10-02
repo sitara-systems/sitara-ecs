@@ -93,7 +93,7 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 	entityx::ComponentHandle<sitara::ecs::DynamicBody> body;
 	entityx::ComponentHandle<sitara::ecs::OverlapDetector> overlapDetector;
 	entityx::ComponentHandle<sitara::ecs::Transform> transform;
-
+		
 	// preprocessing callbacks
 	for (auto entity : entities.entities_with_components(body, transform)) {
 		for (auto callback : mPreUpdateFns) {
@@ -173,10 +173,13 @@ void PhysicsSystem::update(entityx::EntityManager& entities, entityx::EventManag
 				if (it == results.end()) {
 					// in previous collision but NOT in current collision, ending collision
 					entityx::Entity e = entity;
-					entityx::Entity overlappingEntity = entities.get(entityx::Entity::Id((uint64_t)(hit.actor->userData)));
-					if (e.id().id() != overlappingEntity.id().id()) {
-						for (auto& fn : overlapDetector->mOnEndEachOverlapFns) {
-							fn(e, overlappingEntity);
+					entityx::Entity::Id overlappingEntityId = entityx::Entity::Id((uint64_t)(hit.actor->userData));
+					if (entities.valid(overlappingEntityId)) {
+						entityx::Entity overlappingEntity = entities.get(overlappingEntityId);
+						if (e.id().id() != overlappingEntity.id().id()) {
+							for (auto& fn : overlapDetector->mOnEndEachOverlapFns) {
+								fn(e, overlappingEntity);
+							}
 						}
 					}
 				}
@@ -290,6 +293,19 @@ int PhysicsSystem::registerMaterial(const float staticFriction = 0.5f, const flo
 
 physx::PxMaterial* PhysicsSystem::getMaterial(const int id) {
 	return mMaterialRegistry[id];
+}
+
+void PhysicsSystem::setMaximumLinearVelocity(entityx::Entity& entity, float maximumVelocity) {
+	entityx::ComponentHandle<sitara::ecs::DynamicBody> body = entity.component<sitara::ecs::DynamicBody>();
+
+	if (body.valid()) {
+		body->getBody()->setMaxLinearVelocity(maximumVelocity);
+	}
+	/*
+	else {
+		CI_LOG_D("Entity does not have a valid DynamicBody component, no action taken.");
+	}
+	*/
 }
 
 void PhysicsSystem::addPreUpdateFn(std::function<void(entityx::ComponentHandle<sitara::ecs::DynamicBody>)> callback) {

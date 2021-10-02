@@ -116,6 +116,10 @@ namespace sitara {
 			}
 			
 		protected:
+			physx::PxRigidDynamic* getBody() {
+				return mBody;
+			}
+
 			void setVelocity(const ci::vec3& velocity) {
 				mBody->setLinearVelocity(sitara::ecs::physics::to(velocity));
 			}
