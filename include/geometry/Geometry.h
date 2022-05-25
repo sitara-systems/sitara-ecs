@@ -14,35 +14,38 @@ namespace sitara {
 	namespace ecs {
 		class Geometry {
 		public:
-			Geometry(const ci::gl::BatchRef batch) : mUseAssimp(false) {
+            Geometry(const ci::gl::BatchRef batch) : mUseAssimp(false), mUseTexture(false) {
 				mGeometryBatch = batch;
 				// can't get the source geometry from the batch, so need to declare this an unknown primitive
 				mPrimitiveType = geometry::Primitive::UNKNOWN;
 			}
 
-			Geometry(const ci::geom::Source& source, ci::Color color) : mUseAssimp(false) {
+			Geometry(const ci::geom::Source& source, ci::Color color = ci::Color::white())
+                            : mUseAssimp(false), mUseTexture(false) {
 				mPrimitiveType = geometry::checkGeometryType(source);
 				mColor = color;
-				ci::gl::GlslProgRef shader;
 
-				if (mPrimitiveType <= geometry::Primitive::PLANE) {
+                ci::gl::ShaderDef shaderConfig = ci::gl::ShaderDef().color();
+
+				if (mPrimitiveType <= geometry::Primitive::RING) {
 					// if not a wireframe
-					shader = ci::gl::getStockShader(ci::gl::ShaderDef().lambert().color());
+                    shaderConfig.color().lambert().texture();
 				}
-				else {
-					// if a wireframe
-					shader = ci::gl::getStockShader(ci::gl::ShaderDef().color());
-				}
+
+				ci::gl::GlslProgRef shader = ci::gl::getStockShader(shaderConfig);
 				mGeometryBatch = ci::gl::Batch::create(source, shader);
 			}
 
-			Geometry(const ci::geom::Source& source, ci::gl::GlslProgRef shader, ci::Color color = ci::Color(ci::Color::white())) : mUseAssimp(false) {
+			Geometry(const ci::geom::Source& source,
+                                 ci::gl::GlslProgRef shader,
+                                 ci::Color color = ci::Color::white())
+                            : mUseAssimp(false), mUseTexture(false) {
 				mPrimitiveType = geometry::checkGeometryType(source);
 				mGeometryBatch = ci::gl::Batch::create(source, shader);
 			}
 
 			#ifdef USING_ASSIMP
-			Geometry(const std::filesystem::path& filename) : mUseAssimp(true) {
+                        Geometry(const std::filesystem::path& filename) : mUseAssimp(true), mUseTexture(false) {
 				mPrimitiveType = geometry::Primitive::UNKNOWN;
 				std::filesystem::path modelPath = ci::app::getAssetPath(filename);
 				if (!modelPath.empty()) {
@@ -53,7 +56,7 @@ namespace sitara {
 				}
 			}
 
-			Geometry(const sitara::assimp::AssimpLoader& loader) : mUseAssimp(true) {
+			Geometry(const sitara::assimp::AssimpLoader& loader) : mUseAssimp(true), mUseTexture(false) {
 				mPrimitiveType = geometry::Primitive::UNKNOWN;
 				mModelLoader = loader;
 			}
@@ -83,6 +86,15 @@ namespace sitara {
 				return mGeometryBatch->getGlslProg();
 			}
 
+			void setTexture(ci::gl::Texture2dRef texture) {
+                mUseTexture = true;
+                mTexture = texture;
+			}
+
+			ci::gl::Texture2dRef getTexture() {
+				return mTexture;
+			}
+
 			void draw() {
 				#ifdef USING_ASSIMP
 				if (mUseAssimp) {
@@ -94,12 +106,19 @@ namespace sitara {
 				}
 				#else
 				ci::gl::ScopedColor scopedColor(mColor);
-				mGeometryBatch->draw();
+                if (mUseTexture) {
+                    ci::gl::ScopedTextureBind scopedTexture(mTexture, 0);
+                    mGeometryBatch->draw();
+                } else {
+                    mGeometryBatch->draw();                
+				}
 				#endif
 			}
 
 		private:
 			ci::Color mColor;
+            bool mUseTexture;
+            ci::gl::Texture2dRef mTexture;
 			ci::gl::BatchRef mGeometryBatch;
 			sitara::ecs::geometry::Primitive mPrimitiveType;
 			bool mUseAssimp;

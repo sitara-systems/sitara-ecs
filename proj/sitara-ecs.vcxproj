@@ -65,6 +65,7 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\cinder-sdftext\config\cinder-sdftext-dependencies.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -194,6 +195,7 @@
     <ClInclude Include="..\include\physics\Spring.h" />
     <ClInclude Include="..\include\physics\StaticBody.h" />
     <ClInclude Include="..\include\text\Glyph.h" />
+    <ClInclude Include="..\include\text\GlyphString.h" />
     <ClInclude Include="..\include\text\TextSystem.h" />
     <ClInclude Include="..\include\transform\Transform.h" />
     <ClInclude Include="..\include\transform\TransformSystem.h" />

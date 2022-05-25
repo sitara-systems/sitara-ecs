@@ -55,6 +55,12 @@
     <Filter Include="Source Files\ui">
       <UniqueIdentifier>{a6e9267e-6092-418d-9370-aaa28fa1d2ed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\color">
+      <UniqueIdentifier>{10dc9042-da6a-45ca-be4e-afc9ecc1efa9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\color">
+      <UniqueIdentifier>{52af51d2-317c-4dd0-9e65-e0d2321251ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\utilities\Simplex.h">
@@ -149,6 +155,9 @@
     </ClInclude>
     <ClInclude Include="..\include\ui\MouseSystem.h">
       <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\text\GlyphString.h">
+      <Filter>Header Files\text</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

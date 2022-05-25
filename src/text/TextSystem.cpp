@@ -25,6 +25,15 @@ void TextSystem::registerFont(const std::string& name, const std::filesystem::pa
 	mFontInstances.insert(std::pair<std::string, ci::gl::SdfTextRef>(name, fontInstance));
 }
 
+void TextSystem::addGlyphStringComponent(entityx::Entity& entity,
+                                                      const std::string& font,
+                                                      const std::string& string,
+                                                      const ci::vec2& baseline) {
+    std::vector<std::pair<ci::gl::SdfText::Font::Glyph, ci::vec2>> titleString =
+        getGlyphPlacements(font, string);
+    entity.assign<sitara::ecs::GlyphString>(titleString, font, string, baseline);
+}
+
 std::vector<std::pair<ci::gl::SdfText::Font::Glyph, ci::vec2>> TextSystem::getGlyphPlacements(const std::string& fontName, const std::string& str, const ci::gl::SdfText::DrawOptions& options) {
 	ci::gl::SdfTextRef fontRenderer = mFontInstances[fontName];
 	return fontRenderer->getGlyphPlacements(str, options);
@@ -46,6 +55,15 @@ void TextSystem::drawGlyphs(const std::string& fontName, std::vector<std::pair<c
 		return;
 	}
 	fontRenderer->drawGlyphs(glyphPlacements, baseline, options);
+}
+
+void TextSystem::drawGlyphString(entityx::ComponentHandle<sitara::ecs::GlyphString> glyphString) {
+    ci::gl::SdfTextRef fontRenderer = mFontInstances[glyphString->getFontName()];
+    if (!fontRenderer) {
+        std::cout << "Could not find font with name " << glyphString->getFontName() << "; cannot draw Glyphs!" << std::endl;
+        return;
+    }
+    fontRenderer->drawGlyphs(glyphString->getGlyphString(), glyphString->getBaseline(), glyphString->getOptions());
 }
 
 #endif

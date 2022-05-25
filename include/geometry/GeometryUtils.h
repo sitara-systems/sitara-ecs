@@ -11,9 +11,23 @@ namespace sitara {
 	namespace ecs {
 		namespace geometry {
 			enum Primitive {
-				BOX, CAPSULE, CONE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, TORUSKNOT, PLANE,
-				WIRE_BOX, WIRE_CAPSULE, WIRE_CONE, WIRE_CYLINDER, WIRE_ICOSAHEDRON, WIRE_SPHERE, WIRE_TORUS, WIRE_PLANE,
-                RECT, ROUNDED_RECT, CIRCLE, RING, WIRE_RECT, WIRE_ROUNDED_RECT, WIRE_CIRCLE,
+                    BOX,
+                    CAPSULE,
+                    CONE,
+                    CYLINDER,
+                    HELIX,
+                    ICOSAHEDRON,
+                    ICOSPHERE,
+                    SPHERE,
+                    TEAPOT,
+                    TORUS,
+                    TORUSKNOT,
+                    PLANE,
+                    RECT,
+                    ROUNDED_RECT,
+                    CIRCLE,
+                    RING, 
+				WIRE_BOX, WIRE_CAPSULE, WIRE_CONE, WIRE_CYLINDER, WIRE_ICOSAHEDRON, WIRE_SPHERE, WIRE_TORUS, WIRE_PLANE, WIRE_RECT, WIRE_ROUNDED_RECT, WIRE_CIRCLE,
 				UNKNOWN, PRIMITIVE_COUNT };
 
 			enum Quality { LOW, DEFAULT, HIGH };

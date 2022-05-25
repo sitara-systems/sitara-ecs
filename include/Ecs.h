@@ -35,6 +35,7 @@
 
 #ifdef USING_SDFTEXT
 #include "text/Glyph.h"
+#include "text/GlyphString.h"
 #include "text/TextSystem.h"
 #else
 

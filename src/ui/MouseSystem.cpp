@@ -52,5 +52,4 @@ void MouseSystem::onDown(const ci::vec3& mousePosition, entityx::Entity selected
     mDragStartPosition = mousePosition;
     mSelectedEntity = selectedEntity;
     mEntityStartPosition = selectedEntity.component<sitara::ecs::Transform>()->mPosition;
-    CI_LOG_I("Click!" << ci::app::getElapsedFrames());
 }

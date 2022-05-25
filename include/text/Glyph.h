@@ -1,3 +1,5 @@
+#pragma once 
+
 #ifdef USING_SDFTEXT
 
 #include "cinder/gl/SdfText.h"
