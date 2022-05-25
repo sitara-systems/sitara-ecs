@@ -83,12 +83,6 @@ namespace sitara {
 				return mGeometryBatch->getGlslProg();
 			}
 
-			/*
-			~Geometry() {
-				delete mGeometrySource;
-			}
-			*/
-
 			void draw() {
 				#ifdef USING_ASSIMP
 				if (mUseAssimp) {
@@ -98,7 +92,7 @@ namespace sitara {
 					ci::gl::ScopedColor scopedColor(mColor);
 					mGeometryBatch->draw();
 				}
-				#elif
+				#else
 				ci::gl::ScopedColor scopedColor(mColor);
 				mGeometryBatch->draw();
 				#endif

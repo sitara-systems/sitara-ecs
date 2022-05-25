@@ -65,7 +65,6 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\sitara-assimp\config\sitara-assimp-dependencies.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -198,18 +197,20 @@
     <ClInclude Include="..\include\text\TextSystem.h" />
     <ClInclude Include="..\include\transform\Transform.h" />
     <ClInclude Include="..\include\transform\TransformSystem.h" />
+    <ClInclude Include="..\include\ui\Clickable2D.h" />
+    <ClInclude Include="..\include\ui\MouseSystem.h" />
     <ClInclude Include="..\include\utilities\Simplex.h" />
     <ClInclude Include="..\include\utilities\Units.h" />
     <ClInclude Include="framework.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\include\physics\Particle.cpp" />
     <ClCompile Include="..\src\behavior\BehaviorSystem.cpp" />
     <ClCompile Include="..\src\logic\StateSystem.cpp" />
     <ClCompile Include="..\src\physics\ParticleSystem.cpp" />
     <ClCompile Include="..\src\physics\PhysicsSystem.cpp" />
     <ClCompile Include="..\src\text\TextSystem.cpp" />
     <ClCompile Include="..\src\transform\TransformSystem.cpp" />
+    <ClCompile Include="..\src\ui\MouseSystem.cpp" />
     <ClCompile Include="sitara-ecs.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -49,6 +49,12 @@
     <Filter Include="Source Files\text">
       <UniqueIdentifier>{f0ede136-f101-4aaf-b4c6-9d094cf586ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ui">
+      <UniqueIdentifier>{ab889bb5-8e42-4c3c-8243-b73e1611367b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui">
+      <UniqueIdentifier>{a6e9267e-6092-418d-9370-aaa28fa1d2ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\utilities\Simplex.h">
@@ -138,6 +144,12 @@
     <ClInclude Include="..\include\text\TextSystem.h">
       <Filter>Header Files\text</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\ui\Clickable2D.h">
+      <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ui\MouseSystem.h">
+      <Filter>Header Files\ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\behavior\BehaviorSystem.cpp">
@@ -155,14 +167,14 @@
     <ClCompile Include="sitara-ecs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\include\physics\Particle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\physics\ParticleSystem.cpp">
       <Filter>Source Files\physics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\text\TextSystem.cpp">
       <Filter>Source Files\text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\MouseSystem.cpp">
+      <Filter>Source Files\ui</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -40,6 +40,9 @@
 
 #endif
 
+#include "ui/Clickable2D.h"
+#include "ui/MouseSystem.h"
+
 #include "utilities/Units.h"
 
 namespace sitara {
@@ -51,7 +54,8 @@ namespace sitara {
 			systems.add<entityx::deps::Dependency<DynamicBody, Transform>>();
 			systems.add<entityx::deps::Dependency<StaticBody, Transform>>();
 			systems.add<entityx::deps::Dependency<OverlapDetector, Transform>>();
-			systems.add<entityx::deps::Dependency<Geometry, Transform>>();
-		}
+            systems.add<entityx::deps::Dependency<Geometry, Transform>>();
+            systems.add<entityx::deps::Dependency<Clickable2D, Transform>>();
+        }
 	}
 }

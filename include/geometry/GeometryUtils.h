@@ -13,6 +13,7 @@ namespace sitara {
 			enum Primitive {
 				BOX, CAPSULE, CONE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, TORUSKNOT, PLANE,
 				WIRE_BOX, WIRE_CAPSULE, WIRE_CONE, WIRE_CYLINDER, WIRE_ICOSAHEDRON, WIRE_SPHERE, WIRE_TORUS, WIRE_PLANE,
+                RECT, ROUNDED_RECT, CIRCLE, RING, WIRE_RECT, WIRE_ROUNDED_RECT, WIRE_CIRCLE,
 				UNKNOWN, PRIMITIVE_COUNT };
 
 			enum Quality { LOW, DEFAULT, HIGH };
@@ -79,6 +80,30 @@ namespace sitara {
 				else if (typeid(ci::geom::WirePlane) == typeid(source)) {
 					return Primitive::WIRE_PLANE;
 				}
+				else if (typeid(ci::geom::WirePlane) == typeid(source)) {
+					return Primitive::WIRE_PLANE;
+				}
+				else if (typeid(ci::geom::Rect) == typeid(source)) {
+                    return Primitive::RECT;
+                }
+				else if (typeid(ci::geom::RoundedRect) == typeid(source)) {
+                    return Primitive::ROUNDED_RECT;
+                }
+				else if (typeid(ci::geom::Circle) == typeid(source)) {
+                    return Primitive::CIRCLE;
+                }
+				else if (typeid(ci::geom::Ring) == typeid(source)) {
+                    return Primitive::RING;
+                }
+				else if (typeid(ci::geom::WireRect) == typeid(source)) {
+                    return Primitive::WIRE_RECT;
+                }
+				else if (typeid(ci::geom::WireRoundedRect) == typeid(source)) {
+                    return Primitive::WIRE_ROUNDED_RECT;
+                }
+				else if (typeid(ci::geom::WireCircle) == typeid(source)) {
+                    return Primitive::WIRE_CIRCLE;
+                }
 				else {
 					return Primitive::UNKNOWN;
 				}
@@ -287,6 +312,78 @@ namespace sitara {
 						return ci::geom::Teapot();
 				}
 			}
+
+			static ci::geom::Rect createRect(ci::vec2 dims,
+                                                         geometry::Quality quality = geometry::Quality::DEFAULT) {
+                ci::Rectf r(0, 0, dims.x, dims.y);
+                return ci::geom::Rect(r);
+            }
+
+			static ci::geom::RoundedRect createRoundedRect(ci::vec2 dims, float cornerRadius, 
+                                                geometry::Quality quality = geometry::Quality::DEFAULT) {
+                ci::Rectf r(0, 0, dims.x, dims.y);
+                return ci::geom::RoundedRect(r, cornerRadius);
+            }
+
+			static ci::geom::Circle createCircle(float radius, geometry::Quality quality = geometry::Quality::DEFAULT) {
+                switch (quality) {
+                    case DEFAULT:
+                        return ci::geom::Circle().subdivisions(24).radius(radius);
+                        break;
+                    case LOW:
+                        return ci::geom::Circle().subdivisions(8).radius(radius);
+                        break;
+                    case HIGH:
+                        return ci::geom::Circle().subdivisions(120).radius(radius);
+                        break;
+                    default:
+                        return ci::geom::Circle().subdivisions(24).radius(radius);
+                }
+            }
+
+			static ci::geom::Ring createRing(float ringWidth, geometry::Quality quality = geometry::Quality::DEFAULT) {
+                switch (quality) {
+                    case DEFAULT:
+                        return ci::geom::Ring().subdivisions(24).width(ringWidth);
+                        break;
+                    case LOW:
+                        return ci::geom::Ring().subdivisions(8).width(ringWidth);
+                        break;
+                    case HIGH:
+                        return ci::geom::Ring().subdivisions(120).width(ringWidth);
+                        break;
+                    default:
+                        return ci::geom::Ring().subdivisions(24).width(ringWidth);
+                }
+            }
+
+			static ci::geom::WireRect createWireRect(ci::vec2 dims, geometry::Quality quality = geometry::Quality::DEFAULT) {
+                ci::Rectf r(0, 0, dims.x, dims.y);
+                return ci::geom::WireRect(r);
+            }
+
+            static ci::geom::WireRoundedRect createWireRoundedRect(ci::vec2 dims,
+                                                           float cornerRadius,
+                                                           geometry::Quality quality = geometry::Quality::DEFAULT) {
+                ci::Rectf r(0, 0, dims.x, dims.y);
+                return ci::geom::WireRoundedRect(r, cornerRadius);
+            }
+
+            static ci::geom::WireCircle createWireCircle(float radius, geometry::Quality quality = geometry::Quality::DEFAULT) {
+                switch (quality) {
+                    case DEFAULT:
+                        return ci::geom::WireCircle().subdivisions(24).radius(radius);
+                        break;
+                    case LOW:
+                        return ci::geom::WireCircle().subdivisions(8).radius(radius);
+                        break;
+                    case HIGH:
+                        return ci::geom::WireCircle().subdivisions(120).radius(radius);
+                        break;
+                    default:
+                        return ci::geom::WireCircle().subdivisions(24).radius(radius);
+                }
+            }
 
 			static ci::TriMesh getMesh(const ci::geom::Source& source) {
 				ci::TriMesh::Format fmt = ci::TriMesh::Format().positions().normals().texCoords().tangents();
