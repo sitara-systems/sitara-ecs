@@ -29,7 +29,12 @@ void MouseSystem::mouseDown(ci::app::MouseEvent& event) {
         ci::Rectf rect = clickable->getBoundingBox();
         rect.offset(transform->mPosition);
         if (rect.contains(point)) {
-            onDown(point, e);
+            mSelectedEntity = e;
+            mDragData.mDragStartPosition = ci::vec3(event.getPos(), 0);
+            mDragData.mEntityStartPosition = transform->mPosition;
+            if (clickable->mOnDownFn != nullptr) {
+                clickable->mOnDownFn(e);            
+            }
         }
     }
 }
@@ -40,16 +45,13 @@ void MouseSystem::mouseDrag(ci::app::MouseEvent& event) {
         entityx::ComponentHandle<Transform> transform;
         mSelectedEntity.unpack(clickable, transform);
 
-        transform->mPosition = mEntityStartPosition + (vec3(event.getPos(), 0.0f) - mDragStartPosition) * ci::vec3(1.0f);
+        if (clickable->mOnDragFn != nullptr) {
+            // should use DragData struct
+            clickable->mOnDragFn(mSelectedEntity);
+        }
     }
 }
 
 void MouseSystem::mouseMove(ci::app::MouseEvent& event) {}
 void MouseSystem::mouseUp(ci::app::MouseEvent& event) {}
 void MouseSystem::mouseWheel(ci::app::MouseEvent& event) {}
-
-void MouseSystem::onDown(const ci::vec3& mousePosition, entityx::Entity selectedEntity) {
-    mDragStartPosition = mousePosition;
-    mSelectedEntity = selectedEntity;
-    mEntityStartPosition = selectedEntity.component<sitara::ecs::Transform>()->mPosition;
-}
