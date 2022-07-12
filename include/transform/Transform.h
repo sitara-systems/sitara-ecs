@@ -86,6 +86,15 @@ namespace sitara {
 				}
 			}
 
+			void sortChildrenByDepth() {
+                std::function<bool(entityx::ComponentHandle<Transform>, entityx::ComponentHandle<Transform>)> compareDepth = [&](const entityx::ComponentHandle<Transform>& t1,
+                                                   const entityx::ComponentHandle<Transform>& t2) {
+                                    return t1->mPosition.z < t2->mPosition.z;
+                                };
+
+                                std::sort(mChildren.begin(), mChildren.end(), compareDepth);
+			}
+
 			static entityx::ComponentHandle<Transform> invalidHandle() {
 				return entityx::ComponentHandle<Transform>();
 			}

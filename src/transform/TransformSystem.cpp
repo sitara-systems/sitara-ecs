@@ -3,6 +3,8 @@
 using namespace cinder;
 using namespace sitara::ecs;
 
+TransformSystem::TransformSystem() : mDepthSortEnabled(false) {};
+
 void TransformSystem::configure(entityx::EntityManager& entities, entityx::EventManager& events) {
 	events.subscribe<entityx::ComponentRemovedEvent<Transform>>(*this);
 }
@@ -45,6 +47,10 @@ void TransformSystem::attachChild(entityx::ComponentHandle<Transform> parentHand
 		removeFromParent(childHandle);
 		childHandle->setParent(parentHandle);
 		parentHandle->addChild(childHandle);
+
+		if (mDepthSortEnabled) {
+            parentHandle->sortChildrenByDepth();
+		}
 	}
 }
 
@@ -63,4 +69,8 @@ void TransformSystem::descend(entityx::ComponentHandle<Transform> rootHandle, co
 
 void TransformSystem::receive(const entityx::ComponentRemovedEvent<Transform>& event) {
 	removeFromParent(event.component);
+}
+
+void TransformSystem::enableDepthSort(bool enabled) {
+    mDepthSortEnabled = enabled;
 }

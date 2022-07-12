@@ -25,6 +25,8 @@ void InterfaceRoot::setupSystems() {
     mSystems.add<sitara::ecs::MouseSystem>(mEntities);
     mSystems.add<sitara::ecs::TextSystem>();
     mSystems.configure();
+
+    mSystems.system<sitara::ecs::TransformSystem>()->enableDepthSort(true);
 }
 
 void InterfaceRoot::update(float dt) {
