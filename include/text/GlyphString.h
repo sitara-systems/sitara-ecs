@@ -53,7 +53,7 @@ namespace sitara {
                 return mBaseline;
             }
 
-            const ci::gl::SdfText::DrawOptions& getOptions() {
+            const ci::gl::SdfText::DrawOptions& getFormatOptions() {
                 return mFormatOptions;
             }
 
@@ -62,7 +62,7 @@ namespace sitara {
             }
 
             const ci::ColorA& getColor() {
-return mTextColor;
+                return mTextColor;
             }
 
 		protected:

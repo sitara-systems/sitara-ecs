@@ -66,6 +66,7 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\cinder-sdftext\config\cinder-sdftext-dependencies.props" />
+    <Import Project="..\..\sitara-assimp\config\sitara-assimp-dependencies.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -200,7 +201,9 @@
     <ClInclude Include="..\include\transform\Transform.h" />
     <ClInclude Include="..\include\transform\TransformSystem.h" />
     <ClInclude Include="..\include\ui\Clickable2D.h" />
+    <ClInclude Include="..\include\ui\InterfaceRoot.h" />
     <ClInclude Include="..\include\ui\MouseSystem.h" />
+    <ClInclude Include="..\include\utilities\Fbo.h" />
     <ClInclude Include="..\include\utilities\Simplex.h" />
     <ClInclude Include="..\include\utilities\Units.h" />
     <ClInclude Include="framework.h" />
@@ -212,6 +215,7 @@
     <ClCompile Include="..\src\physics\PhysicsSystem.cpp" />
     <ClCompile Include="..\src\text\TextSystem.cpp" />
     <ClCompile Include="..\src\transform\TransformSystem.cpp" />
+    <ClCompile Include="..\src\ui\InterfaceRoot.cpp" />
     <ClCompile Include="..\src\ui\MouseSystem.cpp" />
     <ClCompile Include="sitara-ecs.cpp" />
   </ItemGroup>

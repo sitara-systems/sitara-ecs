@@ -1,6 +1,11 @@
 #pragma once
 
 #include "cinder/app/App.h"
+#include "geometry/Geometry.h"
+#include "transform/Transform.h"
+#include "ui/Clickable2D.h"
+#include <functional>
+
 #include "entityx/System.h"
 
 namespace sitara {

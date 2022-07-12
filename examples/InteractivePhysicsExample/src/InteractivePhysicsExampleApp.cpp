@@ -66,7 +66,7 @@ void InteractivePhysicsExampleApp::update() {
 }
 
 void InteractivePhysicsExampleApp::draw() {
-	gl::clear(Color(0, 0, 0));
+	gl::clear(Color(1, 1, 1));
 	gl::enableAlphaBlending();
 
 	gl::setMatrices(mCamera);

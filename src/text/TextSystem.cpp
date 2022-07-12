@@ -23,6 +23,13 @@ void TextSystem::update(entityx::EntityManager& entities, entityx::EventManager&
 
 void TextSystem::registerStyle(const std::string& styleName, const std::filesystem::path& path, float fontSize, const ci::ColorA& color) {
 	std::string cachedPath = text::getCachedFilePath(path);
+
+    if (!std::filesystem::exists(cachedPath)) {
+        CI_LOG_I(
+            "Could not find sdf file for fonts, need to build files.  This may "
+            "take a few minutes.");
+    }
+
 	auto fontInstance = ci::gl::SdfText::create(cachedPath, ci::gl::SdfText::Font(ci::app::loadAsset(path.string()), fontSize));
 	mFontInstances.insert(std::pair<std::string, ci::gl::SdfTextRef>(styleName, fontInstance));
     mStyleColors.insert(std::pair<std::string, ci::ColorA>(styleName, color));
@@ -31,9 +38,10 @@ void TextSystem::registerStyle(const std::string& styleName, const std::filesyst
 entityx::ComponentHandle<sitara::ecs::GlyphString> TextSystem::addGlyphStringComponent(entityx::Entity& entity,
                                                       const std::string& styleName,
                                                       const std::string& string,
+                                                      const ci::gl::SdfText::DrawOptions& options,
                                                       const ci::vec2& baseline) {
     std::vector<std::pair<ci::gl::SdfText::Font::Glyph, ci::vec2>> titleString =
-        getGlyphPlacements(styleName, string);
+        getGlyphPlacements(styleName, string, options);
     auto styleColor = mStyleColors.find(styleName);
     if (styleColor == mStyleColors.end()) {
         std::cout << "Could not find style with name " << styleName << "; cannot draw Glyphs!"
@@ -75,7 +83,7 @@ void TextSystem::drawGlyphString(entityx::ComponentHandle<sitara::ecs::GlyphStri
         return;
     }
     ci::gl::ScopedColor color(glyphString->getColor());
-    fontRenderer->drawGlyphs(glyphString->getGlyphString(), glyphString->getBaseline(), glyphString->getOptions());
+    fontRenderer->drawGlyphs(glyphString->getGlyphString(), glyphString->getBaseline(), glyphString->getFormatOptions());
 }
 
 #endif

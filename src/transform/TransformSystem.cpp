@@ -21,10 +21,14 @@ void TransformSystem::update(entityx::EntityManager &entities, entityx::EventMan
 }
 
 entityx::ComponentHandle<Transform> TransformSystem::attachChild(entityx::Entity parent, entityx::Entity child) {
-	entityx::ComponentHandle<Transform> parentHandle = parent.component<Transform>();
+    entityx::ComponentHandle<Transform> parentHandle;
+	if (parent.has_component<Transform>()) {
+        parentHandle = parent.component<Transform>();
+    } else {
+        parentHandle = parent.assign<Transform>();
+    }
 
 	entityx::ComponentHandle<Transform> childHandle;
-
 	if (child.has_component<Transform>()) {
 		childHandle = child.component<Transform>();
 	}

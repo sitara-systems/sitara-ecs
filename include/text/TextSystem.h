@@ -17,20 +17,6 @@ namespace sitara {
                 std::string cachedPath = ci::app::getAssetPath("").string() + "/sdft/" + sdft_filename;
                 return cachedPath;
             }
-
-            static void checkFontFiles(const std::filesystem::path& filepath) {
-                if (!std::filesystem::exists(filepath)) {
-                    CI_LOG_F("Could not find a valid font at " << filepath.string()
-                                                               << "; please check the file and try again.");
-                    std::exit(0);
-                }
-
-                if (!std::filesystem::exists(sitara::ecs::text::getCachedFilePath(filepath))) {
-                    CI_LOG_I(
-                        "Could not find sdf file for fonts, need to build files.  This may "
-                        "take a few minutes.");
-                }
-            }
         }
 
         class TextSystem : public entityx::System<TextSystem>, public entityx::Receiver<TextSystem> {
@@ -40,7 +26,7 @@ namespace sitara {
             void configure(entityx::EntityManager& entities, entityx::EventManager& events) override;
             void update(entityx::EntityManager& entities, entityx::EventManager& events, entityx::TimeDelta dt) override;
             void registerStyle(const std::string& name, const std::filesystem::path& path, float fontSize = 32.0f, const ci::ColorA& color = ci::Color::black());
-            entityx::ComponentHandle<sitara::ecs::GlyphString> addGlyphStringComponent(entityx::Entity& entity, const std::string& styleName, const std::string& string, const ci::vec2& baseline = ci::vec2(0));
+            entityx::ComponentHandle<sitara::ecs::GlyphString> addGlyphStringComponent(entityx::Entity& entity, const std::string& styleName, const std::string& string, const ci::gl::SdfText::DrawOptions& options = ci::gl::SdfText::DrawOptions(), const ci::vec2& baseline = ci::vec2(0));
             std::vector<std::pair<ci::gl::SdfText::Font::Glyph, ci::vec2>> getGlyphPlacements(const std::string& fontName, const std::string& str, const ci::gl::SdfText::DrawOptions& options = ci::gl::SdfText::DrawOptions());
             std::vector<std::pair<ci::gl::SdfText::Font::Glyph, ci::vec2>> getGlyphPlacementsWrapped(const std::string& fontName, const std::string& str, const ci::Rectf& fitRect, const ci::gl::SdfText::DrawOptions& options = ci::gl::SdfText::DrawOptions());
             void drawGlyphs(const std::string& fontName, std::vector<std::pair<ci::gl::SdfText::Font::Glyph, ci::vec2>> glyphPlacements, const ci::vec2& baseline = ci::vec2(0), const ci::gl::SdfText::DrawOptions& options = ci::gl::SdfText::DrawOptions());

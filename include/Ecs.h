@@ -42,9 +42,11 @@
 #endif
 
 #include "ui/Clickable2D.h"
+#include "ui/InterfaceRoot.h"
 #include "ui/MouseSystem.h"
 
 #include "utilities/Units.h"
+#include "utilities/Fbo.h"
 
 namespace sitara {
 	namespace ecs {
