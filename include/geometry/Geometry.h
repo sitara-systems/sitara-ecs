@@ -98,7 +98,7 @@ namespace sitara {
 					ci::gl::ScopedColor scopedColor(mColor);
 					mGeometryBatch->draw();
 				}
-				#elif
+				#else
 				ci::gl::ScopedColor scopedColor(mColor);
 				mGeometryBatch->draw();
 				#endif

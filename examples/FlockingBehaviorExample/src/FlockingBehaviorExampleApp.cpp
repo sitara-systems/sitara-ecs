@@ -262,7 +262,6 @@ void FlockingBehaviorExampleApp::createWorld() {
 
 		auto body = boid.assign<sitara::ecs::DynamicBody>(mSystems.system<sitara::ecs::PhysicsSystem>()->createDynamicBody(position));
 		body->attachSphere(radius, material);
-		body->setUserData(boid.id().id());
 
 		boid.assign<sitara::ecs::Geometry>(sitara::ecs::geometry::createSphere(radius), Color(0.8, 0, 1));
 		boid.assign<sitara::ecs::LogicalLayer>(LayerNames::BOIDS);
