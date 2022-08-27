@@ -55,6 +55,9 @@
     <Filter Include="Source Files\ui">
       <UniqueIdentifier>{a6e9267e-6092-418d-9370-aaa28fa1d2ed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\utilities">
+      <UniqueIdentifier>{8b7f117f-9410-4a1e-ac5f-e9018408adb4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\utilities\Simplex.h">
@@ -150,14 +153,17 @@
     <ClInclude Include="..\include\ui\MouseSystem.h">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\text\GlyphString.h">
-      <Filter>Header Files\text</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\ui\InterfaceRoot.h">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\include\utilities\Fbo.h">
       <Filter>Header Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\utilities\FboSystem.h">
+      <Filter>Header Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\text\Text.h">
+      <Filter>Header Files\text</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -187,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="..\src\ui\InterfaceRoot.cpp">
       <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utilities\FboSystem.cpp">
+      <Filter>Source Files\utilities</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

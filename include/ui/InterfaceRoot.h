@@ -5,6 +5,7 @@
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/SdfText.h"
+#include "cinder/Timeline.h"
 
 #include "entityx/config.h"
 #include "entityx/Event.h"
@@ -23,14 +24,20 @@ class InterfaceRoot {
     virtual void setupFonts() = 0;
     virtual void update(float dt);
     virtual void draw();
+    void setDebug(bool debug);
+    bool isDebugging();
     entityx::EntityManager& getEntityManager();
     entityx::SystemManager& getSystemManager();
     void addChild(entityx::Entity& parent, entityx::Entity& child);
-    entityx::Entity createTextElement(const ci::vec3& position,
+    entityx::Entity createTextElement(const ci::vec3& baseline,
                                       const std::string& fontStyle,
                                       const std::string& text,
                                       const ci::gl::SdfText::DrawOptions& options = ci::gl::SdfText::DrawOptions());
-    entityx::Entity createImageElement(const ci::vec3& position, ci::gl::Texture2dRef imageTex);
+    entityx::Entity createTextElement(const ci::Rectf& fitRect,
+                                      const std::string& fontStyle,
+                                      const std::string& text,
+                                      const ci::gl::SdfText::DrawOptions& options = ci::gl::SdfText::DrawOptions());
+    entityx::Entity createImageElement(const ci::vec3& position, ci::gl::Texture2dRef imageTex, ci::ColorA tint = ci::Color::white());
     entityx::Entity createFboElement(const ci::vec3& position, const ci::vec2& size, const ci::gl::Fbo::Format& format = ci::gl::Fbo::Format());
     entityx::Entity createRectangleElement(const ci::vec3& position,
                                            const ci::vec2& size,
@@ -48,12 +55,14 @@ class InterfaceRoot {
     entityx::Entity createRectangleButton(const ci::vec3& position,
                                           const ci::vec2& size,
                                           const ci::ColorA& color = ci::Color::white());
-    entityx::Entity createImageButton(const ci::vec3& position, ci::gl::Texture2dRef imageTex);
+    entityx::Entity createImageButton(const ci::vec3& position, ci::gl::Texture2dRef imageTex, ci::ColorA tint = ci::Color::white());
 
    protected:
     entityx::EntityManager mEntities;
     entityx::EventManager mEvents;
     entityx::SystemManager mSystems;
+    ci::TimelineRef mContentTimeline;
+    bool mDebug;
 };
 }  // namespace ecs
 }  // namespace sitara

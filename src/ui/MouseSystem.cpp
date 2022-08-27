@@ -21,16 +21,18 @@ void MouseSystem::mouseDown(ci::app::MouseEvent& event) {
     auto point = ci::vec3(event.getPos(), 0.0f);
 
     for (auto e : mEntities.entities_with_components(transform, clickable)) {
-        ci::Rectf rect = clickable->getBoundingBox();
-        auto world = transform->getWorldTransform();
-        rect.offset(world[3]); // world[3] is the translation part of the matrix
-        if (rect.contains(point)) {
-            mSelectedEntity = e;
-            mDragData.mDragStartPosition = ci::vec3(event.getPos(), 0);
-            mDragData.mEntityStartPosition = transform->mPosition;
-            if (clickable->mOnDownFn != nullptr) {
-                clickable->mOnDownFn(e);            
-            }
+        if (transform->isShowing()) {
+            ci::Rectf rect = clickable->getBoundingBox();
+            auto world = transform->getWorldTransform();
+            rect.offset(world[3]);  // world[3] is the translation part of the matrix
+            if (rect.contains(point)) {
+                mSelectedEntity = e;
+                mDragData.mDragStartPosition = ci::vec3(event.getPos(), 0);
+                mDragData.mEntityStartPosition = transform->mPosition;
+                if (clickable->mOnDownFn != nullptr) {
+                    clickable->mOnDownFn(e);
+                }
+            }        
         }
     }
 }

@@ -13,7 +13,8 @@ namespace sitara {
 				: mPosition(position),
 				mScale(scale),
 				mAnchor(anchor),
-				mOrientation(orientation) {
+				mOrientation(orientation), 
+				mShow(true) {
 				mParent = invalidHandle();
 			}
 
@@ -31,6 +32,30 @@ namespace sitara {
 
 			bool isLeaf() const {
 				return mChildren.empty();
+			}
+
+			bool isShowing() {
+				return mShow;
+			}
+
+			bool isHiding() {
+				return !mShow;
+			}
+
+			void show() {
+				mShow = true;
+			}
+
+			void hide() {
+				mShow = false;
+			}
+
+			void setLabel(const std::string& label) {
+				mNodeLabel = label;
+			}
+
+			std::string& getLabel() {
+				return mNodeLabel;
 			}
 
 			void setParent(entityx::ComponentHandle<Transform> parent) {
@@ -87,12 +112,12 @@ namespace sitara {
 			}
 
 			void sortChildrenByDepth() {
-                std::function<bool(entityx::ComponentHandle<Transform>, entityx::ComponentHandle<Transform>)> compareDepth = [&](const entityx::ComponentHandle<Transform>& t1,
-                                                   const entityx::ComponentHandle<Transform>& t2) {
-                                    return t1->mPosition.z < t2->mPosition.z;
-                                };
+                std::function<bool(entityx::ComponentHandle<Transform>, entityx::ComponentHandle<Transform>)> compareDepth =
+					[&](const entityx::ComponentHandle<Transform>& t1, const entityx::ComponentHandle<Transform>& t2) {
+                        return t1->mPosition.z < t2->mPosition.z;
+                    };
 
-                                std::sort(mChildren.begin(), mChildren.end(), compareDepth);
+                std::sort(mChildren.begin(), mChildren.end(), compareDepth);
 			}
 
 			static entityx::ComponentHandle<Transform> invalidHandle() {
@@ -103,6 +128,8 @@ namespace sitara {
 			std::vector<entityx::ComponentHandle<Transform>> mChildren;
 			ci::mat4 mLocalTransform;
 			ci::mat4 mWorldTransform;
+            bool mShow;
+            std::string mNodeLabel;
 
 			friend class TransformSystem;
 		};

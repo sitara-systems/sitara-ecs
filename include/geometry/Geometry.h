@@ -20,7 +20,7 @@ namespace sitara {
 				mPrimitiveType = geometry::Primitive::UNKNOWN;
 			}
 
-			Geometry(const ci::geom::Source& source, ci::Color color = ci::Color::white())
+			Geometry(const ci::geom::Source& source, ci::ColorA color = ci::ColorA::white())
                             : mUseAssimp(false), mUseTexture(false), mTexture(nullptr) {
 				mPrimitiveType = geometry::checkGeometryType(source);
 				mColor = color;
@@ -36,10 +36,10 @@ namespace sitara {
 				mGeometryBatch = ci::gl::Batch::create(source, shader);
 			}
 
-			Geometry(const ci::geom::Source& source, ci::gl::Texture2dRef texture)
+			Geometry(const ci::geom::Source& source, ci::gl::Texture2dRef texture, ci::ColorA tint = ci::Color::white())
                 : mUseAssimp(false), mUseTexture(true) {
                 mPrimitiveType = geometry::checkGeometryType(source);
-                mColor = ci::Color::white();
+                mColor = tint;
                 mTexture = texture;
 
                 ci::gl::ShaderDef shaderConfig = ci::gl::ShaderDef().color().lambert().texture();
@@ -49,7 +49,7 @@ namespace sitara {
 
 			Geometry(const ci::geom::Source& source,
                                  ci::gl::GlslProgRef shader,
-                                 ci::Color color = ci::Color::white())
+                                 ci::Color color = ci::ColorA::white())
                 : mUseAssimp(false), mUseTexture(false), mTexture(nullptr) {
 				mPrimitiveType = geometry::checkGeometryType(source);
 				mColor = color;

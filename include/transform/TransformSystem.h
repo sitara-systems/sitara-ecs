@@ -13,7 +13,12 @@ namespace sitara {
 		entityx::ComponentHandle<Transform> attachChild(entityx::Entity parent, entityx::Entity child);
 		void attachChild(entityx::ComponentHandle<Transform> parentHandle, entityx::ComponentHandle<Transform> childHandle);
 		void removeFromParent(entityx::ComponentHandle<Transform> childHandle);
-		void descend(entityx::ComponentHandle<Transform> rootHandle, const std::function<void(const entityx::ComponentHandle<Transform>, entityx::ComponentHandle<Transform>)>& function);
+        void applyToRootNodes(entityx::EntityManager& entities,
+                                      const std::function<void(const entityx::ComponentHandle<Transform>,
+                                                               entityx::ComponentHandle<Transform>)>& function);
+        entityx::ComponentHandle<sitara::ecs::Transform> getNodeByLabel(entityx::EntityManager& entities, std::string label);
+        void ascend(entityx::ComponentHandle<Transform> childHandle, const std::function<void(const entityx::ComponentHandle<Transform>, entityx::ComponentHandle<Transform>)>& function);
+        void descend(entityx::ComponentHandle<Transform> rootHandle, const std::function<void(const entityx::ComponentHandle<Transform>, entityx::ComponentHandle<Transform>)>& function);
 		void receive(const entityx::ComponentRemovedEvent<Transform>& event);
         void enableDepthSort(bool enabled);
     private:

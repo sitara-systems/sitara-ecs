@@ -5,8 +5,9 @@
 
 using namespace sitara::ecs;
 
-InterfaceRoot::InterfaceRoot() : mEntities(mEvents), mSystems(mEntities, mEvents) {
+InterfaceRoot::InterfaceRoot() : mEntities(mEvents), mSystems(mEntities, mEvents), mDebug(false) {
     setupSystems();
+    mContentTimeline = ci::Timeline::create();
 }
 
 InterfaceRoot::~InterfaceRoot() {}
@@ -24,13 +25,16 @@ void InterfaceRoot::setupSystems() {
     mSystems.add<sitara::ecs::TransformSystem>();
     mSystems.add<sitara::ecs::MouseSystem>(mEntities);
     mSystems.add<sitara::ecs::TextSystem>();
+    mSystems.add<sitara::ecs::FboSystem>();
     mSystems.configure();
 
     mSystems.system<sitara::ecs::TransformSystem>()->enableDepthSort(true);
 }
 
 void InterfaceRoot::update(float dt) {
-    mSystems.update<sitara::ecs::TransformSystem>(1.0 / 60.0);
+    mSystems.update<sitara::ecs::TransformSystem>(dt);
+    mSystems.update<sitara::ecs::FboSystem>(dt);
+    mContentTimeline->stepTo(static_cast<float>(ci::app::getElapsedSeconds()));
 }
 
 void InterfaceRoot::draw() {
@@ -58,26 +62,46 @@ void InterfaceRoot::draw() {
     //}
 }
 
+void InterfaceRoot::setDebug(bool debug) {
+    mDebug = debug;
+}
+
+bool InterfaceRoot::isDebugging() {
+    return mDebug;
+}
+
 void InterfaceRoot::addChild(entityx::Entity& parent, entityx::Entity& child) {
     mSystems.system<sitara::ecs::TransformSystem>()->attachChild(parent, child);    
 }
 
-entityx::Entity sitara::ecs::InterfaceRoot::createTextElement(const ci::vec3& position,
+entityx::Entity sitara::ecs::InterfaceRoot::createTextElement(const ci::vec3& baseline,
                                                               const std::string& fontStyle,
                                                               const std::string& text,
                                                               const ci::gl::SdfText::DrawOptions& options) {
     entityx::Entity textEntity = mEntities.create();
 
-    textEntity.assign<sitara::ecs::Transform>(position);
-    mSystems.system<sitara::ecs::TextSystem>()->addGlyphStringComponent(textEntity, fontStyle, text, options);
+    textEntity.assign<sitara::ecs::Transform>(baseline);
+    auto textSystem = mSystems.system<sitara::ecs::TextSystem>();
+    textSystem->addTextComponent(textEntity, fontStyle, text, baseline, options);
     return textEntity;
 }
 
-entityx::Entity InterfaceRoot::createImageElement(const ci::vec3& position, ci::gl::Texture2dRef imageTex) {
+entityx::Entity sitara::ecs::InterfaceRoot::createTextElement(const ci::Rectf& fitRect,
+                                                              const std::string& fontStyle,
+                                                              const std::string& text,
+                                                              const ci::gl::SdfText::DrawOptions& options) {
+    entityx::Entity textEntity = mEntities.create();
+
+    auto textSystem = mSystems.system<sitara::ecs::TextSystem>();
+    auto textHandle = textSystem->addTextComponent(textEntity, fontStyle, text, fitRect, options);
+    return textEntity;
+}
+
+entityx::Entity InterfaceRoot::createImageElement(const ci::vec3& position, ci::gl::Texture2dRef imageTex, ci::ColorA tint) {
     entityx::Entity imageEntity = mEntities.create();
     imageEntity.assign<sitara::ecs::Transform>(position);
     ci::geom::Rect imageShape = sitara::ecs::geometry::createRect(imageTex->getSize());
-    entityx::ComponentHandle<sitara::ecs::Geometry> imageGeometryComponent = imageEntity.assign<sitara::ecs::Geometry>(imageShape, imageTex);
+    entityx::ComponentHandle<sitara::ecs::Geometry> imageGeometryComponent = imageEntity.assign<sitara::ecs::Geometry>(imageShape, imageTex, tint);
     return imageEntity;
 }
 
@@ -148,8 +172,8 @@ entityx::Entity sitara::ecs::InterfaceRoot::createRectangleButton(const ci::vec3
     return buttonEntity;
 }
 
-entityx::Entity sitara::ecs::InterfaceRoot::createImageButton(const ci::vec3& position, ci::gl::Texture2dRef imageTex) {
-    entityx::Entity imageEntity = createImageElement(position, imageTex);
+entityx::Entity sitara::ecs::InterfaceRoot::createImageButton(const ci::vec3& position, ci::gl::Texture2dRef imageTex, ci::ColorA tint) {
+    entityx::Entity imageEntity = createImageElement(position, imageTex, tint);
     ci::geom::Rect geom = sitara::ecs::geometry::createRect(imageTex->getSize());
     imageEntity.assign<sitara::ecs::Clickable2D>(geom);
 

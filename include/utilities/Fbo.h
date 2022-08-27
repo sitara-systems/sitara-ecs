@@ -1,6 +1,8 @@
 #pragma once
 
 #include "cinder/gl/gl.h"
+#include "cinder/Timeline.h"
+#include "entityx/Entity.h"
 
 namespace sitara {
     namespace ecs {
@@ -12,40 +14,28 @@ namespace sitara {
                 mCamera = ci::CameraPersp(size.x, size.y, 45.0f);
             }
 
-            ~Fbo() {
+            ~Fbo() {}
 
-            }
+            void bindFbo() { mFbo->bindFramebuffer(); }
 
-            ci::gl::FboRef getFbo() {
-                return mFbo;
-            }
+            void unbindFbo() { mFbo->unbindFramebuffer(); }
 
-            void bindFbo() {
-                mFbo->bindFramebuffer();
-            }
+            void setDrawFn(std::function<void(Fbo&, entityx::TimeDelta)> fn) { mDrawFn = fn; }
 
-            void unbindFbo() {
-                mFbo->unbindFramebuffer();
-            }
+            ci::CameraPersp& getCamera() { return mCamera; }
 
-            ci::gl::Texture2dRef getTexture() {
-                return mFbo->getColorTexture();
-            }
+            void setCamera(const ci::CameraPersp& camera) { mCamera = camera; }
 
-            ci::CameraPersp& getCamera() {
-                return mCamera;
-            }
+            ci::gl::FboRef getFbo() { return mFbo; }
 
-            void setCamera(const ci::CameraPersp& camera) {
-                mCamera = camera;
-            }
-        protected:
+            ci::gl::Texture2dRef getTexture() { return mFbo->getColorTexture(); }
+
+           protected:
             ci::gl::FboRef mFbo;
             ci::CameraPersp mCamera;
-            float mCameraDistance;
-            ci::vec3 mEye;
-            ci::vec3 mCenter;
-            ci::vec3 mUp;
+            std::function<void(Fbo&, entityx::TimeDelta)> mDrawFn;
+
+            friend class FboSystem;
         };
     }  // namespace ecs
 }  // namespace sitara

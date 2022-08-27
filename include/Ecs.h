@@ -35,7 +35,7 @@
 
 #ifdef USING_SDFTEXT
 #include "text/Glyph.h"
-#include "text/GlyphString.h"
+#include "text/Text.h"
 #include "text/TextSystem.h"
 #else
 
@@ -47,6 +47,7 @@
 
 #include "utilities/Units.h"
 #include "utilities/Fbo.h"
+#include "utilities/FboSystem.h"
 
 namespace sitara {
 	namespace ecs {
