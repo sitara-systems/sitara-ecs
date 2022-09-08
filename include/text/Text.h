@@ -69,6 +69,8 @@ namespace sitara {
 
             friend class TextSystem;
         };
+
+        typedef entityx::ComponentHandle<sitara::ecs::Text> TextHandle;
     }  // namespace ecs
 }  // namespace sitara
 

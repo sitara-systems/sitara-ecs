@@ -54,12 +54,17 @@ namespace sitara {
 				mNodeLabel = label;
 			}
 
-			std::string& getLabel() {
+			const std::string& getLabel() {
 				return mNodeLabel;
 			}
 
-			void setParent(entityx::ComponentHandle<Transform> parent) {
-				mParent = parent;
+			std::string getLabelPath() {
+                if (mParent.valid()) {
+                    std::string fullPath = mParentPath + "/" + mNodeLabel;
+                    return fullPath;
+				} else {
+                    return mNodeLabel;
+				}
 			}
 
 			entityx::ComponentHandle<Transform> getParent() const {
@@ -97,6 +102,8 @@ namespace sitara {
 			ci::quat mOrientation;
 
 		private:
+            void setParent(entityx::ComponentHandle<Transform> parent) { mParent = parent; }
+
 			void addChild(entityx::ComponentHandle<Transform> childHandle) {
 				mChildren.push_back(childHandle);
 			}
@@ -104,6 +111,7 @@ namespace sitara {
 			void removeChild(entityx::ComponentHandle<Transform> childHandle) {
 				if (childHandle) {
 					childHandle->setParent(invalidHandle());
+                    childHandle->mParentPath = "";
 					auto begin = std::remove_if(mChildren.begin(), mChildren.end(), [&](const entityx::ComponentHandle<Transform> &entity) {
 						return entity == childHandle;
 					});
@@ -120,6 +128,14 @@ namespace sitara {
                 std::sort(mChildren.begin(), mChildren.end(), compareDepth);
 			}
 
+			void updateLabelPath() {
+                if (mParent.valid()) {
+					mParentPath = mParent->getLabelPath();
+                } else {
+                    mParentPath = "";
+				}
+			}
+
 			static entityx::ComponentHandle<Transform> invalidHandle() {
 				return entityx::ComponentHandle<Transform>();
 			}
@@ -130,8 +146,11 @@ namespace sitara {
 			ci::mat4 mWorldTransform;
             bool mShow;
             std::string mNodeLabel;
+            std::string mParentPath;
 
 			friend class TransformSystem;
 		};
+
+		typedef entityx::ComponentHandle<Transform> TransformHandle;
 	}
 }

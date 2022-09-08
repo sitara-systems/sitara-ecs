@@ -37,5 +37,7 @@ namespace sitara {
 
             friend class FboSystem;
         };
+
+        typedef entityx::ComponentHandle<sitara::ecs::Fbo> FboHandle;
     }  // namespace ecs
 }  // namespace sitara

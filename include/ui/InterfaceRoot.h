@@ -16,7 +16,10 @@
 
 namespace sitara {
 namespace ecs {
+
 class InterfaceRoot {
+    enum ButtonState { INACTIVE, ACTIVE };
+
    public:
     InterfaceRoot();
     ~InterfaceRoot();
@@ -28,34 +31,54 @@ class InterfaceRoot {
     bool isDebugging();
     entityx::EntityManager& getEntityManager();
     entityx::SystemManager& getSystemManager();
+    std::vector<std::pair<std::string, bool>> getLabelTree();
+    void showNode(std::string& label);
+    void hideNode(std::string& label);
     void addChild(entityx::Entity& parent, entityx::Entity& child);
-    entityx::Entity createTextElement(const ci::vec3& baseline,
+    entityx::Entity createNode(const std::string& label, const ci::vec3 position, bool show = true);
+    entityx::Entity createTextElement(const std::string& label,
+                                      const ci::vec3& baseline,
                                       const std::string& fontStyle,
                                       const std::string& text,
                                       const ci::gl::SdfText::DrawOptions& options = ci::gl::SdfText::DrawOptions());
-    entityx::Entity createTextElement(const ci::Rectf& fitRect,
+    entityx::Entity createTextElement(const std::string& label,
+                                      const ci::Rectf& fitRect,
                                       const std::string& fontStyle,
                                       const std::string& text,
                                       const ci::gl::SdfText::DrawOptions& options = ci::gl::SdfText::DrawOptions());
-    entityx::Entity createImageElement(const ci::vec3& position, ci::gl::Texture2dRef imageTex, ci::ColorA tint = ci::Color::white());
-    entityx::Entity createFboElement(const ci::vec3& position, const ci::vec2& size, const ci::gl::Fbo::Format& format = ci::gl::Fbo::Format());
-    entityx::Entity createRectangleElement(const ci::vec3& position,
+    entityx::Entity createImageElement(const std::string& label,
+                                       const ci::vec3& position,
+                                       ci::gl::Texture2dRef imageTex,
+                                       ci::ColorA tint = ci::Color::white());
+    entityx::Entity createFboElement(const std::string& label,
+                                     const ci::vec3& position,
+                                     const ci::vec2& size,
+                                     const ci::gl::Fbo::Format& format = ci::gl::Fbo::Format());
+    entityx::Entity createRectangleElement(const std::string& label,
+                                           const ci::vec3& position,
                                            const ci::vec2& size,
                                            const ci::ColorA& color = ci::Color::white());
-    entityx::Entity createRectangleElement(const ci::vec3& position,
+    entityx::Entity createRectangleElement(const std::string& label,
+                                           const ci::vec3& position,
                                            const ci::geom::Rect& rect,
                                            const ci::ColorA& color = ci::Color::white());
-    entityx::Entity createRoundedRectElement(const ci::vec3& position,
+    entityx::Entity createRoundedRectElement(const std::string& label,
+                                             const ci::vec3& position,
                                              const ci::vec2& size,
                                              float radius,
                                              const ci::ColorA& color = ci::Color::white());
-    entityx::Entity createRoundedRectElement(const ci::vec3& position,
+    entityx::Entity createRoundedRectElement(const std::string& label,
+                                             const ci::vec3& position,
                                              const ci::geom::RoundedRect& rect,
                                              const ci::ColorA& color = ci::Color::white());
-    entityx::Entity createRectangleButton(const ci::vec3& position,
+    entityx::Entity createRectangleButton(const std::string& label,
+                                          const ci::vec3& position,
                                           const ci::vec2& size,
                                           const ci::ColorA& color = ci::Color::white());
-    entityx::Entity createImageButton(const ci::vec3& position, ci::gl::Texture2dRef imageTex, ci::ColorA tint = ci::Color::white());
+    entityx::Entity createImageButton(const std::string& label,
+                                      const ci::vec3& position,
+                                      ci::gl::Texture2dRef imageTex,
+                                      ci::ColorA tint = ci::Color::white());
 
    protected:
     entityx::EntityManager mEntities;

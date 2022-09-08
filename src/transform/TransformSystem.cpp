@@ -12,15 +12,16 @@ void TransformSystem::configure(entityx::EntityManager& entities, entityx::Event
 }
 
 void TransformSystem::update(entityx::EntityManager &entities, entityx::EventManager &events, entityx::TimeDelta dt) {
-	entityx::ComponentHandle<sitara::ecs::Transform> transformHandle;
+	sitara::ecs::TransformHandle transformHandle;
 
 	for (entityx::Entity e : entities.entities_with_components(transformHandle)) {
         if (transformHandle->isRoot() && transformHandle->isShowing()) {
             transformHandle->updateWorldTransform(mat4(1));
-            descend(transformHandle, [](const entityx::ComponentHandle<Transform> parent,
-                                        entityx::ComponentHandle<Transform> child) {
+            descend(transformHandle, [](const sitara::ecs::TransformHandle parent,
+                                        sitara::ecs::TransformHandle child) {
                 child->updateWorldTransform(parent->getWorldTransform());
             });
+
             if (mDepthSortEnabled) {
                 transformHandle->sortChildrenByDepth();
             }
@@ -28,15 +29,15 @@ void TransformSystem::update(entityx::EntityManager &entities, entityx::EventMan
 	}
 }
 
-entityx::ComponentHandle<Transform> TransformSystem::attachChild(entityx::Entity parent, entityx::Entity child) {
-    entityx::ComponentHandle<Transform> parentHandle;
+sitara::ecs::TransformHandle TransformSystem::attachChild(entityx::Entity parent, entityx::Entity child) {
+    sitara::ecs::TransformHandle parentHandle;
 	if (parent.has_component<Transform>()) {
         parentHandle = parent.component<Transform>();
     } else {
         parentHandle = parent.assign<Transform>();
     }
 
-	entityx::ComponentHandle<Transform> childHandle;
+	sitara::ecs::TransformHandle childHandle;
 	if (child.has_component<Transform>()) {
 		childHandle = child.component<Transform>();
 	}
@@ -48,36 +49,39 @@ entityx::ComponentHandle<Transform> TransformSystem::attachChild(entityx::Entity
 	return childHandle;
 }
 
-void TransformSystem::attachChild(entityx::ComponentHandle<Transform> parentHandle, entityx::ComponentHandle<Transform> childHandle) {
+void TransformSystem::attachChild(sitara::ecs::TransformHandle parentHandle, sitara::ecs::TransformHandle childHandle) {
 	if (childHandle.get() != parentHandle.get()) {
 		removeFromParent(childHandle);
 		childHandle->setParent(parentHandle);
+        childHandle->updateLabelPath();
 		parentHandle->addChild(childHandle);
 	}
 }
 
-void TransformSystem::removeFromParent(entityx::ComponentHandle<Transform> childHandle) {
+void TransformSystem::removeFromParent(sitara::ecs::TransformHandle childHandle) {
 	if (childHandle->getParent()) {
 		childHandle->getParent()->removeChild(childHandle);
+        childHandle->updateLabelPath();
 	}
 }
 
 void TransformSystem::applyToRootNodes(entityx::EntityManager& entities,
-    const std::function<void(entityx::ComponentHandle<Transform>, entityx::ComponentHandle<Transform>)>& function) {
-    entityx::ComponentHandle<sitara::ecs::Transform> transformHandle;
+    const std::function<void(sitara::ecs::TransformHandle, sitara::ecs::TransformHandle)>& function) {
+    sitara::ecs::TransformHandle transformHandle;
     for (entityx::Entity e : entities.entities_with_components(transformHandle)) {
         if(transformHandle->isRoot()) {
-            function(entityx::ComponentHandle<sitara::ecs::Transform>(), transformHandle);
+            function(sitara::ecs::TransformHandle(), transformHandle);
         }
     }
 }
 
-entityx::ComponentHandle<sitara::ecs::Transform> TransformSystem::getNodeByLabel(entityx::EntityManager& entities, std::string label) {
+sitara::ecs::TransformHandle TransformSystem::getNodeByLabel(entityx::EntityManager& entities, std::string label) {
     /*
-     * Traverse the transform hierarchy and look for a node with matching label.  Labels use an OSC-style path delimited
-     * by "/". e.g. "root/layer1/child
-     * Leading and trailing backslashes are ignored: '/home', 'home/', '/home/', and 'home' are all equivalent.
-     */
+    * 
+    * Traverse the transform hierarchy and look for a node with matching label.  Labels use an OSC-style path delimited
+    * by "/". e.g. "root/layer1/child
+    * Leading and trailing backslashes are ignored: '/home', 'home/', '/home/', and 'home' are all equivalent.
+    */
 
     // breakdown the string into a std::queue of labels
     std::queue<std::string> labelQueue;
@@ -99,29 +103,42 @@ entityx::ComponentHandle<sitara::ecs::Transform> TransformSystem::getNodeByLabel
     }
     labelQueue.push(label);
 
+
     // recursive search function
-    std::function<entityx::ComponentHandle<Transform>(std::vector<entityx::ComponentHandle<Transform>>,
+    std::function<sitara::ecs::TransformHandle(std::vector<sitara::ecs::TransformHandle>,
                                                       std::queue<std::string>)>
-        searchFn = [&](std::vector<entityx::ComponentHandle<Transform>> children, std::queue<std::string> labels) {
+        searchFn = [&](std::vector<sitara::ecs::TransformHandle> children, std::queue<std::string> labels) {
             std::string searchLabel = labels.front();
-            auto it = std::find_if(children.begin(), children.end(), [&](entityx::ComponentHandle<Transform> transform) {
+            auto it = std::find_if(children.begin(), children.end(), [&](sitara::ecs::TransformHandle transform) {
                 std::string testLabel = transform->getLabel();
                 return (testLabel == searchLabel);
             });
             labels.pop();
             if (it != children.end()) {
-                if ((*it)->getChildren().size()) {
-                    return searchFn((*it)->getChildren(), labels);
+                if (labels.size() == 0) {
+                    // no more labels, we found it!
+                    return *it;
+                } else {
+                    if ((*it)->getChildren().size()) {
+                        // more labels, more children to search
+                        return searchFn((*it)->getChildren(), labels);
+                    } else {
+                        // more labels, but no more children -- dead end
+                        CI_LOG_W("No transform component found with label "
+                                 << searchLabel << "; partial match found but no exact match.");
+                        return sitara::ecs::TransformHandle();
+                    }
                 }
             } else {
+                // did not find a child at this level with the correct label
                 CI_LOG_W("No node found in tree with label " << searchLabel);
-                return entityx::ComponentHandle<Transform>();
+                return sitara::ecs::TransformHandle();
             }
         };
 
     // search through hierarchy, starting with roots
     std::string searchLabel = labelQueue.front();
-    entityx::ComponentHandle<sitara::ecs::Transform> transformHandle;
+    sitara::ecs::TransformHandle transformHandle;
     for (entityx::Entity e : entities.entities_with_components(transformHandle)) {
         if (transformHandle->isRoot() && transformHandle->getLabel() == searchLabel) {
             labelQueue.pop();
@@ -131,27 +148,27 @@ entityx::ComponentHandle<sitara::ecs::Transform> TransformSystem::getNodeByLabel
             } else {
                 if (transformHandle->getChildren().size()) {
                     // more labels, more children to search
-                    return searchFn(transformHandle->getChildren(), labelQueue);                 
+                    return searchFn(transformHandle->getChildren(), labelQueue);
                 } else {
                     // more labels, but no more children -- dead end
-                    CI_LOG_W("No transform component found with label " << searchLabel << "; partial match found but no exact match.");
-                    return entityx::ComponentHandle<Transform>();
+                    CI_LOG_W("No transform component found with label "
+                                << searchLabel << "; partial match found but no exact match.");
+                    return sitara::ecs::TransformHandle();
                 }
             }
-        } else {
-            CI_LOG_W("No transform component found with label " << searchLabel);
-            return entityx::ComponentHandle<Transform>();
         }
     }
+    CI_LOG_W("No transform component found with label " << searchLabel);
+    return sitara::ecs::TransformHandle();
 }
 
 //! Ascends up the tree and applies a function to each node and its parent
 //! The root nodes don't have any parent, so be sure to check if the parentHandle is valid!
 //! Parent handle is only provided as a reference (hence the const)
-void TransformSystem::ascend(entityx::ComponentHandle<Transform> childHandle,
-                             const std::function<void(const entityx::ComponentHandle<Transform>,
-                                                      entityx::ComponentHandle<Transform>)>& function) {
-    entityx::ComponentHandle<Transform> parent = childHandle->getParent();
+void TransformSystem::ascend(sitara::ecs::TransformHandle childHandle,
+                             const std::function<void(const sitara::ecs::TransformHandle,
+                                                      sitara::ecs::TransformHandle)>& function) {
+    sitara::ecs::TransformHandle parent = childHandle->getParent();
     if (parent.valid()) {
         function(parent, childHandle);
         ascend(parent, function);
@@ -160,7 +177,7 @@ void TransformSystem::ascend(entityx::ComponentHandle<Transform> childHandle,
 
 //! Descends down the tree and applies a function to each node and its parent
 //! Parent handle is only provided as a reference (hence the const)
-void TransformSystem::descend(entityx::ComponentHandle<Transform> rootHandle, const std::function<void(const entityx::ComponentHandle<Transform>, entityx::ComponentHandle<Transform>)>& function) {
+void TransformSystem::descend(sitara::ecs::TransformHandle rootHandle, const std::function<void(const sitara::ecs::TransformHandle, sitara::ecs::TransformHandle)>& function) {
 	for (auto& child : rootHandle->getChildren()) {
 		function(rootHandle, child);
 		descend(child, function);
@@ -173,4 +190,32 @@ void TransformSystem::receive(const entityx::ComponentRemovedEvent<Transform>& e
 
 void TransformSystem::enableDepthSort(bool enabled) {
     mDepthSortEnabled = enabled;
+}
+
+std::vector<std::pair<std::string, bool>> TransformSystem::getLabelTree(entityx::EntityManager& entities) {
+    std::vector<std::pair<std::string, bool>> labelTree;
+    sitara::ecs::TransformHandle transformHandle;
+
+    for (entityx::Entity e : entities.entities_with_components(transformHandle)) {
+        // start at root nodes
+        if (transformHandle->isRoot()) {
+            transformHandle->updateLabelPath();
+            labelTree.push_back(
+                std::make_pair<std::string, bool>(transformHandle->getLabelPath(), transformHandle->isShowing()));
+            descend(transformHandle,
+                    [&](const sitara::ecs::TransformHandle parent, sitara::ecs::TransformHandle child) {
+                        child->updateLabelPath();
+                        labelTree.push_back(std::make_pair<std::string, bool>(child->getLabelPath(),
+                                                                              child->isShowing()));
+            });
+        }
+    }
+
+    std::function<bool(const std::pair<std::string, bool>, const std::pair<std::string, bool>)> compareFn =
+        [&](const std::pair<std::string, bool> a, const std::pair<std::string, bool> b) {
+            return a.first < b.first;
+    };
+
+    std::sort(labelTree.begin(), labelTree.end(), compareFn);
+    return labelTree;
 }

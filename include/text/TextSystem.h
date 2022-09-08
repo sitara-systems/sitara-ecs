@@ -28,13 +28,13 @@ namespace sitara {
             void loadFontsFromFile(const std::filesystem::path& path);
             void registerStyle(const std::string& name, const std::filesystem::path& path, float fontSize = 32.0f, const ci::ColorA& color = ci::Color::black());
             void setGlyphColor(entityx::Entity& entity, const ci::ColorA& color);
-            entityx::ComponentHandle<sitara::ecs::Text> addTextComponent(
+            sitara::ecs::TextHandle addTextComponent(
                 entityx::Entity& entity,
                 const std::string& styleName,
                 const std::string& string,
                 const ci::vec2& baseline = ci::vec2(0),
                 const ci::gl::SdfText::DrawOptions& options = ci::gl::SdfText::DrawOptions());
-            entityx::ComponentHandle<sitara::ecs::Text> addTextComponent(
+            sitara::ecs::TextHandle addTextComponent(
                 entityx::Entity& entity,
                 const std::string& styleName,
                 const std::string& string,
@@ -45,14 +45,14 @@ namespace sitara {
                 const std::string& str,
                 const ci::gl::SdfText::DrawOptions& options = ci::gl::SdfText::DrawOptions());
             std::vector<std::pair<ci::gl::SdfText::Font::Glyph, ci::vec2>> getGlyphPlacementsWrapped(const std::string& fontName, const std::string& str, const ci::Rectf& fitRect, const ci::gl::SdfText::DrawOptions& options = ci::gl::SdfText::DrawOptions());
-            float measureLineHeight(entityx::ComponentHandle<sitara::ecs::Text> textHandle);
-            ci::Rectf measureTextFitRect(entityx::ComponentHandle<sitara::ecs::Text> textHandle);
-            ci::Rectf measureTextBounds(entityx::ComponentHandle<sitara::ecs::Text> textHandle);
+            float measureLineHeight(sitara::ecs::TextHandle textHandle);
+            ci::Rectf measureTextFitRect(sitara::ecs::TextHandle textHandle);
+            ci::Rectf measureTextBounds(sitara::ecs::TextHandle textHandle);
             // Updates .leading() in the textHandle's DrawOptions to match for a desired lineHeight -- useful for centering text vertically!
-            void updateLeadingFromLineHeight(entityx::ComponentHandle<sitara::ecs::Text> textHandle, float lineHeight);
+            void updateLeadingFromLineHeight(sitara::ecs::TextHandle textHandle, float lineHeight);
             void drawGlyphs(const std::string& fontName, std::vector<std::pair<ci::gl::SdfText::Font::Glyph, ci::vec2>> glyphPlacements, const ci::vec2& baseline = ci::vec2(0), const ci::gl::SdfText::DrawOptions& options = ci::gl::SdfText::DrawOptions());
-            void drawText(entityx::ComponentHandle<sitara::ecs::Text> textHandle);
-            void drawTextDebug(entityx::ComponentHandle<sitara::ecs::Text> textHandle);
+            void drawText(sitara::ecs::TextHandle textHandle);
+            void drawTextDebug(sitara::ecs::TextHandle textHandle);
         protected:
             ci::gl::SdfTextRef getSdfFont(const std::string& fontName);
             std::map<std::string, ci::gl::SdfTextRef> mFontInstances;

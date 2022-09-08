@@ -140,5 +140,7 @@ namespace sitara {
 			sitara::assimp::AssimpLoader mModelLoader;
 			#endif
 		};
+
+		typedef entityx::ComponentHandle<sitara::ecs::Geometry> GeometryHandle;
 	}
 }

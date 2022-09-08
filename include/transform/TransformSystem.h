@@ -10,17 +10,19 @@ namespace sitara {
         TransformSystem();
 		void configure(entityx::EntityManager& entities, entityx::EventManager& events);
 		void update(entityx::EntityManager &entities, entityx::EventManager &events, entityx::TimeDelta dt) override;
-		entityx::ComponentHandle<Transform> attachChild(entityx::Entity parent, entityx::Entity child);
-		void attachChild(entityx::ComponentHandle<Transform> parentHandle, entityx::ComponentHandle<Transform> childHandle);
-		void removeFromParent(entityx::ComponentHandle<Transform> childHandle);
+        TransformHandle attachChild(entityx::Entity parent, entityx::Entity child);
+        void attachChild(TransformHandle parentHandle, TransformHandle childHandle);
+        void removeFromParent(TransformHandle childHandle);
         void applyToRootNodes(entityx::EntityManager& entities,
-                                      const std::function<void(const entityx::ComponentHandle<Transform>,
-                                                               entityx::ComponentHandle<Transform>)>& function);
-        entityx::ComponentHandle<sitara::ecs::Transform> getNodeByLabel(entityx::EntityManager& entities, std::string label);
-        void ascend(entityx::ComponentHandle<Transform> childHandle, const std::function<void(const entityx::ComponentHandle<Transform>, entityx::ComponentHandle<Transform>)>& function);
-        void descend(entityx::ComponentHandle<Transform> rootHandle, const std::function<void(const entityx::ComponentHandle<Transform>, entityx::ComponentHandle<Transform>)>& function);
+            const std::function<void(const TransformHandle, TransformHandle)>& function);
+        TransformHandle getNodeByLabel(entityx::EntityManager& entities, std::string label);
+        void ascend(TransformHandle childHandle,
+                    const std::function<void(const TransformHandle,
+                                             TransformHandle)>& function);
+        void descend(TransformHandle rootHandle, const std::function<void(const TransformHandle, TransformHandle)>& function);
 		void receive(const entityx::ComponentRemovedEvent<Transform>& event);
         void enableDepthSort(bool enabled);
+        std::vector<std::pair<std::string, bool>> getLabelTree(entityx::EntityManager& entities);
     private:
         bool mDepthSortEnabled;
     };

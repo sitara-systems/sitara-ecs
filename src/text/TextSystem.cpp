@@ -64,7 +64,7 @@ void TextSystem::registerStyle(const std::string& styleName, const std::filesyst
 
 void TextSystem::setGlyphColor(entityx::Entity& entity, const ci::ColorA& color) {
     entityx::ComponentHandle<Glyph> glyph;
-    entityx::ComponentHandle<Text> text;
+    sitara::ecs::TextHandle text;
 
     entity.unpack(glyph, text);
 
@@ -76,7 +76,7 @@ void TextSystem::setGlyphColor(entityx::Entity& entity, const ci::ColorA& color)
     }
 }
 
-entityx::ComponentHandle<sitara::ecs::Text> TextSystem::addTextComponent(entityx::Entity& entity,
+sitara::ecs::TextHandle TextSystem::addTextComponent(entityx::Entity& entity,
     const std::string& styleName,
     const std::string& string,
     const ci::vec2& baseline,
@@ -86,7 +86,7 @@ entityx::ComponentHandle<sitara::ecs::Text> TextSystem::addTextComponent(entityx
     return component;
 }
 
-entityx::ComponentHandle<sitara::ecs::Text> TextSystem::addTextComponent(
+sitara::ecs::TextHandle TextSystem::addTextComponent(
     entityx::Entity& entity,
     const std::string& styleName,
     const std::string& string,
@@ -113,12 +113,12 @@ std::vector<std::pair<ci::gl::SdfText::Font::Glyph, ci::vec2>> TextSystem::getGl
 	return measures;
 }
 
-float TextSystem::measureLineHeight(entityx::ComponentHandle<sitara::ecs::Text> textHandle) {
+float TextSystem::measureLineHeight(sitara::ecs::TextHandle textHandle) {
     ci::gl::SdfTextRef fontRenderer = getSdfFont(textHandle->getStyleName());
     return fontRenderer->measureLineHeight(textHandle->getFormatOptions());
 }
 
-ci::Rectf TextSystem::measureTextFitRect(entityx::ComponentHandle<sitara::ecs::Text> textHandle) {
+ci::Rectf TextSystem::measureTextFitRect(sitara::ecs::TextHandle textHandle) {
     ci::gl::SdfTextRef fontRenderer = getSdfFont(textHandle->getStyleName());
     ci::Rectf fitRect = textHandle->getFitRect();
     ci::gl::SdfTextBox tbox = ci::gl::SdfTextBox(fontRenderer.get());
@@ -131,12 +131,12 @@ ci::Rectf TextSystem::measureTextFitRect(entityx::ComponentHandle<sitara::ecs::T
     return ci::Rectf(fitRect.getUpperLeft(), fitRect.getUpperLeft() + ci::vec2(tbox.getSize()));
 }
 
-ci::Rectf TextSystem::measureTextBounds(entityx::ComponentHandle<sitara::ecs::Text> textHandle) {
+ci::Rectf TextSystem::measureTextBounds(sitara::ecs::TextHandle textHandle) {
     ci::gl::SdfTextRef fontRenderer = getSdfFont(textHandle->getStyleName());
     return fontRenderer->measureStringBounds(textHandle->getString(), textHandle->getFormatOptions());
 }
 
-void TextSystem::updateLeadingFromLineHeight(entityx::ComponentHandle<sitara::ecs::Text> textHandle,
+void TextSystem::updateLeadingFromLineHeight(sitara::ecs::TextHandle textHandle,
                                                           float lineHeight) {
     ci::gl::SdfTextRef fontRenderer = getSdfFont(textHandle->getStyleName());
     ci::gl::SdfText::DrawOptions options = textHandle->getFormatOptions();
@@ -150,7 +150,7 @@ void TextSystem::drawGlyphs(const std::string& fontName, std::vector<std::pair<c
 	fontRenderer->drawGlyphs(glyphPlacements, baseline, options);
 }
 
-void TextSystem::drawText(entityx::ComponentHandle<sitara::ecs::Text> textHandle) {
+void TextSystem::drawText(sitara::ecs::TextHandle textHandle) {
     ci::gl::SdfTextRef fontRenderer = getSdfFont(textHandle->getStyleName());
     ci::gl::ScopedColor color(textHandle->getColor());
     if (textHandle->useFitRect()) {
@@ -160,7 +160,7 @@ void TextSystem::drawText(entityx::ComponentHandle<sitara::ecs::Text> textHandle
     }
 }
 
-void TextSystem::drawTextDebug(entityx::ComponentHandle<sitara::ecs::Text> textHandle) {
+void TextSystem::drawTextDebug(sitara::ecs::TextHandle textHandle) {
     ci::gl::ScopedColor color(textHandle->getColor());
     if (textHandle->useFitRect()) {
         ci::gl::drawStrokedRect(textHandle->getFitRect());
