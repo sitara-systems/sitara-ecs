@@ -62,14 +62,14 @@ namespace sitara {
 				mPrimitiveType = geometry::Primitive::UNKNOWN;
 				std::filesystem::path modelPath = ci::app::getAssetPath(filename);
 				if (!modelPath.empty()) {
-					mModelLoader = sitara::assimp::AssimpLoader(modelPath);
+					mModelLoader = sitara::assimp::AssimpLoader::create(modelPath);
 				}
 				else {
 					CI_LOG_W("Could not find 3d model file " << modelPath << "; please check for this file.");
 				}
 			}
 
-			Geometry(const sitara::assimp::AssimpLoader& loader)
+			Geometry(std::shared_ptr<sitara::assimp::AssimpLoader> loader)
                             : mUseAssimp(true), mUseTexture(false), mTexture(nullptr) {
 				mPrimitiveType = geometry::Primitive::UNKNOWN;
 				mModelLoader = loader;
@@ -112,7 +112,7 @@ namespace sitara {
 			void draw() {
 				#ifdef USING_ASSIMP
 				if (mUseAssimp) {
-					mModelLoader.draw();
+					mModelLoader->draw();
 				}
 				else {
 					ci::gl::ScopedColor scopedColor(mColor);
@@ -137,7 +137,7 @@ namespace sitara {
 			sitara::ecs::geometry::Primitive mPrimitiveType;
 			bool mUseAssimp;
 			#ifdef USING_ASSIMP
-			sitara::assimp::AssimpLoader mModelLoader;
+			std::shared_ptr<sitara::assimp::AssimpLoader> mModelLoader;
 			#endif
 		};
 

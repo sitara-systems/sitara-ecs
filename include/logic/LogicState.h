@@ -51,5 +51,7 @@ namespace sitara {
 
 			friend class StateSystem;
 		};
+
+		typedef entityx::ComponentHandle<sitara::ecs::LogicState> StateHandle;
 	}
 }

@@ -88,6 +88,10 @@ sitara::ecs::TransformHandle TransformSystem::getNodeByLabel(entityx::EntityMana
     size_t delimiterPosition = 0;
     std::string sublabel;
 
+    if (label.empty()) {
+        return sitara::ecs::TransformHandle();
+    }
+
     if (label[0] == '/') {
         label.erase(0);
     }

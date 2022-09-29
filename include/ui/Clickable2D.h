@@ -60,5 +60,8 @@ namespace sitara {
 
             friend class MouseSystem;
         };
+
+        typedef entityx::ComponentHandle<Clickable2D> Clickable2DHandle;
+
 	}
 }

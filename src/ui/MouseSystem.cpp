@@ -14,25 +14,35 @@ void MouseSystem::configure(entityx::EventManager& events) {
 }
 
 void MouseSystem::mouseDown(ci::app::MouseEvent& event) {
-    entityx::ComponentHandle<Clickable2D> clickable;
-    entityx::ComponentHandle<Transform> transform;
-    mSelectedEntity.invalidate();
-
     auto point = ci::vec3(event.getPos(), 0.0f);
 
-    for (auto e : mEntities.entities_with_components(transform, clickable)) {
-        if (transform->isShowing()) {
-            ci::Rectf rect = clickable->getBoundingBox();
-            auto world = transform->getWorldTransform();
-            rect.offset(world[3]);  // world[3] is the translation part of the matrix
-            if (rect.contains(point)) {
-                mSelectedEntity = e;
-                mDragData.mDragStartPosition = ci::vec3(event.getPos(), 0);
-                mDragData.mEntityStartPosition = transform->mPosition;
-                if (clickable->mOnDownFn != nullptr) {
-                    clickable->mOnDownFn(e);
+    std::function<void(sitara::ecs::TransformHandle, sitara::ecs::TransformHandle)> clickFn =
+        [&, point](const sitara::ecs::TransformHandle parentHandle, sitara::ecs::TransformHandle childHandle) {
+            if (childHandle->isShowing()) {
+                sitara::ecs::Clickable2DHandle clickHandle = childHandle.entity().component<sitara::ecs::Clickable2D>();
+                if (clickHandle.valid()) {
+                    ci::Rectf rect = clickHandle->getBoundingBox();
+                    auto world = childHandle->getWorldTransform();
+                    rect.offset(world[3]);  // world[3] is the translation part of the matrix
+                    if (rect.contains(point)) {
+                        mSelectedEntity = childHandle.entity();
+                        mDragData.mDragStartPosition = ci::vec3(event.getPos(), 0);
+                        mDragData.mEntityStartPosition = childHandle->mPosition;
+                        if (clickHandle->mOnDownFn != nullptr) {
+                            clickHandle->mOnDownFn(mSelectedEntity);
+                        }
+                    }                
                 }
-            }        
+            }
+        };
+
+    sitara::ecs::TransformHandle transform;
+    mSelectedEntity.invalidate();
+    auto transformSystem = mSystems.system<sitara::ecs::TransformSystem>();
+
+    for (auto entity : mEntities.entities_with_components(transform)) {
+        if (transform->isRoot() && transform->isShowing()) {
+            transformSystem->descend(transform, clickFn);
         }
     }
 }

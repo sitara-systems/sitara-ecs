@@ -41,9 +41,10 @@ void InterfaceRoot::hideNode(std::string& label) {
 void InterfaceRoot::setupSystems() {
     sitara::ecs::configureSystems(mSystems);
     mSystems.add<sitara::ecs::TransformSystem>();
-    mSystems.add<sitara::ecs::MouseSystem>(mEntities);
+    mSystems.add<sitara::ecs::MouseSystem>(mEntities, mSystems);
     mSystems.add<sitara::ecs::TextSystem>();
     mSystems.add<sitara::ecs::FboSystem>();
+    mSystems.add<sitara::ecs::StateSystem>();
     mSystems.configure();
 
     mSystems.system<sitara::ecs::TransformSystem>()->enableDepthSort(true);
@@ -97,10 +98,13 @@ entityx::Entity InterfaceRoot::createNode(const std::string& label, const ci::ve
     sitara::ecs::TransformHandle transformHandle = nodeEntity.assign<sitara::ecs::Transform>(position);
     transformHandle->setLabel(label);
     if (show) {
-        transformHandle->show();    
+        transformHandle->show();
     } else {
         transformHandle->hide();
     }
+
+    nodeEntity.assign<sitara::ecs::LogicState>(NodeState::HIDE);
+
     return nodeEntity;
 }
 

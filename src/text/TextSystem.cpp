@@ -93,8 +93,10 @@ sitara::ecs::TextHandle TextSystem::addTextComponent(
     const ci::Rectf& fitRect,
     const ci::gl::SdfText::DrawOptions& options) {
     auto component = entity.assign<sitara::ecs::Text>(string, styleName, fitRect, options);
-    // immediately update the desired fitRect to the ACTUAL fitRect
-    component->mFitRect = measureTextFitRect(component);
+    if (options.getResizeFitRect()) {
+        // update the desired fitRect to the ACTUAL fitRect
+        component->mFitRect = measureTextFitRect(component);    
+    }
     // component->setColor((*styleColor).second);
     return component;
 }

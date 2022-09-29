@@ -18,9 +18,9 @@ namespace sitara {
 namespace ecs {
 
 class InterfaceRoot {
-    enum ButtonState { INACTIVE, ACTIVE };
-
    public:
+    enum NodeState { HIDE, SHOW };
+    enum ButtonState { INACTIVE, ACTIVE };
     InterfaceRoot();
     ~InterfaceRoot();
     void setupSystems();

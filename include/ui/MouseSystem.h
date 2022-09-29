@@ -3,6 +3,7 @@
 #include "cinder/app/App.h"
 #include "geometry/Geometry.h"
 #include "transform/Transform.h"
+#include "transform/TransformSystem.h"
 #include "ui/Clickable2D.h"
 #include <functional>
 
@@ -21,8 +22,8 @@ namespace sitara {
         public:
             MouseSystem() = delete;
 
-          explicit MouseSystem(entityx::EntityManager &entities)
-          : mEntities(entities)
+          explicit MouseSystem(entityx::EntityManager& entities, entityx::SystemManager& systems)
+          : mEntities(entities), mSystems(systems)
           {}
 
           void configure(entityx::EventManager &events) override;
@@ -37,7 +38,8 @@ namespace sitara {
         private:
           using ScopedConnectionRef = std::shared_ptr<ci::signals::ScopedConnection>;
           std::vector<ScopedConnectionRef> mSignals;
-          entityx::EntityManager &mEntities;
+          entityx::EntityManager& mEntities;
+          entityx::SystemManager& mSystems;
           entityx::Entity mSelectedEntity;
           DragData mDragData;
         };
