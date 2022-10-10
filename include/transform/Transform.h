@@ -4,6 +4,7 @@
 #include "cinder/Vector.h"
 #include "cinder/Quaternion.h"
 #include "cinder/Matrix.h"
+#include "cinder/Color.h"
 
 namespace sitara {
 	namespace ecs {
@@ -13,9 +14,11 @@ namespace sitara {
 				: mPosition(position),
 				mScale(scale),
 				mAnchor(anchor),
-				mOrientation(orientation), 
+				mOrientation(orientation),
+                mTintColor(ci::ColorA::white()),
 				mShow(true) {
 				mParent = invalidHandle();
+                mAppliedTint = ci::ColorA::white();
 			}
 
 			~Transform() {
@@ -87,6 +90,10 @@ namespace sitara {
 				return mLocalTransform;
 			}
 
+			const ci::ColorA& getAppliedTint() {
+				return mAppliedTint;
+			}
+
 			void updateWorldTransform(const ci::mat4 &parentTransform) {
 				mLocalTransform = calcLocalTransform();
 				mWorldTransform = parentTransform * mLocalTransform;
@@ -100,7 +107,7 @@ namespace sitara {
 			ci::vec3 mScale;
 			ci::vec3 mAnchor; // relative center of orientation and scaling.
 			ci::quat mOrientation;
-
+            ci::ColorA mTintColor;
 		private:
             void setParent(entityx::ComponentHandle<Transform> parent) { mParent = parent; }
 
@@ -147,6 +154,7 @@ namespace sitara {
             bool mShow;
             std::string mNodeLabel;
             std::string mParentPath;
+            ci::ColorA mAppliedTint;
 
 			friend class TransformSystem;
 		};

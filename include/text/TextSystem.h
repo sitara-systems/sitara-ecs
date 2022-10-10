@@ -51,7 +51,7 @@ namespace sitara {
             // Updates .leading() in the textHandle's DrawOptions to match for a desired lineHeight -- useful for centering text vertically!
             void updateLeadingFromLineHeight(sitara::ecs::TextHandle textHandle, float lineHeight);
             void drawGlyphs(const std::string& fontName, std::vector<std::pair<ci::gl::SdfText::Font::Glyph, ci::vec2>> glyphPlacements, const ci::vec2& baseline = ci::vec2(0), const ci::gl::SdfText::DrawOptions& options = ci::gl::SdfText::DrawOptions());
-            void drawText(sitara::ecs::TextHandle textHandle);
+            void drawText(sitara::ecs::TextHandle textHandle, ci::ColorA tint = ci::Color::white());
             void drawTextDebug(sitara::ecs::TextHandle textHandle);
         protected:
             ci::gl::SdfTextRef getSdfFont(const std::string& fontName);

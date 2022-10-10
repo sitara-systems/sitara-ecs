@@ -13,6 +13,7 @@
 #include "entityx/System.h"
 #include "entityx/quick.h"
 #include "entityx/deps/Dependencies.h"
+#include "utilities/Tween.h"
 
 namespace sitara {
 namespace ecs {
@@ -34,6 +35,17 @@ class InterfaceRoot {
     std::vector<std::pair<std::string, bool>> getLabelTree();
     void showNode(std::string& label);
     void hideNode(std::string& label);
+    void fadeOutElement(entityx::Entity& fadeOutEntity, const sitara::ecs::Tween::Options& fadeOutOptions);
+    void fadeOutElement(const std::string& fadeOutLabel, const sitara::ecs::Tween::Options& fadeOutOptions);
+    void fadeOutElement(const std::string& fadeOutLabel);
+    void fadeInElement(entityx::Entity& fadeInEntity, const sitara::ecs::Tween::Options& fadeInOptions);
+    void fadeInElement(const std::string& fadeInLabel, const sitara::ecs::Tween::Options& fadeInOptions);
+    void fadeInElement(const std::string& fadeInLabel);
+    void crossfadeElements(const std::string& fadeOutLabel,
+                           const std::string& fadeInLabel,
+                           const sitara::ecs::Tween::Options& fadeOutOptions,
+                           const sitara::ecs::Tween::Options& fadeInOptions);
+    void crossfadeElements(const std::string& fadeOutLabel, const std::string& fadeInLabel);
     void addChild(entityx::Entity& parent, entityx::Entity& child);
     entityx::Entity createNode(const std::string& label, const ci::vec3 position, bool show = true);
     entityx::Entity createTextElement(const std::string& label,

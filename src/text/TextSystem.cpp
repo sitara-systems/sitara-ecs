@@ -152,9 +152,9 @@ void TextSystem::drawGlyphs(const std::string& fontName, std::vector<std::pair<c
 	fontRenderer->drawGlyphs(glyphPlacements, baseline, options);
 }
 
-void TextSystem::drawText(sitara::ecs::TextHandle textHandle) {
+void TextSystem::drawText(sitara::ecs::TextHandle textHandle, ci::ColorA tint) {
     ci::gl::SdfTextRef fontRenderer = getSdfFont(textHandle->getStyleName());
-    ci::gl::ScopedColor color(textHandle->getColor());
+    ci::gl::ScopedColor color(tint * textHandle->getColor());
     if (textHandle->useFitRect()) {
         fontRenderer->drawString(textHandle->getString(), textHandle->getFitRect(), ci::vec2(0), textHandle->getFormatOptions());
     } else {

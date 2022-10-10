@@ -17,9 +17,11 @@ void TransformSystem::update(entityx::EntityManager &entities, entityx::EventMan
 	for (entityx::Entity e : entities.entities_with_components(transformHandle)) {
         if (transformHandle->isRoot() && transformHandle->isShowing()) {
             transformHandle->updateWorldTransform(mat4(1));
+            transformHandle->mAppliedTint = transformHandle->mTintColor;
             descend(transformHandle, [](const sitara::ecs::TransformHandle parent,
                                         sitara::ecs::TransformHandle child) {
                 child->updateWorldTransform(parent->getWorldTransform());
+                child->mAppliedTint = child->mTintColor * parent->mAppliedTint;
             });
 
             if (mDepthSortEnabled) {

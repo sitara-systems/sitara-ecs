@@ -48,6 +48,8 @@
 #include "utilities/Units.h"
 #include "utilities/Fbo.h"
 #include "utilities/FboSystem.h"
+#include "utilities/Tween.h"
+#include "utilities/TimelineSystem.h"
 
 namespace sitara {
 	namespace ecs {
@@ -60,6 +62,7 @@ namespace sitara {
 			systems.add<entityx::deps::Dependency<OverlapDetector, Transform>>();
             systems.add<entityx::deps::Dependency<Geometry, Transform>>();
             systems.add<entityx::deps::Dependency<Clickable2D, Transform>>();
-        }
+            systems.add<entityx::deps::Dependency<Tween, Transform>>();
+                }
 	}
 }

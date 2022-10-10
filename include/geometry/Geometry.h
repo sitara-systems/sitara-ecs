@@ -109,17 +109,17 @@ namespace sitara {
 				return mTexture;
 			}
 
-			void draw() {
+			void draw(ci::ColorA tint = ci::Color::white()) {
 				#ifdef USING_ASSIMP
 				if (mUseAssimp) {
 					mModelLoader->draw();
 				}
 				else {
-					ci::gl::ScopedColor scopedColor(mColor);
+					ci::gl::ScopedColor scopedColor(tint*mColor);
 					mGeometryBatch->draw();
 				}
 				#else
-                ci::gl::ScopedColor scopedColor(mColor);
+                ci::gl::ScopedColor scopedColor(tint*mColor);
                 if (mUseTexture) {
                     ci::gl::ScopedTextureBind scopedTexture(mTexture, 0);
                     mGeometryBatch->draw();
