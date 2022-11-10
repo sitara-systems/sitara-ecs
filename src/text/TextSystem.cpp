@@ -55,6 +55,8 @@ void TextSystem::registerStyle(const std::string& styleName, const std::filesyst
         CI_LOG_I(
             "Could not find sdf file for fonts, need to build files.  This may "
             "take a few minutes.");
+    } else {
+        CI_LOG_D("Loading style " << styleName << " with cached font from " << cachedPath);
     }
 
 	auto fontInstance = ci::gl::SdfText::create(cachedPath, ci::gl::SdfText::Font(ci::app::loadAsset(path.string()), fontSize));
