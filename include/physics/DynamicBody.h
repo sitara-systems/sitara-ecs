@@ -39,7 +39,7 @@ namespace sitara {
 
 			physx::PxGeometryType::Enum getGeometryType() {
 				if (mShape) {
-					return mShape->getGeometryType();
+					return mShape->getGeometry().getType();
 				}
 				else {
 					return physx::PxGeometryType::Enum::eINVALID;
