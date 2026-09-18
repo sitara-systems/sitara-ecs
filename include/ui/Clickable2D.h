@@ -21,23 +21,11 @@ namespace sitara {
                           mOnMoveFn(nullptr),
                           mOnUpFn(nullptr),
                           mOnWheelFn(nullptr) {
-                auto primitive = sitara::ecs::geometry::checkGeometryType(source);
-                if (primitive == sitara::ecs::geometry::Primitive::RECT) {
-                    const ci::geom::Rect rect = dynamic_cast<const ci::geom::Rect&>(source);
-                    mBoundingBox = rect.getRect();
-                }
-                else if (primitive == sitara::ecs::geometry::Primitive::ROUNDED_RECT) {
-                    const ci::geom::RoundedRect rect = dynamic_cast<const ci::geom::RoundedRect&>(source);
-                    mBoundingBox = rect.getRect();
-                }
-                else if (primitive == sitara::ecs::geometry::Primitive::CIRCLE) {
-                    const ci::geom::Circle circle = dynamic_cast<const ci::geom::Circle&>(source);
-                    ci::vec2 center = circle.getCenter();
-                    float radius = circle.getRadius();
-                    ci::vec2 topLeft = center - ci::vec2(radius);
-                    ci::vec2 bottomRight = center + ci::vec2(radius);
-                    mBoundingBox = ci::Rectf(topLeft, bottomRight);
-                }
+                // geom::Rect/RoundedRect/Circle are one-way mesh-generation
+                // sources with no accessors back to their input parameters,
+                // so recover the 2D bounds via the mesh's own bounding box.
+                ci::AxisAlignedBox box = sitara::ecs::geometry::getBoundingBox(source);
+                mBoundingBox = ci::Rectf(ci::vec2(box.getMin()), ci::vec2(box.getMax()));
             }
 
             ci::Rectf getBoundingBox() {
